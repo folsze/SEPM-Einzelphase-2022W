@@ -37,9 +37,9 @@ public class OwnerEndpoint {
     try {
       return service.create(ownerCreateDto);
     } catch (ValidationException ve) {
-      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Validation of owner failed." + ve.summary(), ve);
+      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ve.getMessage(), ve);
     } catch (ConflictException ce) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, ce.summary(), ce);
+      throw new ResponseStatusException(HttpStatus.CONFLICT, ce.getMessage(), ce);
     }
   }
 }

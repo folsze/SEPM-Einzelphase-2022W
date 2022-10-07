@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -61,13 +62,17 @@ public class OwnerJdbcDao implements OwnerDao {
     LOG.trace("create({})", newOwner);
 
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-    jdbcTemplate.update(con -> {
-      PreparedStatement stmt = con.prepareStatement(SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
-      stmt.setString(1, newOwner.firstName());
-      stmt.setString(2, newOwner.lastName());
-      stmt.setString(3, newOwner.email());
-      return stmt;
-    }, keyHolder);
+    try {
+      jdbcTemplate.update(con -> {
+        PreparedStatement stmt = con.prepareStatement(SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
+        stmt.setString(1, newOwner.firstName());
+        stmt.setString(2, newOwner.lastName());
+        stmt.setString(3, newOwner.email());
+        return stmt;
+      }, keyHolder);
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error while querying all owners from database"); // todo Fragestunde: passt so? Wie sonst?
+    }
 
     Number key = keyHolder.getKey();
     if (key == null) {

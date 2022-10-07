@@ -23,7 +23,7 @@ public class OwnerValidator {
         validateEmail(ownerCreateDto.email(), validationErrors);
 
         if (!validationErrors.isEmpty()) {
-            throw new ValidationException("Validation of owner to be created failed.", validationErrors);
+            throw new ValidationException("Validation of owner to be created failed", validationErrors);
         }
     }
 
@@ -31,7 +31,7 @@ public class OwnerValidator {
         String regEx = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
         if (email != null) {
             if (!email.matches(regEx)){
-                validationErrors.add("Invalid e-mail for new owner.");
+                validationErrors.add("Invalid e-mail for new owner");
             }
         }
     }
@@ -39,42 +39,42 @@ public class OwnerValidator {
     private void validateFirstName(String firstName, List<String> validationErrors) {
         if (firstName != null) {
             if (firstName.isBlank()) {
-                validationErrors.add("First name is given but blank.");
+                validationErrors.add("First name is given but blank");
             }
             if (firstName.length() > 255) {
-                validationErrors.add("First name too long: longer than 255 characters.");
+                validationErrors.add("First name too long: longer than 255 characters");
             }
 
             if (firstName.length() != firstName.trim().length()) {
-                validationErrors.add("First name must not start/end with whitespaces.");
+                validationErrors.add("First name must not start/end with whitespaces");
             }
 
             if (firstName.trim().contains(" ")) {  // trim because space at start/end was already checked
-                validationErrors.add("First name must not contain whitespaces.");
+                validationErrors.add("First name must not contain whitespaces");
             }
         } else {
-            validationErrors.add("First name must not be null.");
+            validationErrors.add("First name must not be null");
         }
     }
 
     private void validateLastName(String lastName, List<String> validationErrors) {
         if (lastName != null) {
             if (lastName.isBlank()) {
-                validationErrors.add("Last name is given but blank.");
+                validationErrors.add("Last name is given but blank");
             }
             if (lastName.length() > 255) {
-                validationErrors.add("Last name too long: longer than 255 characters.");
+                validationErrors.add("Last name too long: longer than 255 characters");
             }
 
             if (lastName.length() != lastName.trim().length()) {
-                validationErrors.add("Last name must not start/end with whitespaces.");
+                validationErrors.add("Last name must not start/end with whitespaces");
             }
 
             if (lastName.trim().contains(" ")) {  // trim because space at start/end was already checked
-                validationErrors.add("Last name must not contain whitespaces.");
+                validationErrors.add("Last name must not contain whitespaces");
             }
         } else {
-            validationErrors.add("Last name must not be null.");
+            validationErrors.add("Last name must not be null");
         }
     }
 }
