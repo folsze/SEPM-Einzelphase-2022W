@@ -1,6 +1,7 @@
 logging:
   level:
     root: INFO
+    at:ac:tuwien:sepm: DEBUG
   file:
     name: ./log/wendys-friends.log
   pattern:
