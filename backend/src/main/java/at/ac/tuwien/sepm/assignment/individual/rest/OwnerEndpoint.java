@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.assignment.individual.rest;
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerCreateDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerSearchDto;
+import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
 import at.ac.tuwien.sepm.assignment.individual.service.OwnerService;
 import java.lang.invoke.MethodHandles;
@@ -36,7 +37,9 @@ public class OwnerEndpoint {
     try {
       return service.create(ownerCreateDto);
     } catch (ValidationException ve) {
-      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Validation of owner failed.");
+      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Validation of owner failed." + ve.summary(), ve);
+    } catch (ConflictException ce) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, ce.summary(), ce);
     }
   }
 }
