@@ -1,0 +1,49 @@
+<!-- SANITY CHECK BANNER
+    This is just for checking, that your setup works.
+    You can – and should – remove this later
+    -->
+<div class="container mt-3 mb-3" *ngIf="bannerError">
+  <div class="alert alert-danger" role="alert">
+    <h4>Error!</h4> {{ error }}
+    <p>Could not load horses.</p>
+    <p>Something is not quite right. Did you start the backend?</p>
+  </div>
+</div>
+
+<div class="container mt-3" *ngIf="!bannerError && owners">
+  <div class="alert alert-success" role="alert">
+    <h4 class="alert-heading">Well done!</h4>
+    <p>Your application is up and running.</p>
+    <p>You should see the current list of horses below.</p>
+  </div>
+</div>
+<!-- END SANITY CHECK BANNER -->
+
+<div class="d-flex flex-row w-auto">
+  <button class="btn btn-primary mr-1" (click)="reloadOwners()" aria-label="Reload horses">
+    <i class="bi bi-arrow-clockwise"></i>
+    Reload
+  </button>
+  <span style="flex: 1"></span>
+  <a class="btn btn-secondary" routerLink="create" aria-label="New horse">
+    <i class="bi bi-plus-lg"></i>
+    Add Owner
+  </a>
+</div>
+
+<div class="mt-3">
+  <table class="table table-hover">
+    <thead>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>E-Mail</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let owner of owners" class="center-td">
+        <td>{{owner.firstName}}</td>
+        <td>{{owner.lastName}}</td>
+        <td>{{owner.email}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

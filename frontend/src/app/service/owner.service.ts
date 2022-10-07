@@ -21,4 +21,8 @@ export class OwnerService {
       .set('maxAmount', limitTo);
     return this.http.get<Owner[]>(baseUri, { params });
   }
+
+  public getAll(): Observable<Owner[]> {
+    return this.http.get<Owner[]>(baseUri); // todo Fragestunde: wieso funktioniert das, aber Postman nicht? (Empty body/DTO)
+  }
 }
