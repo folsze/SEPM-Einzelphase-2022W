@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -41,7 +42,11 @@ public class HorseJdbcDao implements HorseDao {
   @Override
   public List<Horse> getAll() {
     LOG.trace("getAll()");
-    return jdbcTemplate.query(SQL_SELECT_ALL, this::mapRow);
+    try {
+      return jdbcTemplate.query(SQL_SELECT_ALL, this::mapRow);
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error when querying horses from database."); // todo Fragestunde: bis in die Persistenz eh ok? Keine Schichteninformation...
+    }
   }
 
   @Override

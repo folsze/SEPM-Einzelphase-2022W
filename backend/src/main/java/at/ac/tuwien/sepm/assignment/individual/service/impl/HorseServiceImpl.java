@@ -40,19 +40,18 @@ public class HorseServiceImpl implements HorseService {
   @Override
   public Stream<HorseListDto> allHorses() {
     LOG.trace("allHorses()");
-    var horses = dao.getAll();
-    var ownerIds = horses.stream()
+    var horses = dao.getAll(); // clear
+    var ownerIds = horses.stream() // clear: gets all ownerIds somehow, idc
         .map(Horse::getOwnerId)
         .filter(Objects::nonNull)
         .collect(Collectors.toUnmodifiableSet());
-    Map<Long, OwnerDto> ownerMap;
+    Map<Long, OwnerDto> ownerMap; // clear
     try {
-      ownerMap = ownerService.getAllById(ownerIds);
+      ownerMap = ownerService.getAllById(ownerIds); // instead of a list, get a map, where the id of the owner is the key, but also in the DTO (LOL)
     } catch (NotFoundException e) {
       throw new FatalException("Horse, that is already persisted, refers to non-existing owner", e);
     }
-    return horses.stream()
-        .map(horse -> mapper.entityToListDto(horse, ownerMap));
+    return horses.stream().map(horse -> mapper.entityToListDto(horse, ownerMap));
   }
 
 

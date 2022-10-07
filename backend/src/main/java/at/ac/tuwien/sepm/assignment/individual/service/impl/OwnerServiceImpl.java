@@ -56,8 +56,7 @@ public class OwnerServiceImpl implements OwnerService {
   @Override
   public Stream<OwnerDto> search(OwnerSearchDto searchParameters) {
     LOG.trace("search({})", searchParameters);
-    return dao.search(searchParameters).stream()
-        .map(mapper::entityToDto);
+    return dao.search(searchParameters).stream().map(mapper::entityToDto);
   }
 
   @Override
