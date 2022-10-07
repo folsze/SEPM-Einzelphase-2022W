@@ -46,7 +46,13 @@ public class OwnerJdbcDao implements OwnerDao {
   @Override
   public Owner getById(long id) throws NotFoundException {
     LOG.trace("getById({})", id);
-    List<Owner> owners = jdbcTemplate.query(SQL_SELECT_BY_ID, this::mapRow, id);
+    List<Owner> owners;
+    try {
+      owners = jdbcTemplate.query(SQL_SELECT_BY_ID, this::mapRow, id);
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error while getting owner from database by id");
+    }
+
     if (owners.isEmpty()) {
       throw new NotFoundException("Owner with ID %d not found".formatted(id));
     }
