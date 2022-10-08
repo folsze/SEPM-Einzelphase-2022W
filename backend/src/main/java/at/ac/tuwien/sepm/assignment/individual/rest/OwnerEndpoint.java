@@ -27,9 +27,12 @@ public class OwnerEndpoint {
   }
 
   @GetMapping
-  public Stream<OwnerDto> search(OwnerSearchDto searchParameters) {
-    LOG.info("GET " + BASE_PATH + " query parameters: {}", searchParameters);
-    return service.search(searchParameters);
+  public Stream<OwnerDto> search(
+      @RequestParam(required = false) String fullNameSubstring,
+      @RequestParam(required = false) Integer maxResultCount) {
+    LOG.info("Post " + BASE_PATH + " query parameters: fullNameSubstring: {}, maxAmount: {}",
+      fullNameSubstring, maxResultCount);
+    return service.search(new OwnerSearchDto(fullNameSubstring, maxResultCount));
   }
 
   @PostMapping
