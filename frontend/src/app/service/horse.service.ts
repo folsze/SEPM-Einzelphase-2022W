@@ -21,7 +21,7 @@ export class HorseService {
    *
    * @return observable list of found horses.
    */
-  getAll(): Observable<Horse[]> {
+  public getAll(): Observable<Horse[]> {
     return this.http.get<Horse[]>(baseUri);
   }
 
@@ -32,11 +32,15 @@ export class HorseService {
    * @param horse the data for the horse that should be created
    * @return an Observable for the created horse
    */
-  create(horse: Horse): Observable<Horse> {
+  public create(horse: Horse): Observable<Horse> {
     return this.http.post<Horse>(
       baseUri,
       horse
     );
+  }
+
+  public getHorseById(id: number): Observable<Horse> {
+    return this.http.get<Horse>(baseUri + '/' + id);
   }
 
 }
