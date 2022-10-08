@@ -25,4 +25,8 @@ export class OwnerService {
   public getAll(): Observable<Owner[]> {
     return this.http.get<Owner[]>(baseUri); // todo Fragestunde: wieso funktioniert das, aber Postman nicht? (Empty body/DTO)
   }
+
+  public create(owner: Owner): Observable<Owner> {
+    return this.http.post<Owner>(baseUri, owner);
+  }
 }

@@ -1,0 +1,84 @@
+<h1 class="display-1">Add Owner</h1>
+
+<form [formGroup]="ownerForm" #form="ngForm" (ngSubmit)="onSubmit()">
+  <div class="row">
+    <div class="mb-2 col-lg-6">
+      <!-- When nesting rows, always make row > col-* > row. The Bootstrap classes do not work right when an element is both col* and row -->
+      <div class="row">
+        <label for="firstName" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          First Name
+        </label>
+        <div class="col-md-10 col-lg-8"
+        >
+          <input type="text"
+                 id="firstName"
+                 name="firstName"
+                 placeholder="First name"
+                 class="form-control"
+                 [ngClass]="{ 'is-invalid': firstName.invalid && firstName.dirty }"
+                 formControlName="firstName">
+          <div class="invalid-feedback" *ngIf="firstName.errors?.required">
+            First Name is required.
+          </div>
+          <div class="invalid-feedback" *ngIf="firstName.hasError('whitespace')">
+            No whitespace allowed inside first name.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="lastName" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Last Name
+        </label>
+        <div class="col-md-10 col-lg-8"
+        >
+          <input type="text"
+                 id="lastName"
+                 name="lastName"
+                 placeholder="Last name"
+                 class="form-control"
+                 [ngClass]="{ 'is-invalid': lastName.invalid && lastName.dirty }"
+                 formControlName="lastName">
+          <div class="invalid-feedback" *ngIf="lastName.errors?.required">
+            Last Name is required.
+          </div>
+          <div class="invalid-feedback" *ngIf="lastName.hasError('whitespace')">
+            No whitespace allowed inside last name.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="email" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          E-Mail
+        </label>
+        <div class="col-md-10 col-lg-8"
+        >
+          <input type="text"
+                 id="email"
+                 name="email"
+                 placeholder="E-Mail"
+                 class="form-control"
+                 [ngClass]="{ 'is-invalid': email.invalid && email.dirty }"
+                 formControlName="email">
+          <div class="invalid-feedback">
+            This E-Mail is invalid.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex flex-row">
+    <span class="flex-grow-1"></span>
+    <button type="submit" class="btn btn-primary" [disabled]="!form.valid">
+      Submit
+    </button>
+  </div>
+</form>

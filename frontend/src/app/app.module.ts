@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {HttpClientModule} from '@angular/common/http';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {ToastrModule} from 'ngx-toastr';
 
@@ -14,6 +14,7 @@ import {HeaderComponent} from './component/header/header.component';
 import {HorseCreateEditComponent} from './component/horse/horse-create-edit/horse-create-edit.component';
 import {HorseComponent} from './component/horse/horse.component';
 import { OwnerComponent } from './component/owner/owner.component';
+import { OwnerCreateComponent } from './component/owner/owner-create/owner-create.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { OwnerComponent } from './component/owner/owner.component';
     HorseCreateEditComponent,
     AutocompleteComponent,
     OwnerComponent,
+    OwnerCreateComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,6 +35,7 @@ import { OwnerComponent } from './component/owner/owner.component';
     ToastrModule.forRoot(),
     // Needed for Toastr
     BrowserAnimationsModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
