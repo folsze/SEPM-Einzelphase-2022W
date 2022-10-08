@@ -16,7 +16,9 @@
                  placeholder="First name"
                  class="form-control"
                  [ngClass]="{ 'is-invalid': firstName.invalid && firstName.dirty }"
-                 formControlName="firstName">
+                 formControlName="firstName"
+                 maxlength="255"
+          >
           <div class="invalid-feedback" *ngIf="firstName.errors?.required">
             First Name is required.
           </div>
@@ -41,7 +43,9 @@
                  placeholder="Last name"
                  class="form-control"
                  [ngClass]="{ 'is-invalid': lastName.invalid && lastName.dirty }"
-                 formControlName="lastName">
+                 formControlName="lastName"
+                 maxlength="255"
+          >
           <div class="invalid-feedback" *ngIf="lastName.errors?.required">
             Last Name is required.
           </div>
