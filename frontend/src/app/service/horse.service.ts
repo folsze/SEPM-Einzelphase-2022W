@@ -1,9 +1,8 @@
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {environment} from 'src/environments/environment';
 import {Horse} from '../dto/horse';
-import {Sex} from '../dto/sex';
 
 const baseUri = environment.backendUrl + '/horses';
 
@@ -25,6 +24,9 @@ export class HorseService {
     return this.http.get<Horse[]>(baseUri);
   }
 
+  public getHorseById(id: number): Observable<Horse> {
+    return this.http.get<Horse>(baseUri + '/' + id);
+  }
 
   /**
    * Create a new horse in the system.
@@ -39,8 +41,10 @@ export class HorseService {
     );
   }
 
-  public getHorseById(id: number): Observable<Horse> {
-    return this.http.get<Horse>(baseUri + '/' + id);
+  public update(horse: Horse): Observable<Horse> {
+    return this.http.put<Horse>(
+      baseUri + '/' + horse.id,
+      horse
+    );
   }
-
 }

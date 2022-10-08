@@ -1,6 +1,6 @@
 <div class="header-and-button">
   <h1 class="display-1">Details of {{horse.name}}</h1>
-  <button class="btn btn-sm edit-button" [routerLink]="['edit', horse.id]">
+  <button class="btn btn-sm edit-button" [routerLink]="[horse.id, 'edit']">
     <i class="bi bi-pencil"></i>Edit
   </button>
 </div>
@@ -70,7 +70,7 @@
 
   <div class="mt-4 d-flex flex-row">
     <button type="button" class="btn btn-danger"
-      [routerLink]="['delete', horse.id]"
+      [routerLink]="[horse.id, 'delete']"
     >
       <i class="bi bi-trash"></i>
       Delete

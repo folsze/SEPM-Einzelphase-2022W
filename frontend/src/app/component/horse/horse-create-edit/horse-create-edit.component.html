@@ -2,29 +2,26 @@
 
 <form [formGroup]="horseForm" (ngSubmit)="onSubmit()">
   <div class="row">
-    <!-- Start name and date of birth row -->
     <div class="mb-2 col-lg-6">
       <!-- When nesting rows, always make row > col-* > row. The Bootstrap classes do not work right when an element is both col* and row -->
       <div class="row">
         <label for="horseName" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
           Name
         </label>
-        <div class="col-md-10 col-lg-8"
-             >
+        <div class="col-md-10 col-lg-8">
           <input type="text"
                  id="horseName"
                  name="horseName"
                  placeholder="Horse name"
                  class="form-control"
-                 [class]="dynamicCssClassesForInput(name)"
+                 [class]="dynamicCssClassesForInput(nameFormControl)"
                  formControlName="name"
                  maxlength="255"
           >
-          <div class="invalid-feedback" *ngIf="name.errors?.required">
-            <!-- This is shown, when the form validation deems the name input to be invalid -->
+          <div class="invalid-feedback" *ngIf="nameFormControl.errors?.required">
             Name is required.
           </div>
-          <div class="invalid-feedback" *ngIf="name.hasError('whitespace')">
+          <div class="invalid-feedback" *ngIf="nameFormControl.hasError('whitespace')">
             No whitespace allowed inside name.
           </div>
         </div>
@@ -40,22 +37,20 @@
                  id="horseDateOfBirth"
                  name="horseDateOfBirth"
                  class="form-control"
-                 [class]="dynamicCssClassesForInput(dateOfBirth)"
+                 [class]="dynamicCssClassesForInput(dateOfBirthFormControl)"
                  formControlName="dateOfBirth"
-          ><div class="invalid-feedback" *ngIf="dateOfBirth.errors?.required">
+          ><div class="invalid-feedback" *ngIf="dateOfBirthFormControl.errors?.required">
             Date of birth is required.
           </div>
-          <div class="invalid-feedback" *ngIf="dateOfBirth.hasError('dateInFuture')">
+          <div class="invalid-feedback" *ngIf="dateOfBirthFormControl.hasError('dateInFuture')">
             Date of birth cannot be in the future.
           </div>
         </div>
       </div>
     </div>
-    <!-- End name and date of birth row -->
   </div>
 
   <div class="row">
-    <!-- Start sex and owner row -->
     <div class="mb-2 col-lg-6">
       <div class="row">
         <label for="horseSex" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
@@ -106,7 +101,6 @@
   </div>
 
   <div class="row">
-    <!-- No row and col-* here. We want this to always span the whole width. -->
     <label for="horseDescription" class="col-form-label text-md-end text-md-end text-muted col-md-2">
       Description
     </label>
@@ -123,7 +117,7 @@
   </div>
 
   <div class="mt-4 d-flex flex-row">
-    <button type="button" class="btn btn-danger" *ngIf="!modeIsCreate">
+    <button type="button" class="btn btn-danger" *ngIf="isEditMode">
       <i class="bi bi-trash"></i>
       Delete
     </button>
