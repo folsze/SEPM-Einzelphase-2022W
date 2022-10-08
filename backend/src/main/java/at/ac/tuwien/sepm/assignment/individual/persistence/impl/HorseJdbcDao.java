@@ -128,6 +128,26 @@ public class HorseJdbcDao implements HorseDao {
         ;
   }
 
+  @Override
+  public void delete(Long id) throws NotFoundException {
+    LOG.trace("delete horse with id {}", id);
+    final String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+
+    try {
+      int noOfUpdates = jdbcTemplate.update(connection -> {
+        PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        stmt.setLong(1, id);
+        return stmt;
+      });
+
+      if (noOfUpdates < 1) {
+        throw new NotFoundException("Horse to be deleted not found");
+      }
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error when deleting horse", dae);
+    }
+  }
+
   private Horse mapRow(ResultSet result, int rownum) throws SQLException {
     return new Horse()
         .setId(result.getLong("id"))

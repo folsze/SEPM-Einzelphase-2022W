@@ -39,4 +39,6 @@ public interface HorseDao {
   Horse getById(long id) throws NotFoundException;
 
   Horse create(HorseDetailDto toCreate);
+
+  void delete(Long id) throws NotFoundException;
 }

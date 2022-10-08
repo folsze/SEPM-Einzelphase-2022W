@@ -45,4 +45,6 @@ public interface HorseService {
   HorseDetailDto getById(long id) throws NotFoundException;
 
   HorseDetailDto create(HorseDetailDto toCreate) throws ValidationException;
+
+  void delete(Long id) throws NotFoundException;
 }

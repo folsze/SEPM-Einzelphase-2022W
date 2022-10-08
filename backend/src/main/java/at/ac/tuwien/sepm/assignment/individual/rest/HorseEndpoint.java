@@ -74,6 +74,20 @@ public class HorseEndpoint {
     }
   }
 
+  @DeleteMapping(path = "/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(@PathVariable("id") Long id) {
+    LOG.info("DELETE " + BASE_PATH + "/{}", id);
+    try {
+      service.delete(id);
+    } catch (NotFoundException nfe) {
+      LOG.error("Horse (with id {}) to be deleted doesn't exist",id,nfe);
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Horse to be deleted doesn't exist", nfe);
+    } catch (FatalException fe){
+      LOG.error("Error while deleting horse with id {} from database",id,fe);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while deleting horse from database", fe);
+    }
+  }
 
   private void logClientError(HttpStatus status, String message, Exception e) {
     LOG.warn("{} {}: {}: {}", status.value(), message, e.getClass().getSimpleName(), e.getMessage());
