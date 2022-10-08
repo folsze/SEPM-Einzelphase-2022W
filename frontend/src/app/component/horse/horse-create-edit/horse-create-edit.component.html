@@ -1,8 +1,6 @@
-
 <h1 class="display-1">{{heading}}</h1>
 
-
-<form #form="ngForm" (ngSubmit)="onSubmit(form)">
+<form [formGroup]="horseForm" (ngSubmit)="onSubmit()">
   <div class="row">
     <!-- Start name and date of birth row -->
     <div class="mb-2 col-lg-6">
@@ -18,14 +16,16 @@
                  name="horseName"
                  placeholder="Horse name"
                  class="form-control"
-                 [class]="dynamicCssClassesForInput(horseNameModel)"
-                 [(ngModel)]="horse.name"
-                 #horseNameModel="ngModel"
-                 required
-                 >
-          <div class="invalid-feedback">
+                 [class]="dynamicCssClassesForInput(name)"
+                 formControlName="name"
+                 maxlength="255"
+          >
+          <div class="invalid-feedback" *ngIf="name.errors?.required">
             <!-- This is shown, when the form validation deems the name input to be invalid -->
-            Name is required
+            Name is required.
+          </div>
+          <div class="invalid-feedback" *ngIf="name.hasError('whitespace')">
+            No whitespace allowed inside name.
           </div>
         </div>
       </div>
@@ -35,19 +35,18 @@
         <label for="horseDateOfBirth" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
           Date of Birth
         </label>
-        <div class="col-md-10 col-lg-8"
-             >
+        <div class="col-md-10 col-lg-8">
           <input type="date"
                  id="horseDateOfBirth"
                  name="horseDateOfBirth"
                  class="form-control"
-                 [class]="dynamicCssClassesForInput(horseDateOfBirthModel)"
-                 [(ngModel)]="horse.dateOfBirth"
-                 #horseDateOfBirthModel="ngModel"
-                 required
-                 >
-          <div class="invalid-feedback">
-            Date of birth is required
+                 [class]="dynamicCssClassesForInput(dateOfBirth)"
+                 formControlName="dateOfBirth"
+          ><div class="invalid-feedback" *ngIf="dateOfBirth.errors?.required">
+            Date of birth is required.
+          </div>
+          <div class="invalid-feedback" *ngIf="dateOfBirth.hasError('dateInFuture')">
+            Date of birth cannot be in the future.
           </div>
         </div>
       </div>
@@ -62,14 +61,12 @@
         <label for="horseSex" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
           Sex
         </label>
-        <div class="col-md-10 col-lg-8"
-             >
+        <div class="col-md-10 col-lg-8">
           <select class="form-select"
                   id="horseSex"
                   name="horseSex"
-                  [(ngModel)]="horse.sex"
-                  required
-                  >
+                  formControlName="sex"
+            >
             <option value="FEMALE">Female</option>
             <option value="MALE">Male</option>
           </select>
@@ -88,15 +85,13 @@
           class="col-md-10 col-lg-8"
           textInputClass="form-control"
           valueNeedsToMatchSuggestion="true"
-          [(ngModel)]="horse.owner"
+          formControlName="ownerFullName"
           [formatModel]="formatOwnerName"
           [suggestions]="ownerSuggestions"
           ></app-autocomplete>
       </div>
     </div>
-    <!-- End sex and owner row -->
   </div>
-
 
   <div class="row">
     <!-- No row and col-* here. We want this to always span the whole width. -->
@@ -108,26 +103,20 @@
       <textarea class="form-control"
                 id="horseDescription"
                 name="horseDescription"
-                [(ngModel)]="horse.description"
-                >
+                formControlName="description"
+                maxlength="4095"
+      >
       </textarea>
     </div>
   </div>
 
   <div class="mt-4 d-flex flex-row">
-    <button type="button"
-            class="btn btn-danger"
-            *ngIf="!modeIsCreate"
-            >
+    <button type="button" class="btn btn-danger" *ngIf="!modeIsCreate">
       <i class="bi bi-trash"></i>
       Delete
     </button>
     <span class="flex-grow-1"></span>
-    <button type="submit"
-            class="btn btn-primary"
-            [disabled]="!form.valid"
-            type="submit"
-            >
+    <button type="submit" class="btn btn-primary" [disabled]="horseForm.invalid">
       {{submitButtonText}}
     </button>
   </div>
