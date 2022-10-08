@@ -54,7 +54,6 @@ public class HorseServiceImpl implements HorseService {
     return horses.stream().map(horse -> mapper.entityToListDto(horse, ownerMap));
   }
 
-
   @Override
   public HorseDetailDto update(HorseDetailDto horse) throws NotFoundException, ValidationException, ConflictException {
     LOG.trace("update({})", horse);
@@ -65,7 +64,6 @@ public class HorseServiceImpl implements HorseService {
         ownerMapForSingleId(updatedHorse.getOwnerId()));
   }
 
-
   @Override
   public HorseDetailDto getById(long id) throws NotFoundException {
     LOG.trace("details({})", id);
@@ -75,6 +73,12 @@ public class HorseServiceImpl implements HorseService {
         ownerMapForSingleId(horse.getOwnerId()));
   }
 
+  @Override
+  public HorseDetailDto create(HorseDetailDto toCreate) throws ValidationException {
+    validator.validateForCreate(toCreate);
+    var createdHorse = dao.create(toCreate);
+    return mapper.entityToDetailDto(createdHorse, ownerMapForSingleId(createdHorse.getOwnerId()));
+  }
 
   private Map<Long, OwnerDto> ownerMapForSingleId(Long ownerId) {
     try {
