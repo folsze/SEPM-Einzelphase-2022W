@@ -107,15 +107,16 @@
         <td>{{ownerName(horse.owner)}}</td>
         <td>
           <div class="btn-group">
-            <a class="btn btn-sm responsive-info-button"
+            <button class="btn btn-sm responsive-info-button"
+               [routerLink]="[horse.id]"
                aria-label="Show horse details">
               <i class="bi bi-info-lg"></i>
-            </a>
-            <a class="btn btn-sm responsive-warning-button"
+            </button>
+            <button class="btn btn-sm responsive-warning-button"
                [routerLink]="['edit', horse.id]"
                aria-label="Edit horse">
               <i class="bi bi-pencil"></i>
-            </a>
+            </button>
           </div>
         </td>
       </tr>
