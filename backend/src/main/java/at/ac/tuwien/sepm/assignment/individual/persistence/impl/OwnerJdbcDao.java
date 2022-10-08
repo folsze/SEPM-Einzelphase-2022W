@@ -50,7 +50,7 @@ public class OwnerJdbcDao implements OwnerDao {
     try {
       owners = jdbcTemplate.query(SQL_SELECT_BY_ID, this::mapRow, id);
     } catch (DataAccessException dae) {
-      throw new FatalException("Error while getting owner from database by id");
+      throw new FatalException("Error while getting owner by id.");
     }
 
     if (owners.isEmpty()) {
@@ -77,7 +77,7 @@ public class OwnerJdbcDao implements OwnerDao {
         return stmt;
       }, keyHolder);
     } catch (DataAccessException dae) {
-      throw new FatalException("Error while querying all owners from database"); // todo Fragestunde: passt so? Wie sonst?
+      throw new FatalException("Error while querying all owners."); // todo Fragestunde: passt so? Wie sonst?
     }
 
     Number key = keyHolder.getKey();
