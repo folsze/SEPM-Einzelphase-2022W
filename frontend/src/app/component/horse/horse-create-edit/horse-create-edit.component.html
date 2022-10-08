@@ -79,16 +79,28 @@
         <label for="horseOwner" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
           Owner
         </label>
-        <app-autocomplete
-          id="horseOwner"
-          name="horseOwner"
-          class="col-md-10 col-lg-8"
-          textInputClass="form-control"
-          valueNeedsToMatchSuggestion="true"
-          formControlName="ownerFullName"
-          [formatModel]="formatOwnerName"
-          [suggestions]="ownerSuggestions"
-          ></app-autocomplete>
+        <div class="col-md-10 col-lg-8">
+          <input *ngIf="!ownerFormControl.value else selectedOwnerFullName"
+                 class="form-control"
+                 type="text"
+                 placeholder="Start typing here to select an owner..."
+                 id="horseOwner" name="owner"
+                 [ngbTypeahead]="searchOwner"
+                 (selectItem)="setOwner($event.item)"
+                 maxlength="255"
+                 [resultFormatter]="ownerFullNameResultFormatter"
+          />
+        </div>
+        <ng-template #selectedOwnerFullName>
+          <div>
+            <div class="typeahead-result">
+              {{ ownerFormControl.value?.firstName + ' ' + ownerFormControl.value?.lastName }}
+              <button type="button" (click)="clearOwner()" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </div>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>

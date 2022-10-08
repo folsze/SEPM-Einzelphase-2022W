@@ -46,10 +46,6 @@ export class OwnerCreateComponent {
     return isValid ? null : { whitespace: true };
   }
 
-  public ownerSuggestions = (input: string) => (input === '')
-    ? of([])
-    : this.service.searchByName(input, 5);
-
   public formatOwnerName(owner: Owner | null | undefined): string { // todo Fragestunde: what if owner undefined?
     return (owner == null) ? '' : `${this.firstName.value} ${this.lastName.value}`;
   }

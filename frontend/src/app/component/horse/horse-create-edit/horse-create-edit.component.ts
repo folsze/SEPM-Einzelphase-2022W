@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
-import {Observable, of} from 'rxjs';
+import {debounceTime, distinctUntilChanged, Observable, of, OperatorFunction, switchMap} from 'rxjs';
 import {Horse} from 'src/app/dto/horse';
 import {Owner} from 'src/app/dto/owner';
 import {Sex} from 'src/app/dto/sex';
@@ -20,6 +20,10 @@ export enum HorseCreateEditMode {
   styleUrls: ['./horse-create-edit.component.scss']
 })
 export class HorseCreateEditComponent implements OnInit {
+
+  private static readonly typeAheadMaxOptionCount = 5;
+
+  public currentOwnerInputContent = '';
 
   public mode: HorseCreateEditMode = HorseCreateEditMode.create;
 
@@ -53,6 +57,7 @@ export class HorseCreateEditComponent implements OnInit {
     private formBuilder: FormBuilder,
   ) { }
 
+  // ---------------------------- START OF GETTER SECTION ----------------------------
   public get name(): AbstractControl {
     return this.horseForm.controls.name;
   }
@@ -69,11 +74,11 @@ export class HorseCreateEditComponent implements OnInit {
     return this.horseForm.controls.sex;
   }
 
-  public get ownerFullName(): AbstractControl {
+  public get ownerFullNameSubstring(): AbstractControl {
     return this.horseForm.controls.ownerFullName;
   }
 
-  public get owner(): AbstractControl {
+  public get ownerFormControl(): AbstractControl {
     return this.horseForm.controls.owner;
   }
 
@@ -111,10 +116,9 @@ export class HorseCreateEditComponent implements OnInit {
     }
   }
 
-  get modeIsCreate(): boolean {
+  public get modeIsCreate(): boolean {
     return this.mode === HorseCreateEditMode.create;
   }
-
 
   private get modeActionFinished(): string {
     switch (this.mode) {
@@ -124,6 +128,37 @@ export class HorseCreateEditComponent implements OnInit {
         return '?';
     }
   }
+  // ---------------------------- END OF GETTER SECTION ----------------------------
+
+  ngOnInit(): void {
+    this.route.data.subscribe(data => {
+      this.mode = data.mode;
+    });
+  }
+
+  public setOwner(owner: Owner) {
+    this.currentOwnerInputContent = this.getFullNameIfExists(owner);
+    this.horseForm.controls.owner.setValue(owner);
+  }
+
+  public clearOwner(): void {
+    this.ownerFullNameSubstring.reset();
+    this.ownerFormControl.reset();
+    this.currentOwnerInputContent = '';
+  }
+
+  public getFullNameIfExists(owner: Owner): string { // fixme: will cause unknown bug soon, cause null
+    return owner.firstName + ' ' + owner.lastName;
+  }
+
+  public ownerFullNameResultFormatter = (owner: Owner) => this.getFullNameIfExists(owner);
+
+  public searchOwner: OperatorFunction<string, readonly Owner[]> = (fullName$: Observable<string>) =>
+    fullName$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(fullName => this.searchOwnersByFullName(fullName))
+    );
 
   public noWhitespaceInsideValidator(control: AbstractControl) { // todo: private?
     const containsWhitespace = (control.value || '').trim().match(/\s/g);
@@ -133,17 +168,8 @@ export class HorseCreateEditComponent implements OnInit {
 
   public noDateInFutureValidator(dateControl: AbstractControl) {
     const now: Date = new Date();
-    return dateControl.value < now ? null : { dateInFuture: true };
-  }
-
-  public ownerSuggestions = (input: string) => (input === '')
-    ? of([])
-    : this.ownerService.searchByName(input, 5);
-
-  ngOnInit(): void {
-    this.route.data.subscribe(data => {
-      this.mode = data.mode;
-    });
+    const isValid = !(dateControl.value < now);
+    return isValid ? null : { dateInFuture: true };
   }
 
   public dynamicCssClassesForInput(input: AbstractControl): any {
@@ -155,20 +181,13 @@ export class HorseCreateEditComponent implements OnInit {
     };
   }
 
-  public formatOwnerName(owner: Owner | null | undefined): string {
-    return (owner == null)
-      ? ''
-      : `${owner.firstName} ${owner.lastName}`;
-  }
-
-
   public onSubmit(): void {
     const sendHorse: Horse = {
       name: this.name.value.trim(),
       description: this.description.value?.trim(),
       dateOfBirth: this.dateOfBirth.value,
       sex: this.sex.value,
-      owner: this.owner?.value,
+      owner: this.ownerFormControl?.value,
     };
 
     let horse$: Observable<Horse>;
@@ -190,5 +209,11 @@ export class HorseCreateEditComponent implements OnInit {
         // TODO show an error message to the user. Include and sensibly present the info from the backend!
       }
     });
+  }
+
+  private searchOwnersByFullName(fullName: string): Observable<Owner[]> {
+    return (fullName === '') ? of([]) :
+    this.ownerService.searchByFullNameSubstring(fullName.trim(),
+      HorseCreateEditComponent.typeAheadMaxOptionCount);
   }
 }

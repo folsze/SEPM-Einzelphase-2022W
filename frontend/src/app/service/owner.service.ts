@@ -15,15 +15,15 @@ export class OwnerService {
     private http: HttpClient,
   ) { }
 
-  public searchByName(name: string, limitTo: number): Observable<Owner[]> {
-    const params = new HttpParams()
-      .set('name', name)
-      .set('maxAmount', limitTo);
-    return this.http.get<Owner[]>(baseUri, { params });
+  public getAll(): Observable<Owner[]>{
+    return this.http.get<Owner[]>(baseUri);
   }
 
-  public getAll(): Observable<Owner[]> {
-    return this.http.get<Owner[]>(baseUri); // todo Fragestunde: wieso funktioniert das, aber Postman nicht? (Empty body/DTO)
+  public searchByFullNameSubstring(fullNameSubstring: string, maxResultCount: number): Observable<Owner[]> {
+    const params = new HttpParams()
+      .set('fullNameSubstring', fullNameSubstring)
+      .set('maxResultCount', maxResultCount);
+    return this.http.get<Owner[]>(baseUri, { params });
   }
 
   public create(owner: Owner): Observable<Owner> {
