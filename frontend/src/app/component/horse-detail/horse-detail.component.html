@@ -1,0 +1,80 @@
+<div class="header-and-button">
+  <h1 class="display-1">Details of {{horse.name}}</h1>
+  <button class="btn btn-sm edit-button" [routerLink]="['edit', horse.id]">
+    <i class="bi bi-pencil"></i>Edit
+  </button>
+</div>
+
+<div>
+  <div class="row">
+    <!-- Start name and date of birth row -->
+    <div class="mb-2 col-lg-6">
+      <!-- When nesting rows, always make row > col-* > row. The Bootstrap classes do not work right when an element is both col* and row -->
+      <div class="row">
+        <label for="horseName" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Name
+        </label>
+        <div id="horseName" class="col-md-10 col-lg-8 readonly-field">
+          {{horse.name}}
+        </div>
+      </div>
+    </div>
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="horseDateOfBirth" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Date of Birth
+        </label>
+        <div id="horseDateOfBirth" class="col-md-10 col-lg-8 readonly-field">
+          {{horse.dateOfBirth}}
+        </div>
+      </div>
+    </div>
+    <!-- End name and date of birth row -->
+  </div>
+
+  <div class="row">
+    <!-- Start sex and owner row -->
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="horseSex" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Sex
+        </label>
+        <div id="horseSex" class="col-md-10 col-lg-8 readonly-field">
+          {{horse.sex}}
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="horseOwner" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Owner
+        </label>
+        <div id="horseOwner" class="col-md-10 col-lg-8 readonly-field">
+          {{ownerFullName}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="horse.description">
+    <!-- No row and col-* here. We want this to always span the whole width. -->
+    <label for="horseDescription" class="col-form-label text-md-end text-md-end text-muted col-md-2">
+      Description
+    </label>
+    <div id="horseDescription" class="col-md-10 readonly-field"
+    >
+      {{horse.description}}
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex flex-row">
+    <button type="button" class="btn btn-danger"
+      [routerLink]="['delete', horse.id]"
+    >
+      <i class="bi bi-trash"></i>
+      Delete
+    </button>
+    <span class="flex-grow-1"></span>
+  </div>
+</div>

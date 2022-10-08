@@ -1,0 +1,16 @@
+.readonly-field {
+  display: flex;
+  align-items: center;
+}
+
+.edit-button {
+  display: flex;
+  gap: 8px;
+  border: black 1px solid;
+}
+
+.header-and-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

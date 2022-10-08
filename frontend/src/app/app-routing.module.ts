@@ -4,12 +4,14 @@ import {HorseCreateEditComponent, HorseCreateEditMode} from './component/horse/h
 import {HorseComponent} from './component/horse/horse.component';
 import {OwnerComponent} from './component/owner/owner.component';
 import {OwnerCreateComponent} from './component/owner/owner-create/owner-create.component';
+import {HorseDetailComponent} from './component/horse-detail/horse-detail.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'horses', pathMatch: 'full'},
   {path: 'horses', children: [
     {path: '', component: HorseComponent},
     {path: 'create', component: HorseCreateEditComponent, data: {mode: HorseCreateEditMode.create}},
+    {path: ':id', component: HorseDetailComponent},
   ]},
   {path: 'owners', children: [
       {path: '', component: OwnerComponent},
