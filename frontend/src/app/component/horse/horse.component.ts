@@ -50,4 +50,16 @@ export class HorseComponent implements OnInit {
     return new Date(horse.dateOfBirth).toLocaleDateString();
   }
 
+  public deleteIfUserConfirms(horse: Horse): void {
+    if (horse.id) {
+      if (confirm(`Are you sure you want to delete the horse \"${horse.name}\"`)) {
+        this.service.deleteHorse(horse.id).subscribe(
+          () => {
+            this.notification.success(`Horse ${horse.name} successfully deleted.`);
+            this.reloadHorses();
+          }
+        );
+      }
+    }
+  }
 }

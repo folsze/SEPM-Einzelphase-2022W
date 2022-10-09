@@ -118,7 +118,7 @@ export class HorseFormComponent implements OnInit {
     if (this.isCreateMode) {
       return 'Add Horse';
     } else {
-      return 'Submit Edits';
+      return 'Save changes';
     }
   }
 
