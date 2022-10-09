@@ -1,18 +1,18 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {FormMode, HorseCreateEditComponent} from './component/horse/horse-create-edit/horse-create-edit.component';
+import {HorseFormComponent} from './component/horse/horse-form/horse-form.component';
 import {HorseComponent} from './component/horse/horse.component';
 import {OwnerComponent} from './component/owner/owner.component';
 import {OwnerCreateComponent} from './component/owner/owner-create/owner-create.component';
-import {HorseDetailComponent} from './component/horse-detail/horse-detail.component';
+import {FormMode} from './enum/formMode';
 
 const routes: Routes = [
   {path: '', redirectTo: 'horses', pathMatch: 'full'},
   {path: 'horses', children: [
     {path: '', component: HorseComponent},
-    {path: 'create', component: HorseCreateEditComponent, data: {mode: FormMode.create}},
-    {path: ':id', component: HorseDetailComponent},
-    {path: ':id/edit', component: HorseCreateEditComponent, data: {mode: FormMode.edit}},
+    {path: 'create', component: HorseFormComponent, data: {mode: FormMode.create}},
+    {path: ':id', component: HorseFormComponent, data: {mode: FormMode.readonly}},
+    {path: ':id/edit', component: HorseFormComponent, data: {mode: FormMode.edit}},
   ]},
   {path: 'owners', children: [
       {path: '', component: OwnerComponent},

@@ -1,0 +1,28 @@
+.typeahead-result{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  align-items: center;
+}
+
+.button-with-icon-and-text {
+  display: flex;
+  gap: 8px;
+  border: black 1px solid;
+}
+
+.buttons-wrapper {
+  display: flex;
+  gap: 16px;
+}
+
+.header-and-buttons {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+}

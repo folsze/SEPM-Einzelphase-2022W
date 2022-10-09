@@ -8,23 +8,18 @@ import {Owner} from 'src/app/dto/owner';
 import {Sex} from 'src/app/dto/sex';
 import {HorseService} from 'src/app/service/horse.service';
 import {OwnerService} from 'src/app/service/owner.service';
-
-export enum FormMode {
-  create,
-  edit,
-}
+import {FormMode} from '../../../enum/formMode';
 
 @Component({
-  selector: 'app-horse-create-edit',
-  templateUrl: './horse-create-edit.component.html',
-  styleUrls: ['./horse-create-edit.component.scss']
+  selector: 'app-horse-form',
+  templateUrl: './horse-form.component.html',
+  styleUrls: ['./horse-form.component.scss']
 })
-export class HorseCreateEditComponent implements OnInit {
+export class HorseFormComponent implements OnInit {
 
   private static readonly typeAheadMaxOptionCount = 5;
 
   public currentOwnerInputContent = '';
-  public initialName: string;
 
   public mode: FormMode = FormMode.create;
 
@@ -34,7 +29,7 @@ export class HorseCreateEditComponent implements OnInit {
     description: [null],
     dateOfBirth: [null, [Validators.required, this.noDateInFutureValidator]],
     sex: [null, [Validators.required]],
-    ownerFullName: [''],
+    ownerFullNameSubstring: [''],
     owner: [null], // owner gets selected by using the ownerFullName control
     // motherName: [''],
     // mother: [null],
@@ -80,11 +75,17 @@ export class HorseCreateEditComponent implements OnInit {
   }
 
   public get ownerFullNameSubstring(): AbstractControl {
-    return this.horseForm.controls.ownerFullName;
+    return this.horseForm.controls.ownerFullNameSubstring;
   }
 
   public get ownerFormControl(): AbstractControl {
     return this.horseForm.controls.owner;
+  }
+
+  public get currentOwnerFullName(): string {
+    return this.ownerFormControl.value ?
+      this.ownerFormControl.value.firstName + ' ' + this.ownerFormControl.value.lastName :
+      '';
   }
 
   public get motherName(): AbstractControl {
@@ -106,8 +107,10 @@ export class HorseCreateEditComponent implements OnInit {
   public get heading(): string {
     if (this.isCreateMode) {
       return 'Add Horse';
-    } else {
+    } else if (this.isEditMode) {
       return 'Edit Horse';
+    } else {
+      return 'Details of Horse';
     }
   }
 
@@ -127,6 +130,10 @@ export class HorseCreateEditComponent implements OnInit {
     return this.mode === FormMode.create;
   }
 
+  public get isReadonlyMode(): boolean {
+    return this.mode === FormMode.readonly;
+  }
+
   private get modeActionFinished(): string {
     if (this.isCreateMode) {
       return 'created';
@@ -134,26 +141,55 @@ export class HorseCreateEditComponent implements OnInit {
       return 'edited';
     }
   }
-  // -------------------------------------------------------- END OF GETTER SECTION -----------------------------------
+  // -------------------------------------------------------- END OF GETTER & SETTER SECTION -----------------------------------
 
+  /**
+   * With the current implementation it is not possible to directly transition from [edit/readonly <-> create].
+   * That's why when subscribing to mode changes, the transition where special things happen is only: [edit <-> readonly].
+   * [read -> edit] requires no actions (no fetch/clear).
+   * [edit -> read] requires fetch
+   */
   ngOnInit(): void {
-    this.route.data.subscribe(data => {
-      // the following: really rare edge case: if user manually edits url from horses/1/edit to horses/create without reloading somehow
-      if (this.isEditMode && data.mode === FormMode.create) {
-        this.horseForm.reset();
+    this.route.data.subscribe(
+    data => {
+      const id = Number(this.route.snapshot.params.id);
+      if (this.isEditMode || this.isReadonlyMode) {
+        this.requestHorseValues(id);
       }
       this.mode = data.mode;
     });
 
     this.route.paramMap.subscribe(paramMap => {
-      if (this.isEditMode) {
-        this.getHorseValues(Number(paramMap.get('id')));
-      }
+      this.requestHorseValues(Number(paramMap.get('id')));
     });
   }
 
+  public setCreateMode() {
+    this.horseForm.reset();
+    this.mode = FormMode.create;
+  }
+
+  public setEditMode(){
+    this.mode = FormMode.edit;
+  }
+
+  public setReadonlyMode() {
+    this.mode = FormMode.readonly;
+  }
+
+  public confirmIfDeleteHorse(): void {
+    if (confirm(`Are you sure you want to delete the horse \"${this.nameFormControl.value}\"`)) {
+      this.service.deleteHorse(this.editHorseId).subscribe(
+        () => {
+          this.notification.success(`Horse ${this.nameFormControl.value} successfully deleted.`);
+          this.router.navigate(['/horses']);
+        }
+      );
+    }
+  }
+
   public setOwner(owner: Owner) {
-    this.currentOwnerInputContent = this.getFullNameIfExists(owner);
+    this.currentOwnerInputContent = this.getFullNameIfExistsOf(owner);
     this.horseForm.controls.owner.setValue(owner);
   }
 
@@ -163,11 +199,12 @@ export class HorseCreateEditComponent implements OnInit {
     this.currentOwnerInputContent = '';
   }
 
-  public getFullNameIfExists(owner: Owner): string { // fixme: will cause unknown bug soon, cause null
+
+  public getFullNameIfExistsOf(owner: Owner): string {
     return owner ? owner.firstName + ' ' + owner.lastName : '';
   }
 
-  public ownerFullNameResultFormatter = (owner: Owner) => this.getFullNameIfExists(owner);
+  public ownerFullNameResultFormatter = (owner: Owner) => this.getFullNameIfExistsOf(owner);
 
   public searchOwner: OperatorFunction<string, readonly Owner[]> = (fullName$: Observable<string>) =>
     fullName$.pipe(
@@ -230,14 +267,13 @@ export class HorseCreateEditComponent implements OnInit {
   private searchOwnersByFullName(fullName: string): Observable<Owner[]> {
     return (fullName === '') ? of([]) :
     this.ownerService.searchByFullNameSubstring(fullName.trim(),
-      HorseCreateEditComponent.typeAheadMaxOptionCount);
+      HorseFormComponent.typeAheadMaxOptionCount);
   }
 
-  private getHorseValues(id: number): void {
+  private requestHorseValues(id: number): void {
     this.service.getHorseById(id).subscribe({
       next: horse => {
-        this.initialName = horse.name;
-        this.currentOwnerInputContent = this.getFullNameIfExists(this.ownerFormControl.value);
+        this.currentOwnerInputContent = this.getFullNameIfExistsOf(this.ownerFormControl.value); // fixme
         this.setFormValues(horse);
       },
       error: error => {
@@ -253,7 +289,7 @@ export class HorseCreateEditComponent implements OnInit {
       description: horse.description,
       dateOfBirth: horse.dateOfBirth,
       sex: horse.sex,
-      ownerFullName: this.getFullNameIfExists(this.ownerFormControl.value),
+      ownerFullNameSubstring: this.getFullNameIfExistsOf(this.ownerFormControl.value),
       owner: horse.owner,
       // motherName: horse.mother ? horse.mother.name : null,
       // mother: horse.mother,

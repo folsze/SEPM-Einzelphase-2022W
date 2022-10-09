@@ -11,22 +11,20 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {AutocompleteComponent} from './component/autocomplete/autocomplete.component';
 import {HeaderComponent} from './component/header/header.component';
-import {HorseCreateEditComponent} from './component/horse/horse-create-edit/horse-create-edit.component';
+import {HorseFormComponent} from './component/horse/horse-form/horse-form.component';
 import {HorseComponent} from './component/horse/horse.component';
 import { OwnerComponent } from './component/owner/owner.component';
 import { OwnerCreateComponent } from './component/owner/owner-create/owner-create.component';
-import { HorseDetailComponent } from './component/horse-detail/horse-detail.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     HorseComponent,
-    HorseCreateEditComponent,
+    HorseFormComponent,
     AutocompleteComponent,
     OwnerComponent,
     OwnerCreateComponent,
-    HorseDetailComponent,
   ],
   imports: [
     BrowserModule,
@@ -35,7 +33,6 @@ import { HorseDetailComponent } from './component/horse-detail/horse-detail.comp
     HttpClientModule,
     NgbModule,
     ToastrModule.forRoot(),
-    // Needed for Toastr
     BrowserAnimationsModule,
     ReactiveFormsModule,
   ],
