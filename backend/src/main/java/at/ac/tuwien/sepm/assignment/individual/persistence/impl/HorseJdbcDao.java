@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepm.assignment.individual.persistence.impl;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
@@ -12,6 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -38,12 +42,28 @@ public class HorseJdbcDao implements HorseDao {
       + "  , sex = ?"
       + "  , owner_id = ?"
       + " WHERE id = ?";
+  private static final String SQL_SEARCH =
+          " SELECT * FROM " + TABLE_NAME + " WHERE " +
+          " (? IS NULL OR name = ?) AND " +
+          " (description IS NULL OR ? IS NULL OR description = ?) AND " +
+          " (? IS NULL OR dateOfBirth < ?) AND " +
+          " (? IS NULL OR sex = ?) AND " +
+          " (owner_id IS NULL OR ? IS NULL OR owner_id = ?)";
 
   private final JdbcTemplate jdbcTemplate;
 
   public HorseJdbcDao(
       JdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
+  }
+
+  public List<Horse> search() {
+    LOG.trace("getAll()");
+    try {
+      return jdbcTemplate.query(SQL_SEARCH, this::mapRow);
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error while querying all horses."); // todo Fragestunde: bis in die Persistenz eh ok? Keine Schichteninformation...
+    }
   }
 
   @Override
@@ -147,6 +167,14 @@ public class HorseJdbcDao implements HorseDao {
       throw new FatalException("Error when deleting horse", dae);
     }
   }
+
+  @Override
+  public List<Horse> search(HorseSearchDto searchParameters) {
+    return null;
+  }
+
+//  @Override
+//  public void search()
 
   private Horse mapRow(ResultSet result, int rownum) throws SQLException {
     return new Horse()

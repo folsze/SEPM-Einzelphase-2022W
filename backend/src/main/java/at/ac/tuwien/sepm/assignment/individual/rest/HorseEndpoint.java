@@ -33,7 +33,11 @@ public class HorseEndpoint {
     LOG.info("GET " + BASE_PATH);
     LOG.debug("request parameters: {}", searchParameters);
     // TODO We have the request params in the DTO now, but don't do anything with them yet…
-    return service.allHorses();
+    try {
+      return service.search(searchParameters);
+    } catch (ValidationException ve) {
+      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ve.getMessage(), ve);
+    }
   }
 
   @GetMapping("{id}")
