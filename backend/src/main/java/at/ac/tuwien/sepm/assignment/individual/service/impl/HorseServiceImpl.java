@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.assignment.individual.service.impl;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
@@ -35,23 +36,6 @@ public class HorseServiceImpl implements HorseService {
     this.mapper = mapper;
     this.validator = validator;
     this.ownerService = ownerService;
-  }
-
-  @Override
-  public Stream<HorseListDto> allHorses() {
-    LOG.trace("allHorses()");
-    var horses = dao.getAll(); // clear
-    var ownerIds = horses.stream() // clear: gets all ownerIds somehow, idc
-        .map(Horse::getOwnerId)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toUnmodifiableSet());
-    Map<Long, OwnerDto> ownerMap; // clear
-    try {
-      ownerMap = ownerService.getAllById(ownerIds); // instead of a list, get a map, where the id of the owner is the key, but also in the DTO (LOL)
-    } catch (NotFoundException e) {
-      throw new FatalException("Horse, that is already persisted, refers to non-existing owner", e);
-    }
-    return horses.stream().map(horse -> mapper.entityToListDto(horse, ownerMap));
   }
 
   @Override
@@ -94,6 +78,23 @@ public class HorseServiceImpl implements HorseService {
   public void delete(Long id) throws NotFoundException {
     LOG.trace("delete horse with id {}", id);
     dao.delete(id);
+  }
+
+  @Override
+  public Stream<HorseListDto> search(HorseSearchDto searchParameters) throws ValidationException {
+    validator.validateForSearch(searchParameters);
+    var horses = dao.search(searchParameters);
+    var ownerIds = horses.stream() // clear: gets all ownerIds somehow, idc
+            .map(Horse::getOwnerId)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toUnmodifiableSet());
+    Map<Long, OwnerDto> ownerMap; // clear
+    try {
+      ownerMap = ownerService.getAllById(ownerIds); // instead of a list, get a map, where the id of the owner is the key, but also in the DTO (LOL)
+    } catch (NotFoundException e) {
+      throw new FatalException("Horse, that is already persisted, refers to non-existing owner", e);
+    }
+    return horses.stream().map(horse -> mapper.entityToListDto(horse, ownerMap));
   }
 
 }
