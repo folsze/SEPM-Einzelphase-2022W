@@ -43,10 +43,10 @@ public class OwnerServiceImpl implements OwnerService {
   }
 
   @Override
-  public Map<Long, OwnerDto> getAllById(Collection<Long> ids) throws NotFoundException {
+  public Map<Long, OwnerDto> getOwnersByIds(Collection<Long> ids) throws NotFoundException {
     LOG.trace("getAllById({})", ids);
     Map<Long, OwnerDto> owners =
-        dao.getAllById(ids).stream()
+        dao.getOwnersByIds(ids).stream()
             .map(mapper::entityToDto)
             .collect(Collectors.toUnmodifiableMap(OwnerDto::id, Function.identity()));
     for (final var id : ids) {
@@ -61,6 +61,12 @@ public class OwnerServiceImpl implements OwnerService {
   public Stream<OwnerDto> search(OwnerSearchDto searchParameters) {
     LOG.trace("search({})", searchParameters);
     return dao.search(searchParameters).stream().map(mapper::entityToDto);
+  }
+
+  public Map<Long, OwnerDto> getOwnersByIdsAndFilter(Collection<Long> ownersOfHorses, OwnerSearchDto searchParameters) {
+    LOG.trace("search({})", searchParameters);
+    return dao.getOwnersByIdsAndFilter(ownersOfHorses, searchParameters).stream().map(mapper::entityToDto).
+            collect(Collectors.toUnmodifiableMap(OwnerDto::id, Function.identity()));
   }
 
   @Override

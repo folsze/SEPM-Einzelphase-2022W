@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
+import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -19,8 +21,9 @@ public class HorseServiceTest {
   HorseService horseService;
 
   @Test
-  public void getAllReturnsAllStoredHorses() {
-    List<HorseListDto> horses = horseService.allHorses()
+  public void getAllReturnsAllStoredHorses() throws ValidationException {
+    HorseSearchDto h = new HorseSearchDto(null, null, null, null, null,  null);
+    List<HorseListDto> horses = horseService.search(h)
         .toList();
     assertThat(horses.size()).isGreaterThanOrEqualTo(1); // TODO adapt to exact number of elements in test data later
     assertThat(horses)

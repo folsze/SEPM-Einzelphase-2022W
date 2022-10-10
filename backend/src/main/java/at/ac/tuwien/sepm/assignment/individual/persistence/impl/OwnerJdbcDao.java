@@ -11,10 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -28,10 +26,14 @@ public class OwnerJdbcDao implements OwnerDao {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String TABLE_NAME = "owner";
   private static final String SQL_SELECT_BY_ID = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?";
-  private static final String SQL_SELECT_ALL = "SELECT * FROM " + TABLE_NAME + " WHERE id IN (:ids)";
+  private static final String SQL_SELECT_OWNERS_BY_IDS = "SELECT * FROM " + TABLE_NAME + " WHERE id IN (:ids)";
   private static final String SQL_SELECT_SEARCH = "SELECT * FROM " + TABLE_NAME
       + " WHERE UPPER(first_name||' '||last_name) like UPPER('%'||COALESCE(?, '')||'%')";
   private static final String SQL_SELECT_SEARCH_LIMIT_CLAUSE = " LIMIT ?";
+
+  private static final String SQL_SELECT_OWNERS_BY_IDS_AND_FILTER = "SELECT * FROM " + TABLE_NAME
+          + " WHERE id IN (:ids)"; // " AND UPPER(first_name||' '||last_name) like UPPER('%'||COALESCE(?, '')||'%')";
+
   private static final String SQL_CREATE = "INSERT INTO " + TABLE_NAME + " (first_name, last_name, email) VALUES (?, ?, ?)";
 
   private final JdbcTemplate jdbcTemplate;
@@ -41,7 +43,6 @@ public class OwnerJdbcDao implements OwnerDao {
     this.jdbcTemplate = jdbcTemplate;
     this.jdbcNamed = jdbcNamed;
   }
-
 
   @Override
   public Owner getById(long id) throws NotFoundException {
@@ -77,7 +78,7 @@ public class OwnerJdbcDao implements OwnerDao {
         return stmt;
       }, keyHolder);
     } catch (DataAccessException dae) {
-      throw new FatalException("Error while querying all owners."); // todo Fragestunde: passt so? Wie sonst?
+      throw new FatalException("Error while querying all owners.", dae); // todo Fragestunde: passt so? Wie sonst?
     }
 
     Number key = keyHolder.getKey();
@@ -95,10 +96,18 @@ public class OwnerJdbcDao implements OwnerDao {
   }
 
   @Override
-  public Collection<Owner> getAllById(Collection<Long> ids) {
-    LOG.trace("getAllById({})", ids);
-    var statementParams = Collections.singletonMap("ids", ids);
-    return jdbcNamed.query(SQL_SELECT_ALL, statementParams, this::mapRow);
+  public Collection<Owner> getOwnersByIdsAndFilter(Collection<Long> ownerIdsOfHorses, OwnerSearchDto searchParameters) {
+    Map<String, Object> paramMap = new HashMap<>();
+    paramMap.put("ids", ownerIdsOfHorses);
+    paramMap.put("name", searchParameters.name());
+    return jdbcNamed.query(SQL_SELECT_OWNERS_BY_IDS_AND_FILTER, paramMap, this::mapRow);
+  }
+
+  @Override
+  public Collection<Owner> getOwnersByIds(Collection<Long> ownerIdsOfHorses) {
+    LOG.trace("getAllById({})", ownerIdsOfHorses);
+    var statementParams = Collections.singletonMap("ids", ownerIdsOfHorses);
+    return jdbcNamed.query(SQL_SELECT_OWNERS_BY_IDS, statementParams, this::mapRow);
   }
 
   @Override

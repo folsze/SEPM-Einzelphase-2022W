@@ -1,10 +1,12 @@
 package at.ac.tuwien.sepm.assignment.individual.persistence;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerCreateDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.OwnerDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Owner;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Data Access Object for owners.
@@ -27,7 +29,7 @@ public interface OwnerDao {
    * @param ids a collection of ids, to fetch the referenced owners by.
    * @return the collection of all found owners, without those, that are not in the persistent data store
    */
-  Collection<Owner> getAllById(Collection<Long> ids);
+  Collection<Owner> getOwnersByIds(Collection<Long> ids);
 
   /**
    * Search for owners matching the criteria in {@code searchParameters}.
@@ -49,4 +51,6 @@ public interface OwnerDao {
    * @return the newly created owner
    */
   Owner create(OwnerCreateDto newOwner);
+
+  Collection<Owner> getOwnersByIdsAndFilter(Collection<Long> ownersOfHorses, OwnerSearchDto searchParameters);
 }

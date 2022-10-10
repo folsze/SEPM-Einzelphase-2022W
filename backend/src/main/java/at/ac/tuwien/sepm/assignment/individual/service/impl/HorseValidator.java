@@ -100,7 +100,7 @@ public class HorseValidator {
     validateSearchHorseData(horse.name(), horse.description(), horse.bornBefore(), validationErrors);
 
     if (!validationErrors.isEmpty()) {
-      throw new ValidationException("Validation of horse for search failed", validationErrors);
+      throw new ValidationException("Validation of horse search filter failed", validationErrors);
     }
   }
 

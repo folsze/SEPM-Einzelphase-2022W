@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepm.assignment.individual.persistence.impl;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
-import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
@@ -13,8 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +43,10 @@ public class HorseJdbcDao implements HorseDao {
       + " WHERE id = ?";
   private static final String SQL_SEARCH =
           " SELECT * FROM " + TABLE_NAME + " WHERE " +
-          " (? IS NULL OR name = ?) AND " +
-          " (description IS NULL OR ? IS NULL OR description = ?) AND " +
-          " (? IS NULL OR dateOfBirth < ?) AND " +
-          " (? IS NULL OR sex = ?) AND " +
-          " (owner_id IS NULL OR ? IS NULL OR owner_id = ?)";
+          " (? IS NULL OR name LIKE ?) AND " +
+          " (? IS NULL OR description LIKE ?) AND " +
+          " (? IS NULL OR date_of_birth < ?) AND " +
+          " (? IS NULL OR sex = ?)";
 
   private final JdbcTemplate jdbcTemplate;
 
@@ -57,12 +55,22 @@ public class HorseJdbcDao implements HorseDao {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  public List<Horse> search() {
-    LOG.trace("getAll()");
+  @Override
+  public List<Horse> search(HorseSearchDto searchParameters) {
+    var args = new ArrayList<>();
+    args.add((searchParameters.name() != null) ? '%' + searchParameters.name() + '%' : null );
+    args.add((searchParameters.name() != null) ? '%' + searchParameters.name() + '%' : null );
+    args.add((searchParameters.description() != null) ? '%' + searchParameters.description() + '%' : null );
+    args.add((searchParameters.description() != null) ? '%' + searchParameters.description() + '%' : null );
+    args.add(searchParameters.bornBefore()); // todo: convert to sql date?
+    args.add(searchParameters.bornBefore()); // todo: convert to sql date?
+    args.add(searchParameters.sex());
+    args.add(searchParameters.sex());
+    // todo: conditionally add limit to query and args once parents implemented
     try {
-      return jdbcTemplate.query(SQL_SEARCH, this::mapRow);
+      return jdbcTemplate.query(SQL_SEARCH, this::mapRow, args.toArray());
     } catch (DataAccessException dae) {
-      throw new FatalException("Error while querying all horses."); // todo Fragestunde: bis in die Persistenz eh ok? Keine Schichteninformation...
+      throw new FatalException("Error while querying all horses.", dae);
     }
   }
 
@@ -72,7 +80,7 @@ public class HorseJdbcDao implements HorseDao {
     try {
       return jdbcTemplate.query(SQL_SELECT_ALL, this::mapRow);
     } catch (DataAccessException dae) {
-      throw new FatalException("Error while querying all horses."); // todo Fragestunde: bis in die Persistenz eh ok? Keine Schichteninformation...
+      throw new FatalException("Error while querying all horses.", dae); // todo Fragestunde: bis in die Persistenz eh ok? Keine Schichteninformation...
     }
   }
 
@@ -120,7 +128,7 @@ public class HorseJdbcDao implements HorseDao {
               .setOwnerId(toCreate.ownerId())
               ;
     } catch (DataAccessException dae) {
-      throw new FatalException("Error while adding horse.");
+      throw new FatalException("Error while adding horse.", dae);
     }
   }
 
@@ -151,11 +159,10 @@ public class HorseJdbcDao implements HorseDao {
   @Override
   public void delete(Long id) throws NotFoundException {
     LOG.trace("delete horse with id {}", id);
-    final String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
 
     try {
       int noOfUpdates = jdbcTemplate.update(connection -> {
-        PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement stmt = connection.prepareStatement(SQL_DELETE, Statement.RETURN_GENERATED_KEYS);
         stmt.setLong(1, id);
         return stmt;
       });
@@ -167,14 +174,6 @@ public class HorseJdbcDao implements HorseDao {
       throw new FatalException("Error when deleting horse", dae);
     }
   }
-
-  @Override
-  public List<Horse> search(HorseSearchDto searchParameters) {
-    return null;
-  }
-
-//  @Override
-//  public void search()
 
   private Horse mapRow(ResultSet result, int rownum) throws SQLException {
     return new Horse()

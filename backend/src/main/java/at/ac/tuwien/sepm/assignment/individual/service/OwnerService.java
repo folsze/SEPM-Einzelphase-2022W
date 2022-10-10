@@ -30,7 +30,10 @@ public interface OwnerService {
    * @return a map that contains the requested owners with their IDs as key
    * @throws NotFoundException if any of the requested owners is not found
    */
-  Map<Long, OwnerDto> getAllById(Collection<Long> ids) throws NotFoundException;
+  Map<Long, OwnerDto> getOwnersByIds(Collection<Long> ids) throws NotFoundException;
+
+
+  Map<Long, OwnerDto> getOwnersByIdsAndFilter(Collection<Long> ownersOfHorses, OwnerSearchDto searchParameters);
 
   /**
    * Search for owners matching the criteria in {@code searchParameters}.

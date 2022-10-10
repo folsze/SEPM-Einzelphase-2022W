@@ -29,10 +29,9 @@ public class HorseEndpoint {
   }
 
   @GetMapping
-  public Stream<HorseListDto> searchHorses(HorseSearchDto searchParameters) {
+  public Stream<HorseListDto> searchHorses(@RequestBody HorseSearchDto searchParameters) {
     LOG.info("GET " + BASE_PATH);
     LOG.debug("request parameters: {}", searchParameters);
-    // TODO We have the request params in the DTO now, but don't do anything with them yet…
     try {
       return service.search(searchParameters);
     } catch (ValidationException ve) {
