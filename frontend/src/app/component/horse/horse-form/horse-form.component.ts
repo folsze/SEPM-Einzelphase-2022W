@@ -74,7 +74,7 @@ export class HorseFormComponent implements OnInit {
     return this.horseForm.controls.sex;
   }
 
-  public get ownerFullNameSubstring(): AbstractControl {
+  public get ownerFullNameSubstringFormControl(): AbstractControl {
     return this.horseForm.controls.ownerFullNameSubstring;
   }
 
@@ -194,7 +194,7 @@ export class HorseFormComponent implements OnInit {
   }
 
   public clearOwner(): void {
-    this.ownerFullNameSubstring.reset();
+    this.ownerFullNameSubstringFormControl.reset();
     this.ownerFormControl.reset();
     this.currentOwnerInputContent = '';
   }
@@ -212,18 +212,6 @@ export class HorseFormComponent implements OnInit {
       distinctUntilChanged(),
       switchMap(fullName => this.searchOwnersByFullName(fullName))
     );
-
-  public noWhitespaceInsideValidator(control: AbstractControl) { // todo: private?
-    const containsWhitespace = (control.value || '').trim().match(/\s/g);
-    const isValid = !containsWhitespace;
-    return isValid ? null : { whitespace: true };
-  }
-
-  public noDateInFutureValidator(dateControl: AbstractControl) {
-    const now: Date = new Date();
-    const isValid = !(dateControl.value < now);
-    return isValid ? null : { dateInFuture: true };
-  }
 
   public dynamicCssClassesForInput(input: AbstractControl): any {
     return {
@@ -262,6 +250,18 @@ export class HorseFormComponent implements OnInit {
         // TODO show an error message to the user. Include and sensibly present the info from the backend!
       }
     });
+  }
+
+  private noWhitespaceInsideValidator(control: AbstractControl) { // todo: private?
+    const containsWhitespace = (control.value || '').trim().match(/\s/g);
+    const isValid = !containsWhitespace;
+    return isValid ? null : { whitespace: true };
+  }
+
+  private noDateInFutureValidator(dateControl: AbstractControl) {
+    const now: Date = new Date();
+    const isValid = !(dateControl.value < now);
+    return isValid ? null : { dateInFuture: true };
   }
 
   private searchOwnersByFullName(fullName: string): Observable<Owner[]> {

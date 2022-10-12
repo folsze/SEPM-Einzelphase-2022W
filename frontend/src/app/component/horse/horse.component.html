@@ -31,28 +31,31 @@
   </a>
 </div>
 
-<form class="d-flex flex-row w-auto mb-3" (submit)="reloadHorses()">
+<form [formGroup]="horseSearchForm" class="d-flex flex-row w-auto mb-3" (ngSubmit)="onSubmit()">
   <!-- this button is here, just so that simple submitting of this form
        to reload the horses, is possible -->
-  <button type="submit" hidden="true">submit</button>
   <div class="flex-grow-2">
-    <label for="searchHorseName" class="col-form-label">
+    <label class="col-form-label">
       Name
     </label>
     <input type="text" name="searchHorseName"
            class="form-control"
+           formControlName="name"
+           (input)="reloadHorses()"
            >
   </div>
   <div class="flex-grow-1 ms-1">
-    <label for="searchHorseDescription" class="col-form-label">
+    <label class="col-form-label">
       Description
     </label>
     <input type="text" name="searchHorseDescription"
            class="form-control"
+           formControlName="description"
+           (input)="reloadHorses()"
            >
   </div>
   <div class="ms-1">
-    <label for="searchHorseDateOfBirth" class="col-form-label">
+    <label class="col-form-label">
       Date of Birth
     </label>
     <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
@@ -62,29 +65,29 @@
            pattern="\d{4}-\d{2}-\d{2}"
            placeholder="yyyy-mm-dd"
            class="form-control"
+           formControlName="dateOfBirth"
+           (input)="reloadHorses()"
            >
   </div>
   <div class="ms-1">
-    <label for="searchHorseSex" class="col-form-label">
+    <label class="col-form-label">
       Sex
     </label>
     <select name="searchHorseSex"
             class="form-select"
+            formControlName="sex"
+            (change)="reloadHorses()"
             >
-      <option></option>
+      <option [ngValue]="null">None</option>
       <option value="FEMALE">Female</option>
       <option value="MALE">Male</option>
     </select>
   </div>
   <div class="flex-grow-2 ms-1">
-    <label for="searchHorseOwner" class="col-form-label">
-      Owner
+    <label class="col-form-label">
+      Owner's Name
     </label>
-    <app-autocomplete name="searchHorseOwner"
-                      textInputClass="form-control"
-                      valueNeedsToMatchSuggestion="false"
-                      >
-    </app-autocomplete>
+    <input class="form-control" formControlName="ownerFullNameSubstring" (input)="reloadHorses()">
   </div>
 </form>
 

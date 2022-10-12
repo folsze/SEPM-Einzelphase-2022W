@@ -11,7 +11,11 @@ export interface Horse {
 }
 
 
-export interface HorseSearch {
+export interface HorseSearchFilter {
   name?: string;
-  // TODO fill in missing fields
+  description?: string;
+  dateOfBirth?: Date;
+  sex?: Sex;
+  ownerFullNameSubstringFormControl?: string;
+  limit?: number;
 }

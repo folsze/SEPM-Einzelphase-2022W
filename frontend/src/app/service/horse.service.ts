@@ -1,8 +1,9 @@
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {environment} from 'src/environments/environment';
-import {Horse} from '../dto/horse';
+import {Horse, HorseSearchFilter} from '../dto/horse';
+import {dateComparator} from '@ng-bootstrap/ng-bootstrap/datepicker/datepicker-tools';
 
 const baseUri = environment.backendUrl + '/horses';
 
@@ -12,16 +13,38 @@ const baseUri = environment.backendUrl + '/horses';
 export class HorseService {
 
   constructor(
-    private http: HttpClient,
-  ) { }
+    private http: HttpClient
+  ) {}
 
-  /**
-   * Get all horses stored in the system
-   *
-   * @return observable list of found horses.
-   */
-  public getAll(): Observable<Horse[]> {
-    return this.http.get<Horse[]>(baseUri);
+  public search(filter: HorseSearchFilter): Observable<Horse[]> {
+    let params = new HttpParams(); // todo Fragstunde: what happens with empty params sent..?
+
+    if (filter.name) {
+      params = params.append('name', filter.name);
+    }
+
+    if (filter.description) {
+      params = params.append('description', filter.description);
+    }
+
+    if (filter.dateOfBirth) {
+      params = params.append('dateOfBirth', filter.dateOfBirth.toString());
+    }
+
+    if (filter.sex) {
+      console.log("AAAAAA", filter.sex)
+      params = params.append('sex', filter.sex);
+    }
+
+    if (filter.ownerFullNameSubstringFormControl) {
+      params = params.append('ownerFullNameSubstring', filter.ownerFullNameSubstringFormControl);
+    }
+
+    if (filter.limit) {
+      params = params.append('limit', filter.limit);
+    }
+
+    return this.http.get<Horse[]>(baseUri, { params });
   }
 
   public getHorseById(id: number): Observable<Horse> {
