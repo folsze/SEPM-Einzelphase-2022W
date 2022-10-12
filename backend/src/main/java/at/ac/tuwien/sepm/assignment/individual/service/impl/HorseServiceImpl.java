@@ -85,8 +85,14 @@ public class HorseServiceImpl implements HorseService {
             .map(Horse::getOwnerId)
             .filter(Objects::nonNull)
             .collect(Collectors.toUnmodifiableSet());
-    Map<Long, OwnerDto> horsesOwnersMatchingName = ownerService.getOwnersByIdsAndFilter(ownerIds,
-            new OwnerSearchDto(searchParameters.ownerName(), null));
-    return horses.stream().map(horse -> mapper.entityToListDto(horse, horsesOwnersMatchingName));
+
+    Map<Long, OwnerDto> horsesOwnersMatchingOwnerFullNameSubstring = ownerService.getOwnersByIdsAndFilter(ownerIds,
+            new OwnerSearchDto(searchParameters.ownerFullNameSubstring(), null));
+
+//    Stream<Horse> horseStream = horses.stream().filter(horse -> horsesOwnersMatchingOwnerFullNameSubstring.containsKey(horse.getOwnerId()));
+    // einkommentieren &: horsesStream.map(... todo Fragestunde
+    Stream<HorseListDto> result = horses.stream().map(horse -> mapper.entityToListDto(horse, horsesOwnersMatchingOwnerFullNameSubstring));
+
+    return result;
   }
 }

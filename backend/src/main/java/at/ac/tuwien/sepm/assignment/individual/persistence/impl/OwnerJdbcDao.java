@@ -32,7 +32,7 @@ public class OwnerJdbcDao implements OwnerDao {
   private static final String SQL_SELECT_SEARCH_LIMIT_CLAUSE = " LIMIT ?";
 
   private static final String SQL_SELECT_OWNERS_BY_IDS_AND_FILTER = "SELECT * FROM " + TABLE_NAME
-          + " WHERE id IN (:ids)"; // " AND UPPER(first_name||' '||last_name) like UPPER('%'||COALESCE(?, '')||'%')";
+          + " WHERE id IN (:ids) AND UPPER(first_name||' '||last_name) like UPPER('%'||COALESCE(:name, '')||'%')";
 
   private static final String SQL_CREATE = "INSERT INTO " + TABLE_NAME + " (first_name, last_name, email) VALUES (?, ?, ?)";
 
@@ -100,7 +100,8 @@ public class OwnerJdbcDao implements OwnerDao {
     Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("ids", ownerIdsOfHorses);
     paramMap.put("name", searchParameters.name());
-    return jdbcNamed.query(SQL_SELECT_OWNERS_BY_IDS_AND_FILTER, paramMap, this::mapRow);
+    Collection<Owner> c = jdbcNamed.query(SQL_SELECT_OWNERS_BY_IDS_AND_FILTER, paramMap, this::mapRow);
+    return c;
   }
 
   @Override

@@ -74,11 +74,10 @@ public class HorseMapper {
     var ownerId = horse.getOwnerId();
     if (ownerId != null) {
       if (!owners.containsKey(ownerId)) {
-        throw new FatalException("Given owner map does not contain owner of this Horse (%d)".formatted(horse.getId()));
+        throw new FatalException("Given owner map does not contain owner of this Horse (%d)".formatted(horse.getId())); // where would this be needed?
       }
       owner = owners.get(ownerId);
     }
     return owner;
   }
-
 }

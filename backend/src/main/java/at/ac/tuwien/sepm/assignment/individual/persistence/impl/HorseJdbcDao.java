@@ -43,8 +43,8 @@ public class HorseJdbcDao implements HorseDao {
       + " WHERE id = ?";
   private static final String SQL_SEARCH =
           " SELECT * FROM " + TABLE_NAME + " WHERE " +
-          " (? IS NULL OR name LIKE ?) AND " +
-          " (? IS NULL OR description LIKE ?) AND " +
+          " (? IS NULL OR UPPER(name) LIKE UPPER(?)) AND " +
+          " (? IS NULL OR UPPER(description) LIKE UPPER(?)) AND " +
           " (? IS NULL OR date_of_birth < ?) AND " +
           " (? IS NULL OR sex = ?)";
 
@@ -64,8 +64,8 @@ public class HorseJdbcDao implements HorseDao {
     args.add((searchParameters.description() != null) ? '%' + searchParameters.description() + '%' : null );
     args.add(searchParameters.bornBefore()); // todo: convert to sql date?
     args.add(searchParameters.bornBefore()); // todo: convert to sql date?
-    args.add(searchParameters.sex());
-    args.add(searchParameters.sex());
+    args.add(searchParameters.sex() != null ? searchParameters.sex().toString() : null);
+    args.add(searchParameters.sex() != null ? searchParameters.sex().toString() : null);
     // todo: conditionally add limit to query and args once parents implemented
     try {
       return jdbcTemplate.query(SQL_SEARCH, this::mapRow, args.toArray());

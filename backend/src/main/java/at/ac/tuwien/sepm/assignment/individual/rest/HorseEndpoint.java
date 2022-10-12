@@ -37,7 +37,7 @@ public class HorseEndpoint {
   @GetMapping
   public Stream<HorseListDto> searchHorses(@RequestParam(required = false) String name,
                                            @RequestParam(required = false) String description,
-                                           @RequestParam(required = false) LocalDate dateOfBirth,
+                                           @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateOfBirth,
                                            @RequestParam(required = false) Sex sex,
                                            @RequestParam(required = false) String ownerFullNameSubstring,
                                            @RequestParam(required = false) Integer limit) {
