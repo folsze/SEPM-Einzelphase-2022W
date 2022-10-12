@@ -3,8 +3,8 @@ import {ToastrService} from 'ngx-toastr';
 import {HorseService} from 'src/app/service/horse.service';
 import {Horse} from '../../dto/horse';
 import {Owner} from '../../dto/owner';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable} from 'rxjs';
+import {AbstractControl, FormBuilder, FormGroup} from '@angular/forms';
+import {debounceTime, distinctUntilChanged, Observable} from 'rxjs';
 
 @Component({
   selector: 'app-horse',
@@ -52,13 +52,36 @@ export class HorseComponent implements OnInit {
     return this.horseSearchForm.controls.ownerFullNameSubstring;
   }
 
-
   ngOnInit(): void {
-    this.reloadHorses();
+    this.searchWithCurrentValues(this.horseSearchForm.value);
+
+    this.horseSearchForm.valueChanges.pipe(debounceTime(500), distinctUntilChanged()).subscribe({
+        next: horseSearchForm =>   {
+          this.searchWithCurrentValues(horseSearchForm);
+        }
+    });
   }
 
-  public onSubmit() {
+  public searchWithCurrentValues(formValue: any) { // todo Fragestunde: welchen Typ hat das? "object=any ist ok?", "an object with a key-value pair for each member of the group"
+    const horses: Observable<Horse[]> = this.service.search({
+      name: formValue.name?.trim(),
+      description: formValue.description?.trim(),
+      dateOfBirth: formValue.dateOfBirth,
+      sex: formValue.sex,
+      ownerFullNameSubstring: formValue.ownerFullNameSubstring?.trim(),
+    });
 
+    horses.subscribe({
+      next: data => this.horses = data,
+      error: error => {
+        console.error('Error fetching horses', error);
+        this.bannerError = 'Could not fetch horses: ' + error.message;
+        const errorMessage = error.status === 0
+          ? 'Is the backend up?'
+          : error.message.message;
+        this.notification.error(errorMessage, 'Could Not Fetch Horses');
+      }
+    });
   }
 
   public ownerName(owner: Owner | null): string {
@@ -77,35 +100,11 @@ export class HorseComponent implements OnInit {
         this.service.deleteHorse(horse.id).subscribe(
           () => {
             this.notification.success(`Horse ${horse.name} successfully deleted.`);
-            this.reloadHorses();
+            this.searchWithCurrentValues(this.horseSearchForm.value);
           }
         );
       }
     }
-  }
-
-  public reloadHorses(): void {
-    const horses: Observable<Horse[]> = this.service.search({
-      name: this.nameFormControl.value?.trim(),
-      description: this.descriptionFormControl.value?.trim(),
-      dateOfBirth: this.dateOfBirthFormControl.value,
-      sex: this.sexFormControl.value,
-      ownerFullNameSubstringFormControl: this.ownerFullNameSubstringFormControl.value?.trim(),
-    });
-
-    horses.subscribe({
-        next: data => {
-          this.horses = data;
-        },
-        error: error => {
-          console.error('Error fetching horses', error);
-          this.bannerError = 'Could not fetch horses: ' + error.message;
-          const errorMessage = error.status === 0
-            ? 'Is the backend up?'
-            : error.message.message;
-          this.notification.error(errorMessage, 'Could Not Fetch Horses');
-        }
-      });
   }
 
   private noWhitespaceInsideValidator(control: AbstractControl) { // todo: private?

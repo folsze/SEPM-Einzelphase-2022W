@@ -16,6 +16,6 @@ export interface HorseSearchFilter {
   description?: string;
   dateOfBirth?: Date;
   sex?: Sex;
-  ownerFullNameSubstringFormControl?: string;
+  ownerFullNameSubstring?: string;
   limit?: number;
 }

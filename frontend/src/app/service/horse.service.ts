@@ -32,12 +32,11 @@ export class HorseService {
     }
 
     if (filter.sex) {
-      console.log("AAAAAA", filter.sex)
       params = params.append('sex', filter.sex);
     }
 
-    if (filter.ownerFullNameSubstringFormControl) {
-      params = params.append('ownerFullNameSubstring', filter.ownerFullNameSubstringFormControl);
+    if (filter.ownerFullNameSubstring) {
+      params = params.append('ownerFullNameSubstring', filter.ownerFullNameSubstring);
     }
 
     if (filter.limit) {

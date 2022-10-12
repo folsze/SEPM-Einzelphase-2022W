@@ -20,7 +20,7 @@
 <!-- END SANITY CHECK BANNER -->
 
 <div class="d-flex flex-row w-auto">
-  <button class="btn btn-primary mr-1" (click)="reloadHorses()" aria-label="Reload horses">
+  <button class="btn btn-primary mr-1" (click)="searchWithCurrentValues(horseSearchForm)" aria-label="Reload horses">
     <i class="bi bi-arrow-clockwise"></i>
     Reload
   </button>
@@ -31,7 +31,7 @@
   </a>
 </div>
 
-<form [formGroup]="horseSearchForm" class="d-flex flex-row w-auto mb-3" (ngSubmit)="onSubmit()">
+<form [formGroup]="horseSearchForm" class="d-flex flex-row w-auto mb-3">
   <!-- this button is here, just so that simple submitting of this form
        to reload the horses, is possible -->
   <div class="flex-grow-2">
@@ -41,7 +41,6 @@
     <input type="text" name="searchHorseName"
            class="form-control"
            formControlName="name"
-           (input)="reloadHorses()"
            >
   </div>
   <div class="flex-grow-1 ms-1">
@@ -51,7 +50,6 @@
     <input type="text" name="searchHorseDescription"
            class="form-control"
            formControlName="description"
-           (input)="reloadHorses()"
            >
   </div>
   <div class="ms-1">
@@ -66,7 +64,6 @@
            placeholder="yyyy-mm-dd"
            class="form-control"
            formControlName="dateOfBirth"
-           (input)="reloadHorses()"
            >
   </div>
   <div class="ms-1">
@@ -76,7 +73,6 @@
     <select name="searchHorseSex"
             class="form-select"
             formControlName="sex"
-            (change)="reloadHorses()"
             >
       <option [ngValue]="null">Don't filter</option>
       <option value="FEMALE">Female</option>
@@ -87,7 +83,7 @@
     <label class="col-form-label">
       Owner's Name
     </label>
-    <input class="form-control" formControlName="ownerFullNameSubstring" (input)="reloadHorses()">
+    <input class="form-control" formControlName="ownerFullNameSubstring">
   </div>
 </form>
 
