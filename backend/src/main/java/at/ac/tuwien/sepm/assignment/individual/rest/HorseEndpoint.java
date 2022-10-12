@@ -9,12 +9,18 @@ import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
 import at.ac.tuwien.sepm.assignment.individual.service.HorseService;
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
 import java.util.stream.Stream;
+
+import at.ac.tuwien.sepm.assignment.individual.type.Sex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.core.Local;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 
 @RestController
 @RequestMapping(path = HorseEndpoint.BASE_PATH)
@@ -29,11 +35,16 @@ public class HorseEndpoint {
   }
 
   @GetMapping
-  public Stream<HorseListDto> searchHorses(@RequestBody HorseSearchDto searchParameters) {
-    LOG.info("GET " + BASE_PATH);
-    LOG.debug("request parameters: {}", searchParameters);
+  public Stream<HorseListDto> searchHorses(@RequestParam(required = false) String name,
+                                           @RequestParam(required = false) String description,
+                                           @RequestParam(required = false) LocalDate dateOfBirth,
+                                           @RequestParam(required = false) Sex sex,
+                                           @RequestParam(required = false) String ownerFullNameSubstring,
+                                           @RequestParam(required = false) Integer limit) {
+    HorseSearchDto requestParams = new HorseSearchDto(name, description, dateOfBirth, sex, ownerFullNameSubstring, limit);
+    LOG.debug("request parameters: {}", requestParams);
     try {
-      return service.search(searchParameters);
+      return service.search(requestParams);
     } catch (ValidationException ve) {
       throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ve.getMessage(), ve);
     }
