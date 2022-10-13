@@ -32,9 +32,6 @@
             <div class="invalid-feedback" *ngIf="nameFormControl.errors?.required">
               Name is required.
             </div>
-            <div class="invalid-feedback" *ngIf="nameFormControl.hasError('whitespace')">
-              No whitespace allowed inside name.
-            </div>
           </ng-container>
           <ng-container *ngIf="isReadonlyMode">
               {{nameFormControl.value}}

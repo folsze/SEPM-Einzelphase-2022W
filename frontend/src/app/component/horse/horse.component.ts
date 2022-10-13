@@ -14,7 +14,7 @@ import {debounceTime, distinctUntilChanged, Observable} from 'rxjs';
 export class HorseComponent implements OnInit {
 
   public horseSearchForm: FormGroup = this.formBuilder.group({
-    name: [null, [this.noWhitespaceInsideValidator]],
+    name: [null],
     description: [null],
     dateOfBirth: [null, [this.noDateInFutureValidator]],
     sex: [null],
@@ -120,12 +120,6 @@ export class HorseComponent implements OnInit {
         );
       }
     }
-  }
-
-  private noWhitespaceInsideValidator(control: AbstractControl) { // todo: private?
-    const containsWhitespace = (control.value || '').trim().match(/\s/g);
-    const isValid = !containsWhitespace;
-    return isValid ? null : { whitespace: true };
   }
 
   private noDateInFutureValidator(dateControl: AbstractControl) {

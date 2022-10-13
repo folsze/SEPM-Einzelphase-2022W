@@ -23,7 +23,7 @@ export class HorseFormComponent implements OnInit {
 
   public horseForm: FormGroup = this.formBuilder.group({
     id: [null],
-    name: [null, [Validators.required, HorseFormComponent.noWhitespaceInsideValidator]],
+    name: [null, [Validators.required]],
     description: [null],
     dateOfBirth: [null, [Validators.required, HorseFormComponent.noDateInFutureValidator]],
     sex: [null, [Validators.required]],
@@ -155,12 +155,6 @@ export class HorseFormComponent implements OnInit {
 
   private static getNameIfExistsOf(h: HorseDetail): string {
     return h ? h.name : '';
-  }
-
-  private static noWhitespaceInsideValidator(control: AbstractControl) {
-    const containsWhitespace = (control.value || '').trim().match(/\s/g);
-    const isValid = !containsWhitespace;
-    return isValid ? null : { whitespace: true };
   }
 
   private static noDateInFutureValidator(dateControl: AbstractControl) {
