@@ -78,7 +78,7 @@ public class HorseEndpoint {
     LOG.info("PUT " + BASE_PATH + "/{}", id);
     LOG.debug("Body of request:\n{}", updateData);
     try {
-      return service.update(updateData); // TODO: FE probably doesn't send id as update right now
+      return service.update(id, updateData);
     } catch (NotFoundException e) {
       HttpStatus status = HttpStatus.NOT_FOUND;
       logClientError(status, "Horse to update not found", e);

@@ -43,6 +43,8 @@ public class HorseJdbcDao implements HorseDao {
       + "  , date_of_birth = ?"
       + "  , sex = ?"
       + "  , owner_id = ?"
+      + "  , mother_id = ?"
+      + "  , father_id = ?"
       + " WHERE id = ?";
   private static final String SQL_SEARCH =
           " SELECT * FROM " + TABLE_NAME + " WHERE " +
@@ -90,7 +92,7 @@ public class HorseJdbcDao implements HorseDao {
   @Override
   public Horse getById(long id) throws NotFoundException {
     LOG.trace("getById({})", id);
-    List<Horse> horses = jdbcTemplate.query(SQL_SELECT_BY_ID, this::mapRowAndMapParents, id);
+    List<Horse> horses = jdbcTemplate.query(SQL_SELECT_BY_ID, this::mapRow, id);
 
     if (horses.isEmpty()) {
       throw new NotFoundException("No horse with ID %d found".formatted(id));
@@ -131,8 +133,8 @@ public class HorseJdbcDao implements HorseDao {
         stmt.setString(3, java.sql.Date.valueOf(toCreate.dateOfBirth()).toString()); // todo Fragestunde
         stmt.setString(4, toCreate.sex().toString());
         stmt.setObject(5, toCreate.ownerId());
-        stmt.setObject(6, toCreate.motherId()); // todo Fragestunde: wird das eine NullPointerException werfen ever? Wie finde ich das in den Docs?
-        stmt.setObject(7, toCreate.fatherId()); // todo Fragestunde: , Types.Varchar);
+        stmt.setObject(6, toCreate.motherId()); // todo Fragestunde: wird das eine NullPointerException werfen ever? Wie finde ich das in den Docs, dass das sicher nicht so ist?
+        stmt.setObject(7, toCreate.fatherId());
 
         return stmt;
       }, keyHolder);
@@ -153,27 +155,31 @@ public class HorseJdbcDao implements HorseDao {
   }
 
   @Override
-  public Horse update(HorseDetailDto horse) throws NotFoundException {
+  public Horse update(Long id, HorseDetailDto horse) throws NotFoundException {
     LOG.trace("update({})", horse);
     int updated = jdbcTemplate.update(SQL_UPDATE,
-        horse.name(),
-        horse.description(),
-        horse.dateOfBirth(),
-        horse.sex().toString(),
-        horse.ownerId(),
-        horse.id());
+            horse.name(),
+            horse.description(),
+            horse.dateOfBirth(),
+            horse.sex().toString(),
+            horse.ownerId(),
+            horse.motherId(),
+            horse.fatherId(),
+            id);
     if (updated == 0) {
       throw new NotFoundException("Could not update horse with ID " + horse.id() + ", because it does not exist");
     }
 
     return new Horse()
-        .setId(horse.id())
-        .setName(horse.name())
-        .setDescription(horse.description())
-        .setDateOfBirth(horse.dateOfBirth())
-        .setSex(horse.sex())
-        .setOwnerId(horse.ownerId())
-        ;
+            .setId(id)
+            .setName(horse.name())
+            .setDescription(horse.description())
+            .setDateOfBirth(horse.dateOfBirth())
+            .setSex(horse.sex())
+            .setOwnerId(horse.ownerId())
+            .setMotherId(horse.motherId())
+            .setFatherId(horse.fatherId())
+            ;
   }
 
   @Override
@@ -203,20 +209,9 @@ public class HorseJdbcDao implements HorseDao {
         .setDateOfBirth(result.getDate("date_of_birth").toLocalDate())
         .setSex(Sex.valueOf(result.getString("sex")))
         .setOwnerId(result.getObject("owner_id", Long.class))
+        .setMotherId(result.getObject("mother_id", Long.class))
+        .setFatherId(result.getObject("father_id", Long.class))
         ;
-  }
-
-  private Horse mapRowAndMapParents(ResultSet result, int rowNum) throws SQLException {
-    return new Horse()
-            .setId(result.getLong("id"))
-            .setName(result.getString("name"))
-            .setDescription(result.getString("description"))
-            .setDateOfBirth(result.getDate("date_of_birth").toLocalDate())
-            .setSex(Sex.valueOf(result.getString("sex")))
-            .setOwnerId(result.getObject("owner_id", Long.class))
-            .setMotherId(result.getLong("mother_id"))
-            .setFatherId(result.getLong("father_id"))
-            ;
   }
 
   private HorseMinimal mapRowMinimal(ResultSet result, int rowNum) throws SQLException {

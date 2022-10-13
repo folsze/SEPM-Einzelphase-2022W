@@ -35,10 +35,6 @@ public class HorseValidator {
     LOG.trace("validateForUpdate({})", horse);
     List<String> validationErrors = new ArrayList<>();
 
-    if (horse.id() == null) {
-      validationErrors.add("No ID given");
-    }
-
     validateGenericHorseData(horse.name(), horse.description(), horse.dateOfBirth(), horse.sex(), validationErrors);
 
     if (!validationErrors.isEmpty()) {

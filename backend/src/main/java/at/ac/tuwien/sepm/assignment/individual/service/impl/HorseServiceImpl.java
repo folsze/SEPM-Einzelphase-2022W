@@ -37,10 +37,10 @@ public class HorseServiceImpl implements HorseService {
   }
 
   @Override
-  public HorseDetailDto update(HorseDetailDto updateData) throws NotFoundException, ValidationException, ConflictException {
+  public HorseDetailDto update(Long id, HorseDetailDto updateData) throws NotFoundException, ValidationException, ConflictException {
     LOG.trace("update({})", updateData);
     validator.validateForUpdate(updateData);
-    var updatedHorse = dao.update(updateData);
+    var updatedHorse = dao.update(id, updateData);
     return mapper.entityToDetailDto(
             updatedHorse,
             ownerMapForSingleId(updatedHorse.getOwnerId()),
