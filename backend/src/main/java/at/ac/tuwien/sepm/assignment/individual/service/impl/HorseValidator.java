@@ -117,10 +117,6 @@ public class HorseValidator {
       if (name.length() != name.trim().length()) {
         validationErrors.add("Horse name must not start/end with whitespaces");
       }
-
-      if (name.trim().contains(" ")) {  // trim because space at start/end was already checked
-        validationErrors.add("Horse name must not contain whitespaces");
-      }
     } else {
       validationErrors.add("Horse name must be specified");
     }
@@ -260,10 +256,6 @@ public class HorseValidator {
 
       if (name.length() != name.trim().length()) {
         validationErrors.add("Horse name must not start/end with whitespaces");
-      }
-
-      if (name.trim().contains(" ")) {  // trim because space at start/end was already checked
-        validationErrors.add("Horse name must not contain whitespaces");
       }
     }
 
