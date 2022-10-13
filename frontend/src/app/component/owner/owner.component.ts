@@ -35,7 +35,7 @@ export class OwnerComponent implements OnInit {
           this.bannerError = 'Could not fetch owners: ' + error.message;
           const errorMessage = error.status === 0
             ? 'Is the backend up?'
-            : error.message.message;
+            : error.error.message;
           this.notification.error(errorMessage, 'Could Not Fetch Owners');
         }
       });

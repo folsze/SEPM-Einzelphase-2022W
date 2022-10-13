@@ -19,7 +19,7 @@ export class HorseFormComponent implements OnInit {
 
   private static readonly typeAheadMaxOptionCount = 5;
 
-  public mode: FormMode = FormMode.create;
+  public mode: FormMode;
 
   public horseForm: FormGroup = this.formBuilder.group({
     id: [null],

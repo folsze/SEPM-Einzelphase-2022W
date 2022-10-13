@@ -21,7 +21,6 @@ export class HorseComponent implements OnInit {
     ownerFullNameSubstring: [null],
   });
 
-
   horses: Horse[] = [];
   bannerError: string | null = null;
 
@@ -76,12 +75,28 @@ export class HorseComponent implements OnInit {
       error: error => {
         console.error('Error fetching horses', error);
         this.bannerError = 'Could not fetch horses: ' + error.message;
+
         const errorMessage = error.status === 0
           ? 'Is the backend up?'
-          : error.message.message;
-        this.notification.error(errorMessage, 'Could Not Fetch Horses');
+          : HorseComponent.constructErrorMessage(error);
+
+        this.notification.error(errorMessage, 'Could Not Fetch Horses', { enableHtml: true });
       }
     });
+  }
+
+  private static constructErrorMessage(error: any): string {
+    let errorMessage = error.error.message + '.<br><br>';
+
+    if (error.error.errors?.length > 0) {
+      errorMessage += '<ul>';
+      for (const message of error.error.errors) {
+        errorMessage += '<li>' + message + '</li>';
+      }
+      errorMessage += '</ul>';
+    }
+
+    return errorMessage;
   }
 
   public ownerName(owner: Owner | null): string {
