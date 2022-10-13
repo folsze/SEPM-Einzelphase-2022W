@@ -160,7 +160,7 @@ public class HorseValidator {
     validateWhatsRequiredIfCreateOrUpdate(horse,validationErrors);
 
     if (Objects.equals(horse.id(), horse.motherId()) || Objects.equals(horse.id(), horse.fatherId())) {
-      validationErrors.add("A horse cannot be the parent of itself.");
+      validationErrors.add("A horse cannot be the parent of itself");
     }
 
     if (!validationErrors.isEmpty()) {
@@ -240,7 +240,7 @@ public class HorseValidator {
       try {
         horseDao.getById(horse.idOfHorseToBeExcluded());
       } catch (NotFoundException nfe) {
-        validationErrors.add("Horse to be excluded from search not found in database.");
+        validationErrors.add("Horse to be excluded from search not found in database");
       }
     }
 
@@ -283,7 +283,7 @@ public class HorseValidator {
 
     if (bornBefore != null) {
       if (bornBefore.isAfter(LocalDate.now())){
-        validationErrors.add("Date used for filtering horses must not be in the future.");
+        validationErrors.add("Date used for filtering horses must not be in the future");
       }
     }
 
@@ -301,7 +301,7 @@ public class HorseValidator {
     }
 
     if (limit != null && limit <= 0) {
-      validationErrors.add("Limit must be > 0.");
+      validationErrors.add("Limit must be > 0");
     }
   }
 }
