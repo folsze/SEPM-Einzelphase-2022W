@@ -15,12 +15,10 @@ import java.util.stream.Stream;
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.core.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 
 @RestController
 @RequestMapping(path = HorseEndpoint.BASE_PATH)
@@ -63,10 +61,10 @@ public class HorseEndpoint {
   }
 
   @PostMapping
-  public HorseDetailDto create(@RequestBody HorseDetailDto toCreate) throws ValidationException {
-    LOG.info("POST " + BASE_PATH + "/{}", toCreate);
+  public HorseDetailDto create(@RequestBody HorseDetailDto createData) throws ValidationException {
+    LOG.info("POST " + BASE_PATH + "{}", createData);
     try {
-      return service.create(toCreate);
+      return service.create(createData);
     } catch (ValidationException ve) {
       throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ve.getMessage(), ve);
     } catch (FatalException fe) {
@@ -76,11 +74,11 @@ public class HorseEndpoint {
   }
 
   @PutMapping("{id}")
-  public HorseDetailDto update(@PathVariable long id, @RequestBody HorseDetailDto toUpdate) throws ValidationException, ConflictException {
+  public HorseDetailDto update(@PathVariable long id, @RequestBody HorseDetailDto updateData) throws ValidationException, ConflictException {
     LOG.info("PUT " + BASE_PATH + "/{}", id);
-    LOG.debug("Body of request:\n{}", toUpdate);
+    LOG.debug("Body of request:\n{}", updateData);
     try {
-      return service.update(toUpdate.withId(id));
+      return service.update(updateData); // TODO: FE probably doesn't send id as update right now
     } catch (NotFoundException e) {
       HttpStatus status = HttpStatus.NOT_FOUND;
       logClientError(status, "Horse to update not found", e);

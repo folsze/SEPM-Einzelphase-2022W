@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.assignment.individual.service.impl;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.*;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
+import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
@@ -36,13 +37,16 @@ public class HorseServiceImpl implements HorseService {
   }
 
   @Override
-  public HorseDetailDto update(HorseDetailDto horse) throws NotFoundException, ValidationException, ConflictException {
-    LOG.trace("update({})", horse);
-    validator.validateForUpdate(horse);
-    var updatedHorse = dao.update(horse);
+  public HorseDetailDto update(HorseDetailDto updateData) throws NotFoundException, ValidationException, ConflictException {
+    LOG.trace("update({})", updateData);
+    validator.validateForUpdate(updateData);
+    var updatedHorse = dao.update(updateData);
     return mapper.entityToDetailDto(
-        updatedHorse,
-        ownerMapForSingleId(updatedHorse.getOwnerId()));
+            updatedHorse,
+            ownerMapForSingleId(updatedHorse.getOwnerId()),
+            horseMapForSingleId(updatedHorse.getMotherId()),
+            horseMapForSingleId(updatedHorse.getFatherId())
+    );
   }
 
   @Override
@@ -51,14 +55,22 @@ public class HorseServiceImpl implements HorseService {
     Horse horse = dao.getById(id);
     return mapper.entityToDetailDto(
         horse,
-        ownerMapForSingleId(horse.getOwnerId()));
+        ownerMapForSingleId(horse.getOwnerId()),
+        horseMapForSingleId(horse.getMotherId()),
+        horseMapForSingleId(horse.getFatherId())
+    );
   }
 
   @Override
-  public HorseDetailDto create(HorseDetailDto toCreate) throws ValidationException {
-    validator.validateForCreate(toCreate);
-    var createdHorse = dao.create(toCreate);
-    return mapper.entityToDetailDto(createdHorse, ownerMapForSingleId(createdHorse.getOwnerId()));
+  public HorseDetailDto create(HorseDetailDto createData) throws ValidationException {
+    validator.validateForCreate(createData);
+    var createdHorse = dao.create(createData);
+    return mapper.entityToDetailDto(
+            createdHorse,
+            ownerMapForSingleId(createdHorse.getOwnerId()),
+            horseMapForSingleId(createdHorse.getMotherId()),
+            horseMapForSingleId(createdHorse.getFatherId())
+    );
   }
 
   private Map<Long, OwnerDto> ownerMapForSingleId(Long ownerId) {
@@ -69,6 +81,17 @@ public class HorseServiceImpl implements HorseService {
     } catch (NotFoundException e) {
       throw new FatalException("Owner %d referenced by horse not found".formatted(ownerId));
     }
+  }
+
+  private Map<Long, HorseMinimalDto> horseMapForSingleId(Long horseId) {
+    return horseId == null
+            ? null
+            : Collections.singletonMap(horseId, mapper.minimalEntityToMinimalDto(getMinimalHorseById(horseId)));
+  }
+
+  private HorseMinimal getMinimalHorseById(Long id) {
+    LOG.trace("minimals({})", id);
+    return dao.getHorseMinimalById(id);
   }
 
   @Override

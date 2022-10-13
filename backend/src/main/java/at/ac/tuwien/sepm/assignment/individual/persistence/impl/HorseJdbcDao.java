@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.assignment.individual.persistence.impl;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
+import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.persistence.HorseDao;
@@ -31,9 +32,11 @@ public class HorseJdbcDao implements HorseDao {
   private static final String SQL_DELETE = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
   private static final String SQL_SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
   private static final String SQL_SELECT_BY_ID = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?";
+  private static final String SQL_SELECT_MINIMAL_BY_ID = "SELECT horse.id, horse.name, horse.date_of_birth, horse.sex " +
+          " FROM " + TABLE_NAME + " WHERE id = ?";
   private static final String SQL_INSERT = "INSERT INTO " + TABLE_NAME +
-          " (name, description, date_of_birth, sex, owner_id) " +
-          " VALUES (?,?,?,?,?);";
+          " (name, description, date_of_birth, sex, owner_id, mother_id, father_id) " +
+          " VALUES (?,?,?,?,?,?,?);";
   private static final String SQL_UPDATE = "UPDATE " + TABLE_NAME
       + " SET name = ?"
       + "  , description = ?"
@@ -87,14 +90,29 @@ public class HorseJdbcDao implements HorseDao {
   @Override
   public Horse getById(long id) throws NotFoundException {
     LOG.trace("getById({})", id);
-    List<Horse> horses;
-    horses = jdbcTemplate.query(SQL_SELECT_BY_ID, this::mapRow, id);
+    List<Horse> horses = jdbcTemplate.query(SQL_SELECT_BY_ID, this::mapRowAndMapParents, id);
 
     if (horses.isEmpty()) {
       throw new NotFoundException("No horse with ID %d found".formatted(id));
     }
     if (horses.size() > 1) {
-      // This should never happen!!
+      throw new FatalException("Too many horses with ID %d found".formatted(id));
+    }
+
+    return horses.get(0);
+  }
+
+  @Override
+  public HorseMinimal getHorseMinimalById(Long id) {
+    LOG.trace("getById({})", id);
+    if(id == null) return null;
+
+    List<HorseMinimal> horses = jdbcTemplate.query(SQL_SELECT_MINIMAL_BY_ID, this::mapRowMinimal, id);
+    if (horses.isEmpty()) {
+      throw new FatalException("Horse.motherId != null (motherId=%d) but mother was NotFound. This shouldn't happen.".formatted(id));
+    }
+
+    if (horses.size() > 1) {
       throw new FatalException("Too many horses with ID %d found".formatted(id));
     }
 
@@ -112,9 +130,9 @@ public class HorseJdbcDao implements HorseDao {
         stmt.setString(2, toCreate.description());
         stmt.setString(3, java.sql.Date.valueOf(toCreate.dateOfBirth()).toString()); // todo Fragestunde
         stmt.setString(4, toCreate.sex().toString());
-
-        if (toCreate.ownerId() == null) stmt.setString(5,null);
-        else stmt.setString(5, toCreate.ownerId().toString());
+        stmt.setObject(5, toCreate.ownerId());
+        stmt.setObject(6, toCreate.motherId()); // todo Fragestunde: wird das eine NullPointerException werfen ever? Wie finde ich das in den Docs?
+        stmt.setObject(7, toCreate.fatherId()); // todo Fragestunde: , Types.Varchar);
 
         return stmt;
       }, keyHolder);
@@ -126,6 +144,8 @@ public class HorseJdbcDao implements HorseDao {
               .setDateOfBirth(toCreate.dateOfBirth())
               .setSex(toCreate.sex())
               .setOwnerId(toCreate.ownerId())
+              .setMotherId(toCreate.motherId())
+              .setFatherId(toCreate.fatherId())
               ;
     } catch (DataAccessException dae) {
       throw new FatalException("Error while adding horse.", dae);
@@ -175,7 +195,7 @@ public class HorseJdbcDao implements HorseDao {
     }
   }
 
-  private Horse mapRow(ResultSet result, int rownum) throws SQLException {
+  private Horse mapRow(ResultSet result, int rowNum) throws SQLException {
     return new Horse()
         .setId(result.getLong("id"))
         .setName(result.getString("name"))
@@ -184,5 +204,27 @@ public class HorseJdbcDao implements HorseDao {
         .setSex(Sex.valueOf(result.getString("sex")))
         .setOwnerId(result.getObject("owner_id", Long.class))
         ;
+  }
+
+  private Horse mapRowAndMapParents(ResultSet result, int rowNum) throws SQLException {
+    return new Horse()
+            .setId(result.getLong("id"))
+            .setName(result.getString("name"))
+            .setDescription(result.getString("description"))
+            .setDateOfBirth(result.getDate("date_of_birth").toLocalDate())
+            .setSex(Sex.valueOf(result.getString("sex")))
+            .setOwnerId(result.getObject("owner_id", Long.class))
+            .setMotherId(result.getLong("mother_id"))
+            .setFatherId(result.getLong("father_id"))
+            ;
+  }
+
+  private HorseMinimal mapRowMinimal(ResultSet result, int rowNum) throws SQLException {
+    return new HorseMinimal()
+            .setId(result.getLong("id"))
+            .setName(result.getString("name"))
+            .setDateOfBirth(result.getDate("date_of_birth").toLocalDate())
+            .setSex(Sex.valueOf(result.getString("sex")))
+            ;
   }
 }

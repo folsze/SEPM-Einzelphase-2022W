@@ -1,12 +1,11 @@
 package at.ac.tuwien.sepm.assignment.individual.persistence;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
-import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
+import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Data Access Object for horses.
@@ -46,4 +45,6 @@ public interface HorseDao {
   void delete(Long id) throws NotFoundException;
 
   List<Horse> search(HorseSearchDto searchParameters);
+
+  HorseMinimal getHorseMinimalById(Long id);
 }

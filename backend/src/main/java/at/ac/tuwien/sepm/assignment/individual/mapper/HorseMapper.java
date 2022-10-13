@@ -1,9 +1,8 @@
 package at.ac.tuwien.sepm.assignment.individual.mapper;
 
-import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
-import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
-import at.ac.tuwien.sepm.assignment.individual.dto.OwnerDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.*;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
+import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
@@ -16,6 +15,13 @@ public class HorseMapper {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public HorseMapper() {
+  }
+
+  public HorseMinimalDto minimalEntityToMinimalDto(HorseMinimal horse) {
+    if (horse == null) {
+      return null;
+    }
+    return new HorseMinimalDto(horse.getId(), horse.getName(), horse.getDateOfBirth(), horse.getSex());
   }
 
   /**
@@ -38,7 +44,7 @@ public class HorseMapper {
         horse.getDescription(),
         horse.getDateOfBirth(),
         horse.getSex(),
-        getOwner(horse, owners)
+        getOwnerDto(horse.getOwnerId(), owners)
     );
   }
 
@@ -51,13 +57,15 @@ public class HorseMapper {
    * @return the converted {@link HorseListDto}
    */
   public HorseDetailDto entityToDetailDto(
-      Horse horse,
-      Map<Long, OwnerDto> owners) {
+          Horse horse,
+          Map<Long, OwnerDto> owners,
+          Map<Long, HorseMinimalDto> mothers,
+          Map<Long, HorseMinimalDto> fathers
+    ) {
     LOG.trace("entityToDto({})", horse);
     if (horse == null) {
       return null;
     }
-
 
     return new HorseDetailDto(
         horse.getId(),
@@ -65,19 +73,32 @@ public class HorseMapper {
         horse.getDescription(),
         horse.getDateOfBirth(),
         horse.getSex(),
-        getOwner(horse, owners)
+        getOwnerDto(horse.getOwnerId(), owners),
+        getHorseMinimalDto(horse.getMotherId(), mothers),
+        getHorseMinimalDto(horse.getFatherId(), fathers)
     );
   }
 
-  private OwnerDto getOwner(Horse horse, Map<Long, OwnerDto> owners) {
+  private OwnerDto getOwnerDto(Long ownerId, Map<Long, OwnerDto> owners) {
     OwnerDto owner = null;
-    var ownerId = horse.getOwnerId();
     if (ownerId != null) {
       if (!owners.containsKey(ownerId)) {
-        throw new FatalException("Given owner map does not contain owner of this Horse (%d)".formatted(horse.getId())); // where would this be needed?
+        throw new FatalException("Given owner map does not contain owner of this Horse (%d)".formatted(ownerId)); // where would this be needed?
       }
       owner = owners.get(ownerId);
     }
     return owner;
   }
+
+  private HorseMinimalDto getHorseMinimalDto(Long horseId, Map<Long, HorseMinimalDto> horses) {
+    HorseMinimalDto horse = null;
+    if (horseId != null) {
+      if (!horses.containsKey(horseId)) {
+        throw new FatalException("Given owner map does not contain owner of this Horse (%d)".formatted(horseId)); // where would this be needed?
+      }
+      horse = horses.get(horseId);
+    }
+    return horse;
+  }
+
 }
