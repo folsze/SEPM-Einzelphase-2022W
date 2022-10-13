@@ -14,18 +14,6 @@ public record HorseDetailDto(
     HorseMinimalDto father
 ) {
 
-  public HorseDetailDto withId(long newId) {
-    return new HorseDetailDto(
-        newId,
-        name,
-        description,
-        dateOfBirth,
-        sex,
-        owner,
-        mother,
-        father);
-  }
-
   public Long ownerId() {
     return owner == null
         ? null
