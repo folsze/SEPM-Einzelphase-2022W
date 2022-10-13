@@ -3,7 +3,7 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/form
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {debounceTime, distinctUntilChanged, Observable, of, OperatorFunction, switchMap} from 'rxjs';
-import {Horse} from 'src/app/dto/horse';
+import {Horse, HorseDetail} from 'src/app/dto/horse';
 import {Owner} from 'src/app/dto/owner';
 import {Sex} from 'src/app/dto/sex';
 import {HorseService} from 'src/app/service/horse.service';
@@ -19,25 +19,23 @@ export class HorseFormComponent implements OnInit {
 
   private static readonly typeAheadMaxOptionCount = 5;
 
-  public currentOwnerInputContent = '';
-
   public mode: FormMode = FormMode.create;
 
   public horseForm: FormGroup = this.formBuilder.group({
     id: [null],
-    name: [null, [Validators.required, this.noWhitespaceInsideValidator]],
+    name: [null, [Validators.required, HorseFormComponent.noWhitespaceInsideValidator]],
     description: [null],
-    dateOfBirth: [null, [Validators.required, this.noDateInFutureValidator]],
+    dateOfBirth: [null, [Validators.required, HorseFormComponent.noDateInFutureValidator]],
     sex: [null, [Validators.required]],
     ownerFullNameSubstring: [''],
     owner: [null], // owner gets selected by using the ownerFullName control
-    // motherName: [''],
-    // mother: [null],
-    // fatherName: [''],
-    // father: [null]
+    motherNameSubstring: [''],
+    mother: [null],
+    fatherNameSubstring: [''], // todo: null?
+    father: [null]
   });
 
-  public horse: Horse = {
+  public horse: Horse = { // todo: delete
     name: '',
     description: '',
     dateOfBirth: new Date(),
@@ -45,7 +43,7 @@ export class HorseFormComponent implements OnInit {
   };
 
   constructor(
-    private service: HorseService,
+    private horseService: HorseService,
     private ownerService: OwnerService,
     private router: Router,
     private route: ActivatedRoute,
@@ -54,7 +52,7 @@ export class HorseFormComponent implements OnInit {
   ) { }
 
   // -------------------------------------------------------- START OF GETTER SECTION ---------------------------------
-  public get editHorseId(): number {
+  public get idOfHorseBeingEditedElseUndefined(): number {
     return this.horseForm.controls.id.value;
   }
 
@@ -88,20 +86,28 @@ export class HorseFormComponent implements OnInit {
       '';
   }
 
-  public get motherName(): AbstractControl {
-    return this.horseForm.controls.motherName;
+  public get motherNameSubstringFormControl(): AbstractControl {
+    return this.horseForm.controls.motherNameSubstring;
   }
 
-  public get mother(): AbstractControl {
+  public get motherFormControl(): AbstractControl {
     return this.horseForm.controls.mother;
   }
 
-  public get fatherName(): AbstractControl {
-    return this.horseForm.controls.fatherName;
+  public get currentMotherName(): string {
+    return this.motherFormControl.value?.name;
   }
 
-  public get father(): AbstractControl {
+  public get fatherNameSubstringFormControl(): AbstractControl {
+    return this.horseForm.controls.fatherNameSubstring;
+  }
+
+  public get fatherFormControl(): AbstractControl {
     return this.horseForm.controls.father;
+  }
+
+  public get currentFatherName(): string {
+    return this.fatherFormControl.value?.name;
   }
 
   public get heading(): string {
@@ -143,6 +149,26 @@ export class HorseFormComponent implements OnInit {
   }
   // -------------------------------------------------------- END OF GETTER & SETTER SECTION -----------------------------------
 
+  private static getFullNameIfExistsOf(owner: Owner): string {
+    return owner ? owner.firstName + ' ' + owner.lastName : '';
+  }
+
+  private static getNameIfExistsOf(h: HorseDetail): string {
+    return h ? h.name : '';
+  }
+
+  private static noWhitespaceInsideValidator(control: AbstractControl) {
+    const containsWhitespace = (control.value || '').trim().match(/\s/g);
+    const isValid = !containsWhitespace;
+    return isValid ? null : { whitespace: true };
+  }
+
+  private static noDateInFutureValidator(dateControl: AbstractControl) {
+    const now: Date = new Date();
+    const isValid = !(dateControl.value < now);
+    return isValid ? null : { dateInFuture: true };
+  }
+
   /**
    * With the current implementation it is not possible to directly transition from [edit/readonly <-> create].
    * That's why when subscribing to mode changes, the transition where special things happen is only: [edit <-> readonly].
@@ -152,15 +178,18 @@ export class HorseFormComponent implements OnInit {
   ngOnInit(): void {
     this.route.data.subscribe(
     data => {
-      const id = Number(this.route.snapshot.params.id);
       if (this.isEditMode || this.isReadonlyMode) {
+        const id = Number(this.route.snapshot.params.id);
         this.requestHorseValues(id);
       }
       this.mode = data.mode;
     });
 
     this.route.paramMap.subscribe(paramMap => {
-      this.requestHorseValues(Number(paramMap.get('id')));
+      const id: string | null = paramMap.get('id');
+      if (id !== null) {
+        this.requestHorseValues(Number(id));
+      }
     });
   }
 
@@ -179,7 +208,7 @@ export class HorseFormComponent implements OnInit {
 
   public confirmIfDeleteHorse(): void {
     if (confirm(`Are you sure you want to delete the horse \"${this.nameFormControl.value}\"`)) {
-      this.service.deleteHorse(this.editHorseId).subscribe(
+      this.horseService.deleteHorse(this.idOfHorseBeingEditedElseUndefined).subscribe(
         () => {
           this.notification.success(`Horse ${this.nameFormControl.value} successfully deleted.`);
           this.router.navigate(['/horses']);
@@ -187,31 +216,6 @@ export class HorseFormComponent implements OnInit {
       );
     }
   }
-
-  public setOwner(owner: Owner) {
-    this.currentOwnerInputContent = this.getFullNameIfExistsOf(owner);
-    this.horseForm.controls.owner.setValue(owner);
-  }
-
-  public clearOwner(): void {
-    this.ownerFullNameSubstringFormControl.reset();
-    this.ownerFormControl.reset();
-    this.currentOwnerInputContent = '';
-  }
-
-
-  public getFullNameIfExistsOf(owner: Owner): string {
-    return owner ? owner.firstName + ' ' + owner.lastName : '';
-  }
-
-  public ownerFullNameResultFormatter = (owner: Owner) => this.getFullNameIfExistsOf(owner);
-
-  public searchOwner: OperatorFunction<string, readonly Owner[]> = (fullName$: Observable<string>) =>
-    fullName$.pipe(
-      debounceTime(200),
-      distinctUntilChanged(),
-      switchMap(fullName => this.searchOwnersByFullName(fullName))
-    );
 
   public dynamicCssClassesForInput(input: AbstractControl): any {
     return {
@@ -223,21 +227,23 @@ export class HorseFormComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    const sendHorse: Horse = {
-      id: this.editHorseId,
+    const sendHorse: HorseDetail = {
+      id: this.idOfHorseBeingEditedElseUndefined,
       name: this.nameFormControl.value.trim(),
       description: this.descriptionFormControl.value?.trim(),
       dateOfBirth: this.dateOfBirthFormControl.value,
       sex: this.sexFormControl.value,
-      owner: this.ownerFormControl?.value,
+      owner: this.ownerFormControl.value,
+      mother: this.motherFormControl.value,
+      father: this.fatherFormControl.value
     };
 
     let horse$: Observable<Horse>;
 
     if (this.isCreateMode) {
-      horse$ = this.service.create(sendHorse);
+      horse$ = this.horseService.create(sendHorse);
     } else {
-      horse$ = this.service.update(sendHorse);
+      horse$ = this.horseService.update(sendHorse);
     }
 
     horse$.subscribe({
@@ -252,28 +258,99 @@ export class HorseFormComponent implements OnInit {
     });
   }
 
-  private noWhitespaceInsideValidator(control: AbstractControl) { // todo: private?
-    const containsWhitespace = (control.value || '').trim().match(/\s/g);
-    const isValid = !containsWhitespace;
-    return isValid ? null : { whitespace: true };
+  // -------------------------------------------------------- START OF OWNER TYPEAHEAD SECTION -----------------------------------
+  public setOwner(owner: Owner) {
+    this.horseForm.controls.owner.setValue(owner);
   }
 
-  private noDateInFutureValidator(dateControl: AbstractControl) {
-    const now: Date = new Date();
-    const isValid = !(dateControl.value < now);
-    return isValid ? null : { dateInFuture: true };
+  public clearOwner(): void {
+    this.ownerFullNameSubstringFormControl.reset();
+    this.ownerFormControl.reset();
   }
 
-  private searchOwnersByFullName(fullName: string): Observable<Owner[]> {
+  public ownerFullNameResultFormatter = (owner: Owner) => HorseFormComponent.getFullNameIfExistsOf(owner);
+
+  public searchOwner: OperatorFunction<string, readonly Owner[]> = (fullName$: Observable<string>) =>
+    fullName$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(fullName => this.searchOwnersByFullName(fullName))
+    );
+
+  // fixme: this is not private only to disable eslint warnings
+  public searchOwnersByFullName(fullName: string): Observable<Owner[]> {
     return (fullName === '') ? of([]) :
-    this.ownerService.searchByFullNameSubstring(fullName.trim(),
-      HorseFormComponent.typeAheadMaxOptionCount);
+      this.ownerService.searchByFullNameSubstring(fullName.trim(),
+        HorseFormComponent.typeAheadMaxOptionCount);
   }
+  // -------------------------------------------------------- END OF OWNER TYPEAHEAD SECTION -----------------------------------
+
+  // -------------------------------------------------------- START OF MOTHER TYPEAHEAD SECTION -----------------------------------
+  public setMother(mother: HorseDetail) {
+    this.horseForm.controls.mother.setValue(mother);
+  }
+
+  public clearMother(): void {
+    this.motherNameSubstringFormControl.reset();
+    this.motherFormControl.reset();
+  }
+
+  public motherNameResultFormatter = (mother: HorseDetail) => HorseFormComponent.getNameIfExistsOf(mother);
+
+  public searchMother: OperatorFunction<string, readonly HorseDetail[]> = (name$: Observable<string>) =>
+    name$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(name => this.searchMothersByNameSubstring(name))
+    );
+
+  // fixme: this is not private only to disable eslint warnings
+  public searchMothersByNameSubstring(name: string): Observable<HorseDetail[]> {
+    return (name === '') ? of([]) :
+      this.horseService.search({
+          name,
+          sex: Sex.female,
+          limit: HorseFormComponent.typeAheadMaxOptionCount,
+          idOfHorseToBeExcluded: this.idOfHorseBeingEditedElseUndefined, // fixme: actually this is returning null and not undefined like required...
+      }
+      );
+  }
+  // -------------------------------------------------------- END OF MOTHER TYPEAHEAD SECTION -----------------------------------
+
+  // -------------------------------------------------------- START OF FATHER TYPEAHEAD SECTION -----------------------------------
+  public setFather(father: HorseDetail) {
+    this.horseForm.controls.father.setValue(father);
+  }
+
+  public clearFather(): void {
+    this.fatherNameSubstringFormControl.reset();
+    this.fatherFormControl.reset();
+  }
+
+  public fatherNameResultFormatter = (father: HorseDetail) => HorseFormComponent.getNameIfExistsOf(father);
+
+  public searchFather: OperatorFunction<string, readonly HorseDetail[]> = (name$: Observable<string>) =>
+    name$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(name => this.searchFathersByNameSubstring(name))
+    );
+
+  // fixme: this is not private only to disable eslint warnings
+  public searchFathersByNameSubstring(name: string): Observable<HorseDetail[]> {
+    return (name === '') ? of([]) :
+      this.horseService.search({
+        name,
+        sex: Sex.male,
+        limit: HorseFormComponent.typeAheadMaxOptionCount,
+        idOfHorseToBeExcluded: this.idOfHorseBeingEditedElseUndefined, // fixme: actually this is returning null and not undefined like required...
+      });
+  }
+  // -------------------------------------------------------- END OF FATHER TYPEAHEAD SECTION -----------------------------------
 
   private requestHorseValues(id: number): void {
-    this.service.getHorseById(id).subscribe({
+    this.horseService.getHorseById(id).subscribe({
       next: horse => {
-        this.currentOwnerInputContent = this.getFullNameIfExistsOf(this.ownerFormControl.value); // fixme
         this.setFormValues(horse);
       },
       error: error => {
@@ -282,19 +359,20 @@ export class HorseFormComponent implements OnInit {
     });
   }
 
-  private setFormValues(horse: Horse): void {
+  private setFormValues(horse: HorseDetail): void {
     this.horseForm.setValue({
       id: horse.id,
       name: horse.name,
       description: horse.description,
       dateOfBirth: horse.dateOfBirth,
       sex: horse.sex,
-      ownerFullNameSubstring: this.getFullNameIfExistsOf(this.ownerFormControl.value),
+      ownerFullNameSubstring: HorseFormComponent.getFullNameIfExistsOf(this.ownerFormControl.value),
       owner: horse.owner,
-      // motherName: horse.mother ? horse.mother.name : null,
-      // mother: horse.mother,
-      // fatherName: horse.father ? horse.father.name : null,
-      // father: horse.father,
+      motherNameSubstring: HorseFormComponent.getNameIfExistsOf(this.motherFormControl.value),
+      mother: horse.mother,
+      fatherNameSubstring: HorseFormComponent.getNameIfExistsOf(this.fatherFormControl.value),
+      father: horse.father,
     });
   }
+
 }

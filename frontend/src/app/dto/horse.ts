@@ -10,6 +10,24 @@ export interface Horse {
   owner?: Owner;
 }
 
+export interface HorseDetail {
+  id?: number;
+  name: string;
+  description?: string;
+  dateOfBirth: Date;
+  sex: Sex;
+  owner?: Owner;
+  mother?: HorseMinimal;
+  father?: HorseMinimal;
+}
+
+interface HorseMinimal {
+  id: number;
+  name: string;
+  dateOfBirth: Date;
+  sex: Sex;
+}
+
 
 export interface HorseSearchFilter {
   name?: string;
@@ -17,5 +35,7 @@ export interface HorseSearchFilter {
   dateOfBirth?: Date;
   sex?: Sex;
   ownerFullNameSubstring?: string;
+  fatherNameSubstring?: string;
   limit?: number;
+  idOfHorseToBeExcluded?: number;
 }

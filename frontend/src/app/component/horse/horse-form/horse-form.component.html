@@ -69,7 +69,9 @@
     </div>
   </div>
 
+
   <div class="row">
+
     <div class="mb-2 col-lg-6">
       <div class="row">
         <label class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
@@ -91,6 +93,46 @@
         </div>
       </div>
     </div>
+
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Mother
+        </label>
+        <div class="col-md-10 col-lg-8 form-field">
+          <ng-container *ngIf="isCreateMode || isEditMode">
+            <input *ngIf="!motherFormControl.value else selectedMotherName"
+                   class="form-control"
+                   type="text"
+                   placeholder="Start typing here to select a mother..."
+                   name="mother"
+                   [ngbTypeahead]="searchMother"
+                   (selectItem)="setMother($event.item)"
+                   maxlength="255"
+                   [resultFormatter]="motherNameResultFormatter"
+            />
+            <ng-template #selectedMotherName>
+              <div>
+                <div class="typeahead-result">
+                  {{ currentMotherName }}
+                  <button type="button" (click)="clearMother()" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+          </ng-container>
+          <ng-container *ngIf="isReadonlyMode">
+            {{ currentMotherName }}
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="row">
 
     <div class="mb-2 col-lg-6">
       <div class="row">
@@ -126,9 +168,47 @@
         </div>
       </div>
     </div>
+
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Father
+        </label>
+        <div class="col-md-10 col-lg-8 form-field">
+          <ng-container *ngIf="isCreateMode || isEditMode">
+            <input *ngIf="!fatherFormControl.value else selectedFatherName"
+                   class="form-control"
+                   type="text"
+                   placeholder="Start typing here to select a father..."
+                   name="father"
+                   [ngbTypeahead]="searchFather"
+                   (selectItem)="setFather($event.item)"
+                   maxlength="255"
+                   [resultFormatter]="fatherNameResultFormatter"
+            />
+            <ng-template #selectedFatherName>
+              <div>
+                <div class="typeahead-result">
+                  {{ currentFatherName }}
+                  <button type="button" (click)="clearFather()" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+          </ng-container>
+          <ng-container *ngIf="isReadonlyMode">
+            {{ currentFatherName }}
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
   </div>
 
+
   <div class="row">
+
     <label class="col-form-label text-md-end text-md-end text-muted col-md-2">
       Description
     </label>
@@ -144,6 +224,7 @@
         {{descriptionFormControl.value}}
       </ng-container>
     </div>
+
   </div>
 
   <div class="mt-4 d-flex flex-row">
@@ -156,4 +237,6 @@
       {{submitButtonText}}
     </button>
   </div>
+
+
 </form>

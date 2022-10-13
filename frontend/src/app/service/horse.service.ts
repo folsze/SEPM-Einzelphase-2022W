@@ -2,8 +2,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {environment} from 'src/environments/environment';
-import {Horse, HorseSearchFilter} from '../dto/horse';
-import {dateComparator} from '@ng-bootstrap/ng-bootstrap/datepicker/datepicker-tools';
+import {Horse, HorseDetail, HorseSearchFilter} from '../dto/horse';
 
 const baseUri = environment.backendUrl + '/horses';
 
@@ -17,7 +16,7 @@ export class HorseService {
   ) {}
 
   public search(filter: HorseSearchFilter): Observable<Horse[]> {
-    let params = new HttpParams(); // todo Fragstunde: what happens with empty params sent..?
+    let params = new HttpParams(); // todo Fragstunde: what happens with empty params sent..? Wie würde man das in den Docs finden?
 
     if (filter.name) {
       params = params.append('name', filter.name);
@@ -43,11 +42,15 @@ export class HorseService {
       params = params.append('limit', filter.limit);
     }
 
+    if (filter.idOfHorseToBeExcluded) {
+      params = params.append('idOfHorseToBeExcluded', filter.idOfHorseToBeExcluded);
+    }
+
     return this.http.get<Horse[]>(baseUri, { params });
   }
 
-  public getHorseById(id: number): Observable<Horse> {
-    return this.http.get<Horse>(baseUri + '/' + id);
+  public getHorseById(id: number): Observable<HorseDetail> {
+    return this.http.get<HorseDetail>(baseUri + '/' + id);
   }
 
   /**
@@ -56,14 +59,14 @@ export class HorseService {
    * @param horse the data for the horse that should be created
    * @return an Observable for the created horse
    */
-  public create(horse: Horse): Observable<Horse> {
+  public create(horse: HorseDetail): Observable<HorseDetail> {
     return this.http.post<Horse>(
       baseUri,
       horse
     );
   }
 
-  public update(horse: Horse): Observable<Horse> {
+  public update(horse: HorseDetail): Observable<HorseDetail> {
     return this.http.put<Horse>(
       baseUri + '/' + horse.id,
       horse
