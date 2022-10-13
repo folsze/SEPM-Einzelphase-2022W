@@ -249,7 +249,7 @@ public class HorseValidator {
     }
   }
 
-  public void validateSearchHorsePrimitiveAttributes(String name, String description, LocalDate dateOfBirth, String ownerFullNameSubstring, Integer limit, List<String> validationErrors) {
+  public void validateSearchHorsePrimitiveAttributes(String name, String description, LocalDate bornBefore, String ownerFullNameSubstring, Integer limit, List<String> validationErrors) {
     if (name != null) {
       if (name.isBlank()) {
         validationErrors.add("Horse name is given but blank");
@@ -281,9 +281,9 @@ public class HorseValidator {
       }
     }
 
-    if (dateOfBirth != null) {
-      if (dateOfBirth.isAfter(LocalDate.now())){
-        validationErrors.add("Date of birth must not be in the future.");
+    if (bornBefore != null) {
+      if (bornBefore.isAfter(LocalDate.now())){
+        validationErrors.add("Date used for filtering horses must not be in the future.");
       }
     }
 
