@@ -13,7 +13,6 @@ import at.ac.tuwien.sepm.assignment.individual.service.HorseService;
 import at.ac.tuwien.sepm.assignment.individual.service.OwnerService;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -118,10 +117,5 @@ public class HorseServiceImpl implements HorseService {
     Stream<HorseListDto> result = horses.stream().map(horse -> mapper.entityToListDto(horse, horsesOwnersMatchingOwnerFullNameSubstring));
 
     return result;
-  }
-
-  @Override
-  public List<HorseMinimalDto> getChildrenOf(Long horseId) {
-    return dao.getChildrenOf(horseId).stream().map(mapper::minimalEntityToMinimalDto).toList();
   }
 }

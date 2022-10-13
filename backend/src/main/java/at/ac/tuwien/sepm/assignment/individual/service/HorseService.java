@@ -46,5 +46,4 @@ public interface HorseService {
 
   Stream<HorseListDto> search(HorseSearchDto searchParameters) throws ValidationException;
 
-  List<HorseMinimalDto> getChildrenOf(Long horseId);
 }

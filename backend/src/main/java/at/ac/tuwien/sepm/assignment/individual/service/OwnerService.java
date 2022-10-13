@@ -46,7 +46,7 @@ public interface OwnerService {
    * @param searchParameters object containing the search parameters to match
    * @return a stream containing owners matching the criteria in {@code searchParameters}
    */
-  Stream<OwnerDto> search(OwnerSearchDto searchParameters);
+  Stream<OwnerDto> search(OwnerSearchDto searchParameters) throws ValidationException;
 
   /**
    * Create a new owner in the persistent data store.

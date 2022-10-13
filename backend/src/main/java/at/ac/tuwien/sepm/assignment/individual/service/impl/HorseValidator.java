@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import at.ac.tuwien.sepm.assignment.individual.persistence.HorseDao;
 import at.ac.tuwien.sepm.assignment.individual.persistence.OwnerDao;
@@ -157,10 +158,15 @@ public class HorseValidator {
     
     List<String> validationErrors = new ArrayList<>();
     validateWhatsRequiredIfCreateOrUpdate(horse,validationErrors);
+
+    if (Objects.equals(horse.id(), horse.motherId()) || Objects.equals(horse.id(), horse.fatherId())) {
+      validationErrors.add("A horse cannot be the parent of itself.");
+    }
+
     if (!validationErrors.isEmpty()) {
       throw new ValidationException("Validation of horse-update data failed", validationErrors);
     }
-    
+
     List<String> conflictErrors = new ArrayList<>();
     validateWhatsRequiredOnlyIfUpdate(horse, conflictErrors);
     if (!conflictErrors.isEmpty()) {

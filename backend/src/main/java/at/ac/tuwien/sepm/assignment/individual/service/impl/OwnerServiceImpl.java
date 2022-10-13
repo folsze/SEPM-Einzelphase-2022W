@@ -58,8 +58,9 @@ public class OwnerServiceImpl implements OwnerService {
   }
 
   @Override
-  public Stream<OwnerDto> search(OwnerSearchDto searchParameters) {
+  public Stream<OwnerDto> search(OwnerSearchDto searchParameters) throws ValidationException {
     LOG.trace("search({})", searchParameters);
+    validator.validateForSearch(searchParameters);
     return dao.search(searchParameters).stream().map(mapper::entityToDto);
   }
 

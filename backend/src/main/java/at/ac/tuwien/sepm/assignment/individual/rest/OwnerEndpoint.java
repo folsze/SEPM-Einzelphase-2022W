@@ -32,7 +32,11 @@ public class OwnerEndpoint {
       @RequestParam(required = false) Integer maxResultCount) {
     LOG.info("Post " + BASE_PATH + " query parameters: fullNameSubstring: {}, maxAmount: {}",
       fullNameSubstring, maxResultCount);
-    return service.search(new OwnerSearchDto(fullNameSubstring, maxResultCount));
+    try {
+      return service.search(new OwnerSearchDto(fullNameSubstring, maxResultCount));
+    } catch (ValidationException ve) {
+      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ve.getMessage(), ve);
+    }
   }
 
   @PostMapping
