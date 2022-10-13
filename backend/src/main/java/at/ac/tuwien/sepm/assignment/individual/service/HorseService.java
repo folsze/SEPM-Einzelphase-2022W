@@ -2,10 +2,13 @@ package at.ac.tuwien.sepm.assignment.individual.service;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseMinimalDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
+
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -42,4 +45,6 @@ public interface HorseService {
   void delete(Long id) throws NotFoundException;
 
   Stream<HorseListDto> search(HorseSearchDto searchParameters) throws ValidationException;
+
+  List<HorseMinimalDto> getChildrenOf(Long horseId);
 }

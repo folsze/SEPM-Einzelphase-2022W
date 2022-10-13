@@ -28,6 +28,7 @@ import org.springframework.stereotype.Repository;
 public class HorseJdbcDao implements HorseDao {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+
   private static final String TABLE_NAME = "horse";
   private static final String SQL_DELETE = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
   private static final String SQL_SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
@@ -52,6 +53,7 @@ public class HorseJdbcDao implements HorseDao {
           " (? IS NULL OR UPPER(description) LIKE UPPER(?)) AND " +
           " (? IS NULL OR date_of_birth < ?) AND " +
           " (? IS NULL OR sex = ?)";
+  private static final String SQL_SELECT_ALL_CHILDREN = "SELECT * FROM " + TABLE_NAME + " WHERE mother_id = ? OR father_id = ?";
 
   private final JdbcTemplate jdbcTemplate;
 
@@ -200,6 +202,16 @@ public class HorseJdbcDao implements HorseDao {
       throw new FatalException("Error when deleting horse", dae);
     }
   }
+
+  @Override
+  public List<HorseMinimal> getChildrenOf(Long horseId) {
+    try {
+      return jdbcTemplate.query(SQL_SELECT_ALL_CHILDREN, this::mapRowMinimal, horseId, horseId);
+    } catch (DataAccessException dae) {
+      throw new FatalException("Could not get children of mother with id %d".formatted(horseId), dae);
+    }
+  }
+
 
   private Horse mapRow(ResultSet result, int rowNum) throws SQLException {
     return new Horse()
