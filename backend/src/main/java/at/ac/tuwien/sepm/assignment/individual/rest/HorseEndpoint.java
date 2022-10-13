@@ -38,8 +38,9 @@ public class HorseEndpoint {
                                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateOfBirth,
                                            @RequestParam(required = false) Sex sex,
                                            @RequestParam(required = false) String ownerFullNameSubstring,
-                                           @RequestParam(required = false) Integer limit) {
-    HorseSearchDto requestParams = new HorseSearchDto(name, description, dateOfBirth, sex, ownerFullNameSubstring, limit);
+                                           @RequestParam(required = false) Integer limit,
+                                           @RequestParam(required = false) Long idOfHorseToBeExcluded) {
+    HorseSearchDto requestParams = new HorseSearchDto(name, description, dateOfBirth, sex, ownerFullNameSubstring, limit, idOfHorseToBeExcluded);
     LOG.debug("request parameters: {}", requestParams);
     try {
       return service.search(requestParams);

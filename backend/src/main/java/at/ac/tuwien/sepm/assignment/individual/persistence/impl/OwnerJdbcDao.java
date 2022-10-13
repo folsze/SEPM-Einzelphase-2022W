@@ -29,7 +29,7 @@ public class OwnerJdbcDao implements OwnerDao {
   private static final String SQL_SELECT_OWNERS_BY_IDS = "SELECT * FROM " + TABLE_NAME + " WHERE id IN (:ids)";
   private static final String SQL_SELECT_SEARCH = "SELECT * FROM " + TABLE_NAME
       + " WHERE UPPER(first_name||' '||last_name) like UPPER('%'||COALESCE(?, '')||'%')";
-  private static final String SQL_SELECT_SEARCH_LIMIT_CLAUSE = " LIMIT ?";
+  private static final String SQL_SEARCH_LIMIT_CLAUSE = " LIMIT ?";
 
   private static final String SQL_SELECT_OWNERS_BY_IDS_AND_FILTER = "SELECT * FROM " + TABLE_NAME
           + " WHERE id IN (:ids) AND UPPER(first_name||' '||last_name) like UPPER('%'||COALESCE(:name, '')||'%')";
@@ -119,7 +119,7 @@ public class OwnerJdbcDao implements OwnerDao {
     params.add(searchParameters.name());
     var maxAmount = searchParameters.maxAmount();
     if (maxAmount != null) {
-      query += SQL_SELECT_SEARCH_LIMIT_CLAUSE;
+      query += SQL_SEARCH_LIMIT_CLAUSE;
       params.add(maxAmount);
     }
     return jdbcTemplate.query(query, this::mapRow, params.toArray());

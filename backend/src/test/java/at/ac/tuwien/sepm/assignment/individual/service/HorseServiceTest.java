@@ -22,7 +22,7 @@ public class HorseServiceTest {
 
   @Test
   public void getAllReturnsAllStoredHorses() throws ValidationException {
-    HorseSearchDto h = new HorseSearchDto(null, null, null, null, null,  null);
+    HorseSearchDto h = new HorseSearchDto(null, null, null, null, null,  null, null);
     List<HorseListDto> horses = horseService.search(h)
         .toList();
     assertThat(horses.size()).isGreaterThanOrEqualTo(1); // TODO adapt to exact number of elements in test data later

@@ -222,14 +222,28 @@ public class HorseValidator {
     LOG.trace("validateForSearch({})", horse);
     List<String> validationErrors = new ArrayList<>();
 
-    validateSearchHorsePrimitiveAttributes(horse.name(), horse.description(), horse.bornBefore(), validationErrors);
+    validateSearchHorsePrimitiveAttributes(
+            horse.name(),
+            horse.description(),
+            horse.bornBefore(),
+            horse.ownerFullNameSubstring(),
+            horse.limit(),
+            validationErrors);
+
+    if (horse.idOfHorseToBeExcluded() != null) {
+      try {
+        horseDao.getById(horse.idOfHorseToBeExcluded());
+      } catch (NotFoundException nfe) {
+        validationErrors.add("Horse to be excluded from search not found in database.");
+      }
+    }
 
     if (!validationErrors.isEmpty()) {
       throw new ValidationException("Validation of horse search filter failed", validationErrors);
     }
   }
 
-  public void validateSearchHorsePrimitiveAttributes(String name, String description, LocalDate dateOfBirth, List<String> validationErrors) {
+  public void validateSearchHorsePrimitiveAttributes(String name, String description, LocalDate dateOfBirth, String ownerFullNameSubstring, Integer limit, List<String> validationErrors) {
     if (name != null) {
       if (name.isBlank()) {
         validationErrors.add("Horse name is given but blank");
@@ -265,6 +279,23 @@ public class HorseValidator {
       if (dateOfBirth.isAfter(LocalDate.now())){
         validationErrors.add("Date of birth must not be in the future.");
       }
+    }
+
+    if (ownerFullNameSubstring != null) {
+      if (ownerFullNameSubstring.isBlank()) {
+        validationErrors.add("Owner name-substring is given but blank");
+      }
+      if (ownerFullNameSubstring.length() > 255) {
+        validationErrors.add("Owner name-substring too long: longer than 255 characters");
+      }
+
+      if (ownerFullNameSubstring.length() != ownerFullNameSubstring.trim().length()) {
+        validationErrors.add("Owner name-substring must not start/end with whitespaces");
+      }
+    }
+
+    if (limit != null && limit <= 0) {
+      validationErrors.add("Limit must be > 0.");
     }
   }
 }

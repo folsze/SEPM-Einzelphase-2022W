@@ -15,6 +15,7 @@ public record HorseSearchDto(
     LocalDate bornBefore,
     Sex sex,
     String ownerFullNameSubstring,
-    Integer limit
+    Integer limit,
+    Long idOfHorseToBeExcluded
 ) {
 }

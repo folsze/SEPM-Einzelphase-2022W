@@ -55,6 +55,11 @@ public class HorseJdbcDao implements HorseDao {
           " (? IS NULL OR sex = ?)";
   private static final String SQL_SELECT_ALL_CHILDREN = "SELECT * FROM " + TABLE_NAME + " WHERE mother_id = ? OR father_id = ?";
 
+  private static final String SQL_SEARCH_EXCLUDE_CLAUSE = " AND id != ?";
+  private static final String SQL_SEARCH_LIMIT_CLAUSE = " LIMIT ?";
+
+
+
   private final JdbcTemplate jdbcTemplate;
 
   public HorseJdbcDao(
@@ -73,9 +78,22 @@ public class HorseJdbcDao implements HorseDao {
     args.add(searchParameters.bornBefore()); // todo: convert to sql date?
     args.add(searchParameters.sex() != null ? searchParameters.sex().toString() : null);
     args.add(searchParameters.sex() != null ? searchParameters.sex().toString() : null);
-    // todo: conditionally add limit to query and args once parents implemented
+
+    String query = SQL_SEARCH;
+    var excludeThisId = searchParameters.idOfHorseToBeExcluded();
+    if (excludeThisId != null) {
+      query += SQL_SEARCH_EXCLUDE_CLAUSE;
+      args.add(excludeThisId);
+    }
+
+    var maxAmount = searchParameters.limit();
+    if (maxAmount != null) {
+      query += SQL_SEARCH_LIMIT_CLAUSE;
+      args.add(maxAmount);
+    }
+
     try {
-      return jdbcTemplate.query(SQL_SEARCH, this::mapRow, args.toArray());
+      return jdbcTemplate.query(query, this::mapRow, args.toArray());
     } catch (DataAccessException dae) {
       throw new FatalException("Error while querying all horses.", dae);
     }
