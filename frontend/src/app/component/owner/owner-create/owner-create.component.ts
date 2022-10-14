@@ -41,7 +41,7 @@ export class OwnerCreateComponent {
     return this.ownerForm.controls.email;
   }
 
-  public formatOwnerName(owner: Owner | null | undefined): string { // todo Fragestunde: what if owner undefined?
+  public formatOwnerName(owner: Owner | null | undefined): string {
     return (owner == null) ? '' : `${this.firstName.value} ${this.lastName.value}`;
   }
 

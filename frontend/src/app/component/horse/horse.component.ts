@@ -30,7 +30,6 @@ export class HorseComponent implements OnInit {
     private formBuilder: FormBuilder
   ) { }
 
-  // GETTERS:
   public get nameFormControl(): AbstractControl {
     return this.horseSearchForm.controls.name;
   }

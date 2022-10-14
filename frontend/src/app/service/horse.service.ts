@@ -16,7 +16,7 @@ export class HorseService {
   ) {}
 
   public search(filter: HorseSearchFilter): Observable<Horse[]> {
-    let params = new HttpParams(); // todo Fragstunde: what happens with empty params sent..? Wie würde man das in den Docs finden?
+    let params = new HttpParams();
 
     if (filter.name) {
       params = params.append('name', filter.name);

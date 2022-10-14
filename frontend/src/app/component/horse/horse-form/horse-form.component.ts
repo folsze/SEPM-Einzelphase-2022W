@@ -32,7 +32,7 @@ export class HorseFormComponent implements OnInit {
     owner: [null], // owner gets selected by using the ownerFullName control
     motherNameSubstring: [''],
     mother: [null],
-    fatherNameSubstring: [''], // todo: null?
+    fatherNameSubstring: [''],
     father: [null]
   });
 
@@ -275,7 +275,6 @@ export class HorseFormComponent implements OnInit {
       switchMap(fullName => this.searchOwnersByFullName(fullName))
     );
 
-  // fixme: this is not private only to disable eslint warnings
   public searchOwnersByFullName(fullName: string): Observable<Owner[]> {
     return (fullName === '') ? of([]) :
       this.ownerService.searchByFullNameSubstring(fullName.trim(),
@@ -302,14 +301,13 @@ export class HorseFormComponent implements OnInit {
       switchMap(name => this.searchMothersByNameSubstring(name))
     );
 
-  // fixme: this is not private only to disable eslint warnings
   public searchMothersByNameSubstring(name: string): Observable<HorseDetail[]> {
     return (name === '') ? of([]) :
       this.horseService.search({
           name,
           sex: Sex.female,
           limit: HorseFormComponent.typeAheadMaxOptionCount,
-          idOfHorseToBeExcluded: this.idOfHorseBeingEditedElseUndefined, // fixme: actually this is returning null and not undefined like required...
+          idOfHorseToBeExcluded: this.idOfHorseBeingEditedElseUndefined,
       }
       );
   }
@@ -334,14 +332,13 @@ export class HorseFormComponent implements OnInit {
       switchMap(name => this.searchFathersByNameSubstring(name))
     );
 
-  // fixme: this is not private only to disable eslint warnings
   public searchFathersByNameSubstring(name: string): Observable<HorseDetail[]> {
     return (name === '') ? of([]) :
       this.horseService.search({
         name,
         sex: Sex.male,
         limit: HorseFormComponent.typeAheadMaxOptionCount,
-        idOfHorseToBeExcluded: this.idOfHorseBeingEditedElseUndefined, // fixme: actually this is returning null and not undefined like required...
+        idOfHorseToBeExcluded: this.idOfHorseBeingEditedElseUndefined,
       });
   }
   // -------------------------------------------------------- END OF FATHER TYPEAHEAD SECTION -----------------------------------
