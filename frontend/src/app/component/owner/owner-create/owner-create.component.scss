@@ -1,0 +1,7 @@
+label.mark-as-mandatory::before {
+  content: "*";
+  color: rgba(255, 0, 0, 0.50);
+  display: inline-block;
+  font-size: 20px;
+  line-height: 20px;
+}

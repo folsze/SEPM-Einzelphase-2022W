@@ -5,6 +5,7 @@ import {Horse} from '../../dto/horse';
 import {Owner} from '../../dto/owner';
 import {AbstractControl, FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged, Observable} from 'rxjs';
+import {constructErrorMessageWithList} from '../../shared/validator';
 
 @Component({
   selector: 'app-horse',
@@ -16,13 +17,12 @@ export class HorseComponent implements OnInit {
   public horseSearchForm: FormGroup = this.formBuilder.group({
     name: [null],
     description: [null],
-    dateOfBirth: [null, [this.noDateInFutureValidator]],
+    dateOfBirth: [null, HorseComponent.noDateInFutureValidator],
     sex: [null],
     ownerFullNameSubstring: [null],
   });
 
   horses: Horse[] = [];
-  bannerError: string | null = null;
 
   constructor(
     private service: HorseService,
@@ -51,17 +51,25 @@ export class HorseComponent implements OnInit {
     return this.horseSearchForm.controls.ownerFullNameSubstring;
   }
 
+  private static noDateInFutureValidator(dateControl: AbstractControl) {
+    const now: Date = new Date();
+    const dateInput: Date = new Date(dateControl.value);
+    const dateInFuture = dateInput > now;
+    return dateInFuture ? { dateInFuture: true } : null;
+  }
+
   ngOnInit(): void {
     this.searchWithCurrentValues(this.horseSearchForm.value);
-
     this.horseSearchForm.valueChanges.pipe(debounceTime(500), distinctUntilChanged()).subscribe({
-        next: horseSearchForm =>   {
-          this.searchWithCurrentValues(horseSearchForm);
+        next: horseSearchFormValues =>   {
+          if (this.horseSearchForm.valid) {
+            this.searchWithCurrentValues(horseSearchFormValues);
+          }
         }
     });
   }
 
-  public searchWithCurrentValues(formValue: any) { // todo Fragestunde: welchen Typ hat das? "object=any ist ok?", "an object with a key-value pair for each member of the group"
+  public searchWithCurrentValues(formValue: any) {
     const horses: Observable<Horse[]> = this.service.search({
       name: formValue.name?.trim(),
       description: formValue.description?.trim(),
@@ -74,29 +82,12 @@ export class HorseComponent implements OnInit {
       next: data => this.horses = data,
       error: error => {
         console.error('Error fetching horses', error);
-        this.bannerError = 'Could not fetch horses: ' + error.message;
-
         const errorMessage = error.status === 0
-          ? 'Is the backend up?'
-          : HorseComponent.constructErrorMessage(error);
-
-        this.notification.error(errorMessage, 'Could Not Fetch Horses', { enableHtml: true });
+          ? 'Connection to the server failed.'
+          : constructErrorMessageWithList(error);
+        this.notification.error(errorMessage, 'Could Not Fetch Horses', { enableHtml: true, timeOut: 0 });
       }
     });
-  }
-
-  private static constructErrorMessage(error: any): string {
-    let errorMessage = error.error.message + '.<br><br>';
-
-    if (error.error.errors?.length > 0) {
-      errorMessage += '<ul>';
-      for (const message of error.error.errors) {
-        errorMessage += '<li>' + message + '</li>';
-      }
-      errorMessage += '</ul>';
-    }
-
-    return errorMessage;
   }
 
   public ownerName(owner: Owner | null): string {
@@ -112,19 +103,20 @@ export class HorseComponent implements OnInit {
   public deleteIfUserConfirms(horse: Horse): void {
     if (horse.id) {
       if (confirm(`Are you sure you want to delete the horse \"${horse.name}\"`)) {
-        this.service.deleteHorse(horse.id).subscribe(
-          () => {
+        this.service.deleteHorse(horse.id).subscribe({
+          next: () => {
             this.notification.success(`Horse ${horse.name} successfully deleted.`);
             this.searchWithCurrentValues(this.horseSearchForm.value);
+          },
+          error: (error) => {
+            console.error('Error fetching owners', error);
+            const errorMessage = error.status === 0
+              ? 'Connection to the server failed.'
+              : constructErrorMessageWithList(error);
+            this.notification.error(errorMessage, `Could not delete horse ${horse.name}.`, {enableHtml: true, timeOut: 0});
           }
-        );
+        });
       }
     }
-  }
-
-  private noDateInFutureValidator(dateControl: AbstractControl) {
-    const now: Date = new Date();
-    const isValid = !(dateControl.value < now);
-    return isValid ? null : { dateInFuture: true };
   }
 }

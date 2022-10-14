@@ -15,22 +15,24 @@
     <div class="mb-2 col-lg-6">
       <!-- When nesting rows, always make row > col-* > row. The Bootstrap classes do not work right when an element is both col* and row -->
       <div class="row">
-        <label for="horseName" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+        <label for="horseName" class="col-form-label text-md-end text-muted col-md-2 col-lg-4" [ngClass]="{'mark-as-mandatory' : isCreateMode || isEditMode }">
           Name
         </label>
         <div class="col-md-10 col-lg-8 form-field">
           <ng-container *ngIf="isCreateMode || isEditMode">
-            <input type="text"
-                   id="horseName"
-                   name="horseName"
-                   placeholder="Horse name"
-                   class="form-control"
-                   [class]="dynamicCssClassesForInput(nameFormControl)"
-                   formControlName="name"
-                   maxlength="255"
-            >
-            <div class="invalid-feedback" *ngIf="nameFormControl.errors?.required">
-              Name is required.
+            <div class="input-and-message-wrapper">
+              <input type="text"
+                     id="horseName"
+                     name="horseName"
+                     placeholder="Horse name"
+                     class="form-control"
+                     [class]="dynamicCssClassesForInput(nameFormControl)"
+                     formControlName="name"
+                     maxlength="255"
+              >
+              <div class="invalid-feedback" *ngIf="nameFormControl.errors?.required">
+                Name is required.
+              </div>
             </div>
           </ng-container>
           <ng-container *ngIf="isReadonlyMode">
@@ -41,22 +43,25 @@
     </div>
     <div class="mb-2 col-lg-6">
       <div class="row">
-        <label class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+        <label class="col-form-label text-md-end text-muted col-md-2 col-lg-4" [ngClass]="{'mark-as-mandatory' : isCreateMode || isEditMode }">
           Date of Birth
         </label>
         <div class="col-md-10 col-lg-8 form-field">
           <ng-container *ngIf="isCreateMode || isEditMode">
+            <div class="input-and-message-wrapper">
               <input type="date"
                      name="horseDateOfBirth"
                      class="form-control"
                      [class]="dynamicCssClassesForInput(dateOfBirthFormControl)"
                      formControlName="dateOfBirth"
-              ><div class="invalid-feedback" *ngIf="dateOfBirthFormControl.errors?.required">
-              Date of birth is required.
-            </div>
-              <div class="invalid-feedback" *ngIf="dateOfBirthFormControl.hasError('dateInFuture')">
-                Date of birth cannot be in the future.
+              >
+              <div class="invalid-feedback" *ngIf="dateOfBirthFormControl.errors?.required && !dateOfBirthFormControl.hasError('dateInFuture')">
+                Date of birth is required.
               </div>
+              <div class="invalid-feedback" *ngIf="dateOfBirthFormControl.hasError('dateInFuture')">
+                Date cannot be in future.
+              </div>
+            </div>
           </ng-container>
           <ng-container *ngIf="isReadonlyMode">
             {{dateOfBirthFormControl.value}}
@@ -71,7 +76,7 @@
 
     <div class="mb-2 col-lg-6">
       <div class="row">
-        <label class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+        <label class="col-form-label text-md-end text-muted col-md-2 col-lg-4" [ngClass]="{'mark-as-mandatory' : isCreateMode || isEditMode }">
           Sex
         </label>
         <div class="col-md-10 col-lg-8 form-field">
@@ -145,7 +150,7 @@
                    name="owner"
                    [ngbTypeahead]="searchOwner"
                    (selectItem)="setOwner($event.item)"
-                   maxlength="255"
+                   maxlength="511"
                    [resultFormatter]="ownerFullNameResultFormatter"
             />
             <ng-template #selectedOwnerFullName>

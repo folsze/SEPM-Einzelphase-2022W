@@ -3,6 +3,7 @@ import {Horse} from '../../dto/horse';
 import {ToastrService} from 'ngx-toastr';
 import {Owner} from '../../dto/owner';
 import {OwnerService} from '../../service/owner.service';
+import {constructErrorMessageWithList} from '../../shared/validator';
 
 @Component({
   selector: 'app-owner',
@@ -13,7 +14,6 @@ export class OwnerComponent implements OnInit {
 
   search = false;
   owners: Owner[] = [];
-  bannerError: string | null = null;
 
   constructor(
     private service: OwnerService,
@@ -32,11 +32,10 @@ export class OwnerComponent implements OnInit {
         },
         error: error => {
           console.error('Error fetching owners', error);
-          this.bannerError = 'Could not fetch owners: ' + error.message;
           const errorMessage = error.status === 0
-            ? 'Is the backend up?'
-            : error.error.message;
-          this.notification.error(errorMessage, 'Could Not Fetch Owners');
+            ? 'Connection to the server failed.'
+            : constructErrorMessageWithList(error);
+          this.notification.error(errorMessage, 'Could Not Fetch Owners', {enableHtml: true, timeOut: 0});
         }
       });
   }

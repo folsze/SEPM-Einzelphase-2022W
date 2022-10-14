@@ -1,24 +1,3 @@
-<!-- SANITY CHECK BANNER
-    This is just for checking, that your setup works.
-    You can – and should – remove this later
-    -->
-<div class="container mt-3 mb-3" *ngIf="bannerError">
-  <div class="alert alert-danger" role="alert">
-    <h4>Error!</h4> {{ error }}
-    <p>Could not load horses.</p>
-    <p>Something is not quite right. Did you start the backend?</p>
-  </div>
-</div>
-
-<div class="container mt-3" *ngIf="!bannerError && horses">
-  <div class="alert alert-success" role="alert">
-    <h4 class="alert-heading">Well done!</h4>
-    <p>Your application is up and running.</p>
-    <p>You should see the current list of horses below.</p>
-  </div>
-</div>
-<!-- END SANITY CHECK BANNER -->
-
 <div class="d-flex flex-row w-auto">
   <button class="btn btn-primary mr-1" (click)="searchWithCurrentValues(horseSearchForm)" aria-label="Reload horses">
     <i class="bi bi-arrow-clockwise"></i>
@@ -41,7 +20,8 @@
     <input type="text" name="searchHorseName"
            class="form-control"
            formControlName="name"
-           >
+           maxlength="255"
+    >
   </div>
   <div class="flex-grow-1 ms-1">
     <label class="col-form-label">
@@ -50,7 +30,8 @@
     <input type="text" name="searchHorseDescription"
            class="form-control"
            formControlName="description"
-           >
+           maxlength="4095"
+    >
   </div>
   <div class="ms-1">
     <label class="col-form-label">
@@ -65,6 +46,9 @@
            class="form-control"
            formControlName="dateOfBirth"
            >
+    <div class="text-danger" *ngIf="dateOfBirthFormControl.hasError('dateInFuture')">
+      Date cannot be in the future.
+    </div>
   </div>
   <div class="ms-1">
     <label class="col-form-label">
@@ -83,7 +67,7 @@
     <label class="col-form-label">
       Owner's Name
     </label>
-    <input class="form-control" formControlName="ownerFullNameSubstring">
+    <input class="form-control" formControlName="ownerFullNameSubstring" maxlength="511">
   </div>
 </form>
 

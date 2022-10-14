@@ -9,6 +9,7 @@ import {Sex} from 'src/app/dto/sex';
 import {HorseService} from 'src/app/service/horse.service';
 import {OwnerService} from 'src/app/service/owner.service';
 import {FormMode} from '../../../enum/formMode';
+import {constructErrorMessageWithList} from '../../../shared/validator';
 
 @Component({
   selector: 'app-horse-form',
@@ -34,13 +35,6 @@ export class HorseFormComponent implements OnInit {
     fatherNameSubstring: [''], // todo: null?
     father: [null]
   });
-
-  public horse: Horse = { // todo: delete
-    name: '',
-    description: '',
-    dateOfBirth: new Date(),
-    sex: Sex.female,
-  };
 
   constructor(
     private horseService: HorseService,
@@ -159,8 +153,9 @@ export class HorseFormComponent implements OnInit {
 
   private static noDateInFutureValidator(dateControl: AbstractControl) {
     const now: Date = new Date();
-    const isValid = !(dateControl.value < now);
-    return isValid ? null : { dateInFuture: true };
+    const dateInput: Date = new Date(dateControl.value);
+    const dateInFuture = dateInput > now;
+    return dateInFuture ? { dateInFuture: true } : null;
   }
 
   /**
@@ -202,12 +197,18 @@ export class HorseFormComponent implements OnInit {
 
   public confirmIfDeleteHorse(): void {
     if (confirm(`Are you sure you want to delete the horse \"${this.nameFormControl.value}\"`)) {
-      this.horseService.deleteHorse(this.idOfHorseBeingEditedElseUndefined).subscribe(
-        () => {
+      this.horseService.deleteHorse(this.idOfHorseBeingEditedElseUndefined).subscribe({
+        next: () => {
           this.notification.success(`Horse ${this.nameFormControl.value} successfully deleted.`);
           this.router.navigate(['/horses']);
+        },
+        error: (error) => {
+          const errorMessage = error.status === 0
+            ? 'Connection to the server failed.'
+            : constructErrorMessageWithList(error);
+          this.notification.error(errorMessage, `Could not delete horse.`, {enableHtml: true, timeOut: 0});
         }
-      );
+      });
     }
   }
 
@@ -247,7 +248,10 @@ export class HorseFormComponent implements OnInit {
       },
       error: error => {
         console.error('Error creating horse', error);
-        // TODO show an error message to the user. Include and sensibly present the info from the backend!
+        const errorMessage = error.status === 0
+          ? 'Connection to the server failed.'
+          : constructErrorMessageWithList(error);
+        this.notification.error(errorMessage, `Horse could not be ${this.modeActionFinished}`, { enableHtml: true, timeOut: 0 });
       }
     });
   }
@@ -349,6 +353,10 @@ export class HorseFormComponent implements OnInit {
       },
       error: error => {
         console.error(error.message);
+        const errorMessage = error.status === 0
+          ? 'Connection to the server failed.'
+          : constructErrorMessageWithList(error);
+        this.notification.error(errorMessage, `Could not get horse.`, {enableHtml: true, timeOut: 0});
       }
     });
   }

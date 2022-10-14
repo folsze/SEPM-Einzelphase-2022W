@@ -26,3 +26,17 @@
   align-items: center;
   justify-content: space-between;
 }
+
+.input-and-message-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+label.mark-as-mandatory::before {
+  content: "*";
+  color: rgba(255, 0, 0, 0.50);
+  display: inline-block;
+  font-size: 20px;
+  line-height: 20px;
+}

@@ -5,6 +5,7 @@ import {ToastrService} from 'ngx-toastr';
 import {Observable, of} from 'rxjs';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Owner} from '../../../dto/owner';
+import {constructErrorMessageWithList} from '../../../shared/validator';
 
 @Component({
   selector: 'app-owner-create',
@@ -14,8 +15,8 @@ import {Owner} from '../../../dto/owner';
 export class OwnerCreateComponent {
 
   public ownerForm: FormGroup = this.formBuilder.group({
-    firstName: ['', [Validators.required, this.noWhitespaceInsideValidator]],
-    lastName: ['', [Validators.required, this.noWhitespaceInsideValidator]],
+    firstName: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
     email: [null, Validators.email]
   });
 
@@ -40,12 +41,6 @@ export class OwnerCreateComponent {
     return this.ownerForm.controls.email;
   }
 
-  public noWhitespaceInsideValidator(control: AbstractControl) {
-    const containsWhitespace = (control.value || '').trim().match(/\s/g);
-    const isValid = !containsWhitespace;
-    return isValid ? null : { whitespace: true };
-  }
-
   public formatOwnerName(owner: Owner | null | undefined): string { // todo Fragestunde: what if owner undefined?
     return (owner == null) ? '' : `${this.firstName.value} ${this.lastName.value}`;
   }
@@ -63,7 +58,10 @@ export class OwnerCreateComponent {
       },
       error: error => {
         console.error('Error creating owner', error);
-        // TODO show an error message to the user. Include and sensibly present the info from the backend!
+        const errorMessage = error.status === 0
+          ? 'Connection to the server failed.'
+          : constructErrorMessageWithList(error);
+        this.notification.error(errorMessage, 'Could not save owner', {enableHtml: true, timeOut: 0});
       }
     });
   }
