@@ -8,6 +8,7 @@ import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
+
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,16 +30,16 @@ public class HorseValidator {
   private final HorseDao horseDao;
   private final OwnerDao ownerDao;
 
-  public HorseValidator(HorseDao horseDao, OwnerDao ownerDao){
+  public HorseValidator(HorseDao horseDao, OwnerDao ownerDao) {
     this.horseDao = horseDao;
     this.ownerDao = ownerDao;
   }
 
-  // ------------------------------------------------------------------- START OF VALIDATE FOR CREATE OR UPDATE SECTION -------------------------------------------------------------------
+  // START OF VALIDATE FOR CREATE OR UPDATE SECTION
   public void validateForCreate(HorseDetailDto horse) throws ValidationException {
     List<String> validationErrors = new ArrayList<>();
 
-    validateWhatsRequiredIfCreateOrUpdate(horse,validationErrors);
+    validateWhatsRequiredIfCreateOrUpdate(horse, validationErrors);
 
     if (!validationErrors.isEmpty()) {
       throw new ValidationException("Validation of horse for update failed", validationErrors);
@@ -136,7 +137,7 @@ public class HorseValidator {
     }
 
     if (dateOfBirth != null) {
-      if (dateOfBirth.isAfter(LocalDate.now())){
+      if (dateOfBirth.isAfter(LocalDate.now())) {
         validationErrors.add("Date of birth must not be in the future");
       }
     } else {
@@ -148,12 +149,12 @@ public class HorseValidator {
     }
   }
 
-  // ------------------------------------------------------------------- START OF VALIDATE-FOR-UPDATE-ONLY SECTION ----------------------------------------------------------------------------------
+  // START OF VALIDATE-FOR-UPDATE-ONLY SECTION
   public void validateForUpdate(HorseDetailDto horse) throws ValidationException, ConflictException {
     LOG.trace("validateForUpdate({})", horse);
-    
+
     List<String> validationErrors = new ArrayList<>();
-    validateWhatsRequiredIfCreateOrUpdate(horse,validationErrors);
+    validateWhatsRequiredIfCreateOrUpdate(horse, validationErrors);
 
     if (Objects.equals(horse.id(), horse.motherId()) || Objects.equals(horse.id(), horse.fatherId())) {
       validationErrors.add("A horse cannot be the parent of itself");
@@ -181,7 +182,7 @@ public class HorseValidator {
         }
 
         if (oldHorse.getDateOfBirth() != horse.dateOfBirth()) {
-            validateThatHorsesChildrenAreStillYoungerThanTheirParent(horse.id(), horse.dateOfBirth(), conflictErrors);
+          validateThatHorsesChildrenAreStillYoungerThanTheirParent(horse.id(), horse.dateOfBirth(), conflictErrors);
         }
       } catch (NotFoundException ignored) {
         conflictErrors.add("Horse to be updated was not found in database. Could not validate remaining horse values");
@@ -200,7 +201,8 @@ public class HorseValidator {
         }
       }
       if (childrenOlderThanTheirParent.size() > 0) {
-        conflictErrors.add("Cannot change date of birth: When moving this horse's date of birth into the future as at least one of its children would become older than the horse");
+        conflictErrors.add("Cannot change date of birth: When moving this horse's date of birth into the future "
+            + "as at least one of its children would become older than the horse");
         conflictErrors.add("The following children would become older than their parent:\n" + Arrays.toString(childrenOlderThanTheirParent.toArray()));
       }
     }
@@ -219,18 +221,18 @@ public class HorseValidator {
     }
   }
 
-  // ------------------------------------------------------------------- START OF "THE REST" SECTION ----------------------------------------------------------------------------------
+  // START OF "THE REST" SECTION
   public void validateForSearch(HorseSearchDto horse) throws ValidationException {
     LOG.trace("validateForSearch({})", horse);
     List<String> validationErrors = new ArrayList<>();
 
     validateSearchHorsePrimitiveAttributes(
-            horse.name(),
-            horse.description(),
-            horse.bornBefore(),
-            horse.ownerFullNameSubstring(),
-            horse.limit(),
-            validationErrors);
+        horse.name(),
+        horse.description(),
+        horse.bornBefore(),
+        horse.ownerFullNameSubstring(),
+        horse.limit(),
+        validationErrors);
 
     if (horse.idOfHorseToBeExcluded() != null) {
       try {
@@ -245,7 +247,8 @@ public class HorseValidator {
     }
   }
 
-  public void validateSearchHorsePrimitiveAttributes(String name, String description, LocalDate bornBefore, String ownerFullNameSubstring, Integer limit, List<String> validationErrors) {
+  public void validateSearchHorsePrimitiveAttributes(String name, String description, LocalDate bornBefore, String ownerFullNameSubstring, Integer limit,
+                                                     List<String> validationErrors) {
     if (name != null) {
       if (name.isBlank()) {
         validationErrors.add("Horse name is given but blank");
@@ -274,7 +277,7 @@ public class HorseValidator {
     }
 
     if (bornBefore != null) {
-      if (bornBefore.isAfter(LocalDate.now())){
+      if (bornBefore.isAfter(LocalDate.now())) {
         validationErrors.add("Date used for filtering horses must not be in the future");
       }
     }

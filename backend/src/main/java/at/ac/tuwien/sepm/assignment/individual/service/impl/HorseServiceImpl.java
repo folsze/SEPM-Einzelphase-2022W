@@ -1,6 +1,11 @@
 package at.ac.tuwien.sepm.assignment.individual.service.impl;
 
-import at.ac.tuwien.sepm.assignment.individual.dto.*;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseMinimalDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.OwnerDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.OwnerSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
@@ -11,12 +16,14 @@ import at.ac.tuwien.sepm.assignment.individual.mapper.HorseMapper;
 import at.ac.tuwien.sepm.assignment.individual.persistence.HorseDao;
 import at.ac.tuwien.sepm.assignment.individual.service.HorseService;
 import at.ac.tuwien.sepm.assignment.individual.service.OwnerService;
+
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -42,10 +49,10 @@ public class HorseServiceImpl implements HorseService {
     validator.validateForUpdate(updateData);
     var updatedHorse = dao.update(id, updateData);
     return mapper.entityToDetailDto(
-            updatedHorse,
-            ownerMapForSingleId(updatedHorse.getOwnerId()),
-            horseMapForSingleId(updatedHorse.getMotherId()),
-            horseMapForSingleId(updatedHorse.getFatherId())
+        updatedHorse,
+        ownerMapForSingleId(updatedHorse.getOwnerId()),
+        horseMapForSingleId(updatedHorse.getMotherId()),
+        horseMapForSingleId(updatedHorse.getFatherId())
     );
   }
 
@@ -66,10 +73,10 @@ public class HorseServiceImpl implements HorseService {
     validator.validateForCreate(createData);
     var createdHorse = dao.create(createData);
     return mapper.entityToDetailDto(
-            createdHorse,
-            ownerMapForSingleId(createdHorse.getOwnerId()),
-            horseMapForSingleId(createdHorse.getMotherId()),
-            horseMapForSingleId(createdHorse.getFatherId())
+        createdHorse,
+        ownerMapForSingleId(createdHorse.getOwnerId()),
+        horseMapForSingleId(createdHorse.getMotherId()),
+        horseMapForSingleId(createdHorse.getFatherId())
     );
   }
 
@@ -85,8 +92,8 @@ public class HorseServiceImpl implements HorseService {
 
   private Map<Long, HorseMinimalDto> horseMapForSingleId(Long horseId) {
     return horseId == null
-            ? null
-            : Collections.singletonMap(horseId, mapper.minimalEntityToMinimalDto(getMinimalHorseById(horseId)));
+        ? null
+        : Collections.singletonMap(horseId, mapper.minimalEntityToMinimalDto(getMinimalHorseById(horseId)));
   }
 
   private HorseMinimal getMinimalHorseById(Long id) {
@@ -105,14 +112,14 @@ public class HorseServiceImpl implements HorseService {
     validator.validateForSearch(searchParameters);
     var horses = dao.search(searchParameters);
     var ownerIds = horses.stream()
-            .map(Horse::getOwnerId)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toUnmodifiableSet());
+        .map(Horse::getOwnerId)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toUnmodifiableSet());
 
     Map<Long, OwnerDto> horsesOwnersMatchingOwnerFullNameSubstring = ownerService.getOwnersByIdsAndFilter(ownerIds,
-            new OwnerSearchDto(searchParameters.ownerFullNameSubstring(), null));
+        new OwnerSearchDto(searchParameters.ownerFullNameSubstring(), null));
 
-//    Stream<Horse> horseStream = horses.stream().filter(horse -> horsesOwnersMatchingOwnerFullNameSubstring.containsKey(horse.getOwnerId()));
+    // Stream<Horse> horseStream = horses.stream().filter(horse -> horsesOwnersMatchingOwnerFullNameSubstring.containsKey(horse.getOwnerId()));
     // einkommentieren &: horsesStream.map(... todo Fragestunde
     Stream<HorseListDto> result = horses.stream().map(horse -> mapper.entityToListDto(horse, horsesOwnersMatchingOwnerFullNameSubstring));
 

@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.assignment.individual.entity;
 
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
+
 import java.time.LocalDate;
 
 /**
@@ -91,15 +92,15 @@ public class Horse {
 
   @Override
   public String toString() {
-    return "Horse{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            ", description='" + description + '\'' +
-            ", dateOfBirth=" + dateOfBirth +
-            ", sex=" + sex +
-            ", ownerId=" + ownerId +
-            ", motherId=" + motherId +
-            ", fatherId=" + fatherId +
-            '}';
+    return "Horse{"
+        + "id=" + id
+        + ", name='" + name + '\''
+        + ", description='" + description + '\''
+        + ", dateOfBirth=" + dateOfBirth
+        + ", sex=" + sex
+        + ", ownerId=" + ownerId
+        + ", motherId=" + motherId
+        + ", fatherId=" + fatherId
+        + '}';
   }
 }

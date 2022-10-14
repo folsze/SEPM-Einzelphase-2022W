@@ -9,6 +9,7 @@ import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.persistence.HorseDao;
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
+
 import java.lang.invoke.MethodHandles;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,11 +37,11 @@ public class HorseJdbcDao implements HorseDao {
   private static final String SQL_DELETE = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
   private static final String SQL_SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
   private static final String SQL_SELECT_BY_ID = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?";
-  private static final String SQL_SELECT_MINIMAL_BY_ID = "SELECT horse.id, horse.name, horse.date_of_birth, horse.sex " +
-          " FROM " + TABLE_NAME + " WHERE id = ?";
-  private static final String SQL_INSERT = "INSERT INTO " + TABLE_NAME +
-          " (name, description, date_of_birth, sex, owner_id, mother_id, father_id) " +
-          " VALUES (?,?,?,?,?,?,?);";
+  private static final String SQL_SELECT_MINIMAL_BY_ID = "SELECT horse.id, horse.name, horse.date_of_birth, horse.sex "
+      + " FROM " + TABLE_NAME + " WHERE id = ?";
+  private static final String SQL_INSERT = "INSERT INTO " + TABLE_NAME
+      + " (name, description, date_of_birth, sex, owner_id, mother_id, father_id) "
+      + " VALUES (?,?,?,?,?,?,?);";
   private static final String SQL_UPDATE = "UPDATE " + TABLE_NAME
       + " SET name = ?"
       + "  , description = ?"
@@ -51,16 +52,15 @@ public class HorseJdbcDao implements HorseDao {
       + "  , father_id = ?"
       + " WHERE id = ?";
   private static final String SQL_SEARCH =
-          " SELECT * FROM " + TABLE_NAME + " WHERE " +
-          " (? IS NULL OR UPPER(name) LIKE UPPER(?)) AND " +
-          " (? IS NULL OR UPPER(description) LIKE UPPER(?)) AND " +
-          " (? IS NULL OR date_of_birth < ?) AND " +
-          " (? IS NULL OR sex = ?)";
+      " SELECT * FROM " + TABLE_NAME + " WHERE "
+          + " (? IS NULL OR UPPER(name) LIKE UPPER(?)) AND "
+          + " (? IS NULL OR UPPER(description) LIKE UPPER(?)) AND "
+          + " (? IS NULL OR date_of_birth < ?) AND "
+          + " (? IS NULL OR sex = ?)";
   private static final String SQL_SELECT_ALL_CHILDREN = "SELECT * FROM " + TABLE_NAME + " WHERE mother_id = ? OR father_id = ?";
 
   private static final String SQL_SEARCH_EXCLUDE_CLAUSE = " AND id != ?";
   private static final String SQL_SEARCH_LIMIT_CLAUSE = " LIMIT ?";
-
 
 
   private final JdbcTemplate jdbcTemplate;
@@ -73,10 +73,10 @@ public class HorseJdbcDao implements HorseDao {
   @Override
   public List<Horse> search(HorseSearchDto searchParameters) {
     var args = new ArrayList<>();
-    args.add((searchParameters.name() != null) ? '%' + searchParameters.name() + '%' : null );
-    args.add((searchParameters.name() != null) ? '%' + searchParameters.name() + '%' : null );
-    args.add((searchParameters.description() != null) ? '%' + searchParameters.description() + '%' : null );
-    args.add((searchParameters.description() != null) ? '%' + searchParameters.description() + '%' : null );
+    args.add((searchParameters.name() != null) ? '%' + searchParameters.name() + '%' : null);
+    args.add((searchParameters.name() != null) ? '%' + searchParameters.name() + '%' : null);
+    args.add((searchParameters.description() != null) ? '%' + searchParameters.description() + '%' : null);
+    args.add((searchParameters.description() != null) ? '%' + searchParameters.description() + '%' : null);
     args.add(searchParameters.bornBefore()); // todo: convert to sql date?
     args.add(searchParameters.bornBefore()); // todo: convert to sql date?
     args.add(searchParameters.sex() != null ? searchParameters.sex().toString() : null);
@@ -130,7 +130,9 @@ public class HorseJdbcDao implements HorseDao {
   @Override
   public HorseMinimal getHorseMinimalById(Long id) {
     LOG.trace("getById({})", id);
-    if(id == null) return null;
+    if (id == null) {
+      return null;
+    }
 
     List<HorseMinimal> horses = jdbcTemplate.query(SQL_SELECT_MINIMAL_BY_ID, this::mapRowMinimal, id);
     if (horses.isEmpty()) {
@@ -153,25 +155,26 @@ public class HorseJdbcDao implements HorseDao {
         PreparedStatement stmt = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
         stmt.setString(1, toCreate.name());
         stmt.setString(2, toCreate.description());
-        stmt.setString(3, java.sql.Date.valueOf(toCreate.dateOfBirth()).toString()); // todo Fragestunde
+        stmt.setString(3, java.sql.Date.valueOf(toCreate.dateOfBirth()).toString());
         stmt.setString(4, toCreate.sex().toString());
         stmt.setObject(5, toCreate.ownerId());
-        stmt.setObject(6, toCreate.motherId()); // todo Fragestunde: sollte irgendwie NullPointerExceptions abfangen oder ist das eh durch das Spring Endpoint Mapping gegeben?
+        stmt.setObject(6,
+            toCreate.motherId());
         stmt.setObject(7, toCreate.fatherId());
 
         return stmt;
       }, keyHolder);
 
       return new Horse()
-              .setId(((Number)keyHolder.getKeys().get("id")).longValue())
-              .setName(toCreate.name())
-              .setDescription(toCreate.description())
-              .setDateOfBirth(toCreate.dateOfBirth())
-              .setSex(toCreate.sex())
-              .setOwnerId(toCreate.ownerId())
-              .setMotherId(toCreate.motherId())
-              .setFatherId(toCreate.fatherId())
-              ;
+          .setId(((Number) keyHolder.getKeys().get("id")).longValue())
+          .setName(toCreate.name())
+          .setDescription(toCreate.description())
+          .setDateOfBirth(toCreate.dateOfBirth())
+          .setSex(toCreate.sex())
+          .setOwnerId(toCreate.ownerId())
+          .setMotherId(toCreate.motherId())
+          .setFatherId(toCreate.fatherId())
+          ;
     } catch (DataAccessException dae) {
       throw new FatalException("Error while adding horse.", dae);
     }
@@ -181,28 +184,28 @@ public class HorseJdbcDao implements HorseDao {
   public Horse update(Long id, HorseDetailDto horse) throws NotFoundException {
     LOG.trace("update({})", horse);
     int updated = jdbcTemplate.update(SQL_UPDATE,
-            horse.name(),
-            horse.description(),
-            horse.dateOfBirth(),
-            horse.sex().toString(),
-            horse.ownerId(),
-            horse.motherId(),
-            horse.fatherId(),
-            id);
+        horse.name(),
+        horse.description(),
+        horse.dateOfBirth(),
+        horse.sex().toString(),
+        horse.ownerId(),
+        horse.motherId(),
+        horse.fatherId(),
+        id);
     if (updated == 0) {
       throw new NotFoundException("Could not update horse with ID " + horse.id() + ", because it does not exist");
     }
 
     return new Horse()
-            .setId(id)
-            .setName(horse.name())
-            .setDescription(horse.description())
-            .setDateOfBirth(horse.dateOfBirth())
-            .setSex(horse.sex())
-            .setOwnerId(horse.ownerId())
-            .setMotherId(horse.motherId())
-            .setFatherId(horse.fatherId())
-            ;
+        .setId(id)
+        .setName(horse.name())
+        .setDescription(horse.description())
+        .setDateOfBirth(horse.dateOfBirth())
+        .setSex(horse.sex())
+        .setOwnerId(horse.ownerId())
+        .setMotherId(horse.motherId())
+        .setFatherId(horse.fatherId())
+        ;
   }
 
   @Override
@@ -251,10 +254,10 @@ public class HorseJdbcDao implements HorseDao {
 
   private HorseMinimal mapRowMinimal(ResultSet result, int rowNum) throws SQLException {
     return new HorseMinimal()
-            .setId(result.getLong("id"))
-            .setName(result.getString("name"))
-            .setDateOfBirth(result.getDate("date_of_birth").toLocalDate())
-            .setSex(Sex.valueOf(result.getString("sex")))
-            ;
+        .setId(result.getLong("id"))
+        .setName(result.getString("name"))
+        .setDateOfBirth(result.getDate("date_of_birth").toLocalDate())
+        .setSex(Sex.valueOf(result.getString("sex")))
+        ;
   }
 }

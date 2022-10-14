@@ -6,12 +6,18 @@ import at.ac.tuwien.sepm.assignment.individual.entity.Owner;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.persistence.OwnerDao;
+
 import java.lang.invoke.MethodHandles;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +38,7 @@ public class OwnerJdbcDao implements OwnerDao {
   private static final String SQL_SEARCH_LIMIT_CLAUSE = " LIMIT ?";
 
   private static final String SQL_SELECT_OWNERS_BY_IDS_AND_FILTER = "SELECT * FROM " + TABLE_NAME
-          + " WHERE id IN (:ids) AND UPPER(first_name||' '||last_name) like UPPER('%'||COALESCE(:name, '')||'%')";
+      + " WHERE id IN (:ids) AND UPPER(first_name||' '||last_name) like UPPER('%'||COALESCE(:name, '')||'%')";
 
   private static final String SQL_CREATE = "INSERT INTO " + TABLE_NAME + " (first_name, last_name, email) VALUES (?, ?, ?)";
 
@@ -78,7 +84,8 @@ public class OwnerJdbcDao implements OwnerDao {
         return stmt;
       }, keyHolder);
     } catch (DataAccessException dae) {
-      throw new FatalException("Error while querying all owners.", dae); // todo Fragestunde: passt so? Wie sonst? Wieso überhaupt abfangen notwendig? Damit JDBC/SQL nicht sichtbar wird?
+      throw new FatalException("Error while querying all owners.",
+          dae); // todo Fragestunde: passt so? Wie sonst? Wieso überhaupt abfangen notwendig? Damit JDBC/SQL nicht sichtbar wird?
     }
 
     Number key = keyHolder.getKey();

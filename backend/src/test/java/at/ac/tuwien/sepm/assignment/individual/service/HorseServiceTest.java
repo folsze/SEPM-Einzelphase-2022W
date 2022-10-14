@@ -7,7 +7,9 @@ import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
+
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +24,7 @@ public class HorseServiceTest {
 
   @Test
   public void getAllReturnsAllStoredHorses() throws ValidationException {
-    HorseSearchDto h = new HorseSearchDto(null, null, null, null, null,  null, null);
+    HorseSearchDto h = new HorseSearchDto(null, null, null, null, null, null, null);
     List<HorseListDto> horses = horseService.search(h)
         .toList();
     assertThat(horses.size()).isGreaterThanOrEqualTo(1); // TODO adapt to exact number of elements in test data later

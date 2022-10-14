@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.assignment.individual.dto;
 
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
+
 import java.time.LocalDate;
 
 public record HorseDetailDto(
@@ -22,14 +23,14 @@ public record HorseDetailDto(
 
   public Long motherId() {
     return mother == null
-            ? null
-            : mother.id();
+        ? null
+        : mother.id();
   }
 
   public Long fatherId() {
     return father == null
-            ? null
-            : father.id();
+        ? null
+        : father.id();
   }
 
 }

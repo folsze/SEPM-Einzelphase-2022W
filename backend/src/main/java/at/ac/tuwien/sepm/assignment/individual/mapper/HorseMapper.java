@@ -1,11 +1,16 @@
 package at.ac.tuwien.sepm.assignment.individual.mapper;
 
-import at.ac.tuwien.sepm.assignment.individual.dto.*;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseMinimalDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.OwnerDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
+
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -28,7 +33,7 @@ public class HorseMapper {
    * Convert a horse entity object to a {@link HorseListDto}.
    * The given map of owners needs to contain the owner of {@code horse}.
    *
-   * @param horse the horse to convert
+   * @param horse  the horse to convert
    * @param owners a map of horse owners by their id, which needs to contain the owner referenced by {@code horse}
    * @return the converted {@link HorseListDto}
    */
@@ -52,16 +57,16 @@ public class HorseMapper {
    * Convert a horse entity object to a {@link HorseListDto}.
    * The given map of owners needs to contain the owner of {@code horse}.
    *
-   * @param horse the horse to convert
+   * @param horse  the horse to convert
    * @param owners a map of horse owners by their id, which needs to contain the owner referenced by {@code horse}
    * @return the converted {@link HorseListDto}
    */
   public HorseDetailDto entityToDetailDto(
-          Horse horse,
-          Map<Long, OwnerDto> owners,
-          Map<Long, HorseMinimalDto> mothers,
-          Map<Long, HorseMinimalDto> fathers
-    ) {
+      Horse horse,
+      Map<Long, OwnerDto> owners,
+      Map<Long, HorseMinimalDto> mothers,
+      Map<Long, HorseMinimalDto> fathers
+  ) {
     LOG.trace("entityToDto({})", horse);
     if (horse == null) {
       return null;

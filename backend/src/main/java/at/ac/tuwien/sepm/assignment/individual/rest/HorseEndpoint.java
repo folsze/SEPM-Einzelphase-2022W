@@ -8,6 +8,7 @@ import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
 import at.ac.tuwien.sepm.assignment.individual.service.HorseService;
+
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.stream.Stream;
@@ -17,7 +18,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -96,10 +106,10 @@ public class HorseEndpoint {
     try {
       service.delete(id);
     } catch (NotFoundException nfe) {
-      LOG.error("Horse (with id {}) to be deleted doesn't exist",id,nfe);
+      LOG.error("Horse (with id {}) to be deleted doesn't exist", id, nfe);
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Horse to be deleted doesn't exist", nfe);
-    } catch (FatalException fe){
-      LOG.error("Error while deleting horse with id {} from database",id,fe);
+    } catch (FatalException fe) {
+      LOG.error("Error while deleting horse with id {} from database", id, fe);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while deleting horse from database", fe);
     } catch (ConflictException ce) {
       throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ce.getMessage(), ce);
