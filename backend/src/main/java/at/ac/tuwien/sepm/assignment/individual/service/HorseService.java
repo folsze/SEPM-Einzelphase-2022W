@@ -42,7 +42,7 @@ public interface HorseService {
 
   HorseDetailDto create(HorseDetailDto toCreate) throws ValidationException;
 
-  void delete(Long id) throws NotFoundException;
+  void delete(Long id) throws NotFoundException, ConflictException;
 
   Stream<HorseListDto> search(HorseSearchDto searchParameters) throws ValidationException;
 

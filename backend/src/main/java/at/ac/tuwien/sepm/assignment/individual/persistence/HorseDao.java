@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
+import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public interface HorseDao {
 
   Horse create(HorseDetailDto toCreate);
 
-  void delete(Long id) throws NotFoundException;
+  void delete(Long id) throws NotFoundException, ConflictException;
 
   List<Horse> search(HorseSearchDto searchParameters);
 

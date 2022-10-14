@@ -101,6 +101,8 @@ public class HorseEndpoint {
     } catch (FatalException fe){
       LOG.error("Error while deleting horse with id {} from database",id,fe);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while deleting horse from database", fe);
+    } catch (ConflictException ce) {
+      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ce.getMessage(), ce);
     }
   }
 

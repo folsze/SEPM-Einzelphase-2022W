@@ -166,7 +166,7 @@ public class HorseValidator {
     List<String> conflictErrors = new ArrayList<>();
     validateWhatsRequiredOnlyIfUpdate(horse, conflictErrors);
     if (!conflictErrors.isEmpty()) {
-      throw new ConflictException("Conflict-Validation of horse-update data failed", conflictErrors);
+      throw new ConflictException("Validation of updated Horse data failed", conflictErrors);
     }
   }
 

@@ -95,7 +95,7 @@ public class HorseServiceImpl implements HorseService {
   }
 
   @Override
-  public void delete(Long id) throws NotFoundException {
+  public void delete(Long id) throws NotFoundException, ConflictException {
     LOG.trace("delete horse with id {}", id);
     dao.delete(id);
   }

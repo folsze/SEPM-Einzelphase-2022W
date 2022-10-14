@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
+import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.persistence.HorseDao;
@@ -14,11 +15,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -203,7 +206,7 @@ public class HorseJdbcDao implements HorseDao {
   }
 
   @Override
-  public void delete(Long id) throws NotFoundException {
+  public void delete(Long id) throws NotFoundException, ConflictException {
     LOG.trace("delete horse with id {}", id);
 
     try {
@@ -216,6 +219,8 @@ public class HorseJdbcDao implements HorseDao {
       if (noOfUpdates < 1) {
         throw new NotFoundException("Horse to be deleted not found");
       }
+    } catch (DataIntegrityViolationException dive) {
+      throw new ConflictException("Could not delete horse as it is the parent of another horse", List.of("Tried making another horse an orphan"));
     } catch (DataAccessException dae) {
       throw new FatalException("Error when deleting horse", dae);
     }
