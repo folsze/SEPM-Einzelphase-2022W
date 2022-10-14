@@ -81,6 +81,8 @@ public class HorseEndpoint {
     } catch (FatalException fe) {
       LOG.error("Error while creating horse.", fe);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, fe.getMessage(), fe);
+    } catch (ConflictException ce) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, ce.getMessage(), ce);
     }
   }
 

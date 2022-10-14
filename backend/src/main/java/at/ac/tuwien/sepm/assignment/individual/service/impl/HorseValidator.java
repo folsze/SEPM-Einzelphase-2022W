@@ -36,37 +36,42 @@ public class HorseValidator {
   }
 
   // START OF VALIDATE FOR CREATE OR UPDATE SECTION
-  public void validateForCreate(HorseDetailDto horse) throws ValidationException {
+  public void validateForCreate(HorseDetailDto horse) throws ValidationException, ConflictException {
     List<String> validationErrors = new ArrayList<>();
+    List<String> conflictErrors = new ArrayList<>();
 
-    validateWhatsRequiredIfCreateOrUpdate(horse, validationErrors);
+    validateWhatsRequiredIfCreateOrUpdate(horse, validationErrors, conflictErrors);
 
     if (!validationErrors.isEmpty()) {
       throw new ValidationException("Validation of horse for update failed", validationErrors);
     }
+
+    if (!conflictErrors.isEmpty()) {
+      throw new ConflictException("Conflict arose while trying to create horse", conflictErrors);
+    }
   }
 
-  private void validateWhatsRequiredIfCreateOrUpdate(HorseDetailDto horse, List<String> validationErrors) {
+  private void validateWhatsRequiredIfCreateOrUpdate(HorseDetailDto horse, List<String> validationErrors, List<String> conflictErrors) {
     validatePrimitiveHorseAttributes(horse.name(), horse.description(), horse.dateOfBirth(), horse.sex(), validationErrors);
 
     if (horse.ownerId() != null) {
-      validateThatOwnerExistsInDB(horse.ownerId(), validationErrors);
+      validateThatOwnerExistsInDB(horse.ownerId(), conflictErrors);
     }
 
     if (horse.mother() != null) {
       if (horse.mother().sex() != Sex.FEMALE) {
         validationErrors.add("Mother's sex must be female");
       }
-      validateThatHorseYoungerThanMother(horse, horse.mother(), validationErrors);
-      validateThatMotherExistsInDB(horse.motherId(), validationErrors);
+      validateThatHorseYoungerThanMother(horse, horse.mother(), conflictErrors);
+      validateThatMotherExistsInDB(horse.motherId(), conflictErrors);
     }
 
     if (horse.father() != null) {
       if (horse.father().sex() != Sex.MALE) {
         validationErrors.add("Father's sex must be male");
       }
-      validateThatHorseYoungerThanFather(horse, horse.father(), validationErrors);
-      validateThatFatherExistsInDB(horse.fatherId(), validationErrors);
+      validateThatHorseYoungerThanFather(horse, horse.father(), conflictErrors);
+      validateThatFatherExistsInDB(horse.fatherId(), conflictErrors);
     }
   }
 
@@ -152,9 +157,10 @@ public class HorseValidator {
   // START OF VALIDATE-FOR-UPDATE-ONLY SECTION
   public void validateForUpdate(HorseDetailDto horse) throws ValidationException, ConflictException {
     LOG.trace("validateForUpdate({})", horse);
-
     List<String> validationErrors = new ArrayList<>();
-    validateWhatsRequiredIfCreateOrUpdate(horse, validationErrors);
+    List<String> conflictErrors = new ArrayList<>();
+
+    validateWhatsRequiredIfCreateOrUpdate(horse, validationErrors, conflictErrors);
 
     if (Objects.equals(horse.id(), horse.motherId()) || Objects.equals(horse.id(), horse.fatherId())) {
       validationErrors.add("A horse cannot be the parent of itself");
@@ -164,10 +170,9 @@ public class HorseValidator {
       throw new ValidationException("Validation of horse-update data failed", validationErrors);
     }
 
-    List<String> conflictErrors = new ArrayList<>();
     validateWhatsRequiredOnlyIfUpdate(horse, conflictErrors);
     if (!conflictErrors.isEmpty()) {
-      throw new ConflictException("Validation of updated Horse data failed", conflictErrors);
+      throw new ConflictException("Conflict arose while trying to update horse data", conflictErrors);
     }
   }
 
