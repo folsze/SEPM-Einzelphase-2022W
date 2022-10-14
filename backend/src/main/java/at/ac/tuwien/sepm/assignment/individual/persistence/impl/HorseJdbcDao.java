@@ -156,7 +156,7 @@ public class HorseJdbcDao implements HorseDao {
         stmt.setString(3, java.sql.Date.valueOf(toCreate.dateOfBirth()).toString()); // todo Fragestunde
         stmt.setString(4, toCreate.sex().toString());
         stmt.setObject(5, toCreate.ownerId());
-        stmt.setObject(6, toCreate.motherId()); // todo Fragestunde: wird das eine NullPointerException werfen ever? Wie finde ich das in den Docs, dass das sicher nicht so ist?
+        stmt.setObject(6, toCreate.motherId()); // todo Fragestunde: sollte irgendwie NullPointerExceptions abfangen oder ist das eh durch das Spring Endpoint Mapping gegeben?
         stmt.setObject(7, toCreate.fatherId());
 
         return stmt;

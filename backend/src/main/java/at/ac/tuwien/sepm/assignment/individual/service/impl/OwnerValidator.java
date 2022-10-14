@@ -65,10 +65,6 @@ public class OwnerValidator {
             if (firstName.length() != firstName.trim().length()) {
                 validationErrors.add("First name must not start/end with whitespaces");
             }
-
-            if (firstName.trim().contains(" ")) {  // trim because space at start/end was already checked
-                validationErrors.add("First name must not contain whitespaces");
-            }
         } else {
             validationErrors.add("First name must not be null");
         }
@@ -87,10 +83,6 @@ public class OwnerValidator {
             if (lastName.length() != lastName.trim().length()) {
                 validationErrors.add("Last name must not start/end with whitespaces");
             }
-
-            if (lastName.trim().contains(" ")) {  // trim because space at start/end was already checked
-                validationErrors.add("Last name must not contain whitespaces");
-            }
         } else {
             validationErrors.add("Last name must not be null");
         }
@@ -101,8 +93,8 @@ public class OwnerValidator {
             if (ownerFullNameSubstring.isBlank()) {
                 validationErrors.add("Full name substring is given but blank");
             }
-            if (ownerFullNameSubstring.length() > 255) {
-                validationErrors.add("Full name substring too long: longer than 255 characters");
+            if (ownerFullNameSubstring.length() > 255+1+255) {
+                validationErrors.add("Full name substring too long: longer than 255+1+255 characters (1=whitespace)");
             }
 
             if (ownerFullNameSubstring.length() != ownerFullNameSubstring.trim().length()) {
