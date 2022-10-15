@@ -98,9 +98,17 @@
 
     <div class="mb-2 col-lg-6">
       <div class="row">
-        <label class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
-          Mother
-        </label>
+        <div class="col-md-2 col-lg-4 label-and-button">
+          <label class="col-form-label text-md-end text-muted">
+            Mother
+          </label>
+          <button *ngIf="motherFormControl.value && !isCreateMode"
+                  type="button"
+                  class="btn btn-sm btn-secondary detail-button"
+                  (click)="navigateToMother()">
+            <i class="bi bi-info-lg"></i>
+          </button>
+        </div>
         <div class="col-md-10 col-lg-8 form-field">
           <ng-container *ngIf="isCreateMode || isEditMode">
             <input *ngIf="!motherFormControl.value else selectedMotherName"
@@ -173,9 +181,18 @@
 
     <div class="mb-2 col-lg-6">
       <div class="row">
-        <label class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
-          Father
-        </label>
+        <div class="col-md-2 col-lg-4 label-and-button">
+          <label class="col-form-label text-md-end text-muted">
+            Father
+          </label>
+          <button *ngIf="fatherFormControl.value && !isCreateMode"
+                  type="button"
+                  class="btn btn-sm btn-secondary detail-button"
+                  (click)="navigateToFather()"
+                  >
+            <i class="bi bi-info-lg"></i>
+          </button>
+        </div>
         <div class="col-md-10 col-lg-8 form-field">
           <ng-container *ngIf="isCreateMode || isEditMode">
             <input *ngIf="!fatherFormControl.value else selectedFatherName"

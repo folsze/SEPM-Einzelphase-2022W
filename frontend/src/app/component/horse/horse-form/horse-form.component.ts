@@ -182,6 +182,26 @@ export class HorseFormComponent implements OnInit {
     });
   }
 
+  public navigateToMother() {
+    if (this.isReadonlyMode) {
+      this.router.navigate(['../' + this.motherFormControl.value.id],
+      { relativeTo: this.route });
+    } else if (this.isEditMode) {
+      this.router.navigate(['../../' + this.motherFormControl.value.id + '/edit'],
+      { relativeTo: this.route });
+    }
+  }
+
+  public navigateToFather() {
+    if (this.isReadonlyMode) {
+      this.router.navigate(['../' + this.fatherFormControl.value.id],
+        { relativeTo: this.route });
+    } else if (this.isEditMode) {
+      this.router.navigate(['../../' + this.fatherFormControl.value.id + '/edit'],
+        { relativeTo: this.route });
+    }
+  }
+
   public setCreateMode() {
     this.horseForm.reset();
     this.mode = FormMode.create;
