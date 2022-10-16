@@ -34,7 +34,7 @@ export interface HorseSearchFilter {
   description?: string;
   dateOfBirth?: Date;
   sex?: Sex;
-  ownerFullNameSubstring?: string;
+  ownerId?: number;
   fatherNameSubstring?: string;
   limit?: number;
   idOfHorseToBeExcluded?: number;

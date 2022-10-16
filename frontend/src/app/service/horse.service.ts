@@ -34,8 +34,8 @@ export class HorseService {
       params = params.append('sex', filter.sex);
     }
 
-    if (filter.ownerFullNameSubstring) {
-      params = params.append('ownerFullNameSubstring', filter.ownerFullNameSubstring);
+    if (filter.ownerId) {
+      params = params.append('ownerId', filter.ownerId);
     }
 
     if (filter.limit) {

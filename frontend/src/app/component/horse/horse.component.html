@@ -1,5 +1,5 @@
 <div class="d-flex flex-row w-auto">
-  <button class="btn btn-primary mr-1" (click)="searchWithCurrentValues(horseSearchForm)" aria-label="Reload horses">
+  <button class="btn btn-primary mr-1" (click)="searchWithCurrentValues(form)" aria-label="Reload horses">
     <i class="bi bi-arrow-clockwise"></i>
     Reload
   </button>
@@ -10,7 +10,7 @@
   </a>
 </div>
 
-<form [formGroup]="horseSearchForm" class="d-flex flex-row w-auto mb-3">
+<form [formGroup]="form" class="d-flex flex-row w-auto mb-3">
   <!-- this button is here, just so that simple submitting of this form
        to reload the horses, is possible -->
   <div class="flex-grow-2">
@@ -65,9 +65,28 @@
   </div>
   <div class="flex-grow-2 ms-1">
     <label class="col-form-label">
-      Owner's Name
+      Owner
     </label>
-    <input class="form-control" formControlName="ownerFullNameSubstring" maxlength="511">
+    <input *ngIf="!ownerFormControl.value else selectedOwnerFullName"
+           class="form-control"
+           type="text"
+           placeholder="Start typing here to select an owner..."
+           name="owner"
+           [ngbTypeahead]="searchOwner"
+           (selectItem)="setOwner($event.item)"
+           maxlength="511"
+           [resultFormatter]="ownerFullNameResultFormatter"
+    />
+    <ng-template #selectedOwnerFullName>
+      <div>
+        <div class="typeahead-result">
+          {{ currentOwnerFullName }}
+          <button type="button" (click)="clearOwner()" class="btn btn-secondary">
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+      </div>
+    </ng-template>
   </div>
 </form>
 
@@ -87,7 +106,7 @@
         <td>{{horse.description}}</td>
         <td>{{dateOfBirthAsLocaleDate(horse)}}</td>
         <td>{{horse.sex === 'FEMALE' ? 'Female' : 'Male'}}</td>
-        <td>{{ownerName(horse.owner)}}</td>
+        <td>{{ownerFullName(horse.owner)}}</td>
         <td>
           <div class="btn-group">
             <button class="btn btn-sm responsive-secondary-button"
