@@ -45,4 +45,19 @@ label.mark-as-mandatory::before {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+
+  .detail-button {
+    align-self: flex-start;
+    margin-top: 4px;
+  }
+}
+
+.readonly-name {
+  max-width: 440px;
+  word-wrap: break-word;
+}
+
+.readonly-description {
+  max-width: 1000px;
+  word-wrap: break-word;
 }

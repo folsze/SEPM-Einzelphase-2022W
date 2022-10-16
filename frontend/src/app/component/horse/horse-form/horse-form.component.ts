@@ -28,6 +28,7 @@ export class HorseFormComponent implements OnInit {
     description: [null],
     dateOfBirth: [null, [Validators.required, HorseFormComponent.noDateInFutureValidator]],
     sex: [null, [Validators.required]],
+    ownerFullNameSubstring: [''],
     owner: [null], // owner gets selected by using the ownerFullName control
     motherNameSubstring: [''],
     mother: [null],

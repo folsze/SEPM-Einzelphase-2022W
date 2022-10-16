@@ -36,7 +36,7 @@
             </div>
           </ng-container>
           <ng-container *ngIf="isReadonlyMode">
-              {{nameFormControl.value}}
+              <span class="readonly-name">{{nameFormControl.value}}</span>
           </ng-container>
         </div>
       </div>
@@ -124,7 +124,7 @@
             <ng-template #selectedMotherName>
               <div>
                 <div class="typeahead-result">
-                  {{ currentMotherName }}
+                  <span class="readonly-name">{{ currentMotherName }}</span>
                   <button type="button" (click)="clearMother()" class="btn btn-secondary">
                     <i class="bi bi-x-circle"></i>
                   </button>
@@ -133,7 +133,7 @@
             </ng-template>
           </ng-container>
           <ng-container *ngIf="isReadonlyMode">
-            {{ currentMotherName }}
+            <span class="readonly-name">{{ currentMotherName }}</span>
           </ng-container>
         </div>
       </div>
@@ -164,7 +164,7 @@
             <ng-template #selectedOwnerFullName>
               <div>
                 <div class="typeahead-result">
-                  {{ currentOwnerFullName }}
+                  <span class="readonly-name">{{ currentOwnerFullName }}</span>
                   <button type="button" (click)="clearOwner()" class="btn btn-secondary">
                     <i class="bi bi-x-circle"></i>
                   </button>
@@ -173,7 +173,7 @@
             </ng-template>
           </ng-container>
           <ng-container *ngIf="isReadonlyMode">
-            {{ currentOwnerFullName }}
+            <span class="readonly-name">{{ currentOwnerFullName }}</span>
           </ng-container>
         </div>
       </div>
@@ -208,7 +208,7 @@
             <ng-template #selectedFatherName>
               <div>
                 <div class="typeahead-result">
-                  {{ currentFatherName }}
+                  <span class="readonly-name">{{ currentFatherName }}</span>
                   <button type="button" (click)="clearFather()" class="btn btn-secondary">
                     <i class="bi bi-x-circle"></i>
                   </button>
@@ -217,7 +217,7 @@
             </ng-template>
           </ng-container>
           <ng-container *ngIf="isReadonlyMode">
-            {{ currentFatherName }}
+            <span class="readonly-name">{{ currentFatherName }}</span>
           </ng-container>
         </div>
       </div>
@@ -240,7 +240,7 @@
         ></textarea>
       </ng-container>
       <ng-container *ngIf="isReadonlyMode">
-        {{descriptionFormControl.value}}
+        <span class="readonly-description">{{descriptionFormControl.value}}</span>
       </ng-container>
     </div>
 
