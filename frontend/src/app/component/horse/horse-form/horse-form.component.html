@@ -1,7 +1,7 @@
 <div class="header-and-buttons">
   <h1 class="display-1">{{heading}}</h1>
   <div class="top-buttons-wrapper">
-    <button class="button-with-icon-and-text btn btn-sm btn-dark" routerLink="family-tree">
+    <button *ngIf="isReadonlyMode || isEditMode" class="button-with-icon-and-text btn btn-sm btn-dark" routerLink="family-tree">
       <i class="bi bi-diagram-2-fill"></i> View Family Tree
     </button>
     <button *ngIf="isReadonlyMode" class="button-with-icon-and-text btn btn-sm btn-primary" routerLink="edit">

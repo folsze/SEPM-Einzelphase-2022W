@@ -24,7 +24,6 @@ export class FamilyTreeComponent implements OnInit {
 
   public familyTreeRoot: Horse;
 
-
   constructor(private horseService: HorseService,
               private route: ActivatedRoute,
               private router: Router,
@@ -68,17 +67,7 @@ export class FamilyTreeComponent implements OnInit {
     this.setQueryParamLimit(newLimit);
   }
 
-  private subscribeToLimitQueryParamChange(){
-    this.route.queryParamMap.subscribe(
-      (params) => {
-        if (params.has('limit')) {
-          this.limit = Number(this.route.snapshot.queryParamMap.get('limit'));
-          this.getFamilyTreeData();
-        }
-      });
-  }
-
-  private getFamilyTreeData(): void {
+  public getFamilyTreeData(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     const limit = Number(this.route.snapshot.queryParamMap.get('limit'));
     this.horseService.getFamilyTree(id, limit).subscribe({
@@ -92,6 +81,17 @@ export class FamilyTreeComponent implements OnInit {
       }
     });
   }
+
+  private subscribeToLimitQueryParamChange(){
+    this.route.queryParamMap.subscribe(
+      (params) => {
+        if (params.has('limit')) {
+          this.limit = Number(this.route.snapshot.queryParamMap.get('limit'));
+          this.getFamilyTreeData();
+        }
+      });
+  }
+
 
   private setQueryParamLimit(newLimit: number): void {
     this.router.navigate(

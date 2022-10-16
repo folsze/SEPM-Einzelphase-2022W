@@ -1,25 +1,27 @@
 <ng-container *ngIf="familyTreeRoot">
-  <div class="row top-bar">
-    <div class="col-5">
-      <h1>Pedigree of {{familyTreeRoot.name}}</h1>
+  <div class="top-bar">
+    <div>
+      <h1 class="main-header">Family Tree of {{familyTreeRoot.name}}</h1>
     </div>
-    <div class="col-7">
-      <form (ngSubmit)="onSubmit(limitFromInput)" class="float-end">
-        <div *ngIf="editingLimit else displayLimit">
-          <label>Depth-limit of the pedigree:</label>
-          <div class="input-and-button">
-            <input type="number" class="form-control limit-input" [(ngModel)]="limitFromInput" placeholder="Default: 100" min="1" max="100" name="limit">
-            <button type="submit" class="btn btn-secondary">APPLY</button>
-          </div>
+    <button class="reload-button btn btn-primary mr-1" (click)="getFamilyTreeData()" aria-label="Reload horses">
+      <i class="bi bi-arrow-clockwise"></i>
+      Reload
+    </button>
+    <form (ngSubmit)="onSubmit(limitFromInput)" class="limit-form">
+      <div *ngIf="editingLimit else displayLimit">
+        <label>Depth-limit of the pedigree:</label>
+        <div class="input-and-button">
+          <input type="number" class="form-control limit-input" [(ngModel)]="limitFromInput" placeholder="Default: 100" min="1" max="100" name="limit">
+          <button type="submit" class="btn btn-secondary">APPLY</button>
         </div>
-        <ng-template #displayLimit>
-          <div class="display-limit">
-            <h4>Pedigree Depth Limit: {{limit}}</h4>
-            <button class="btn btn-primary" (click)="toEditMode()"><i class="bi bi-pencil"></i></button>
-          </div>
-        </ng-template>
-      </form>
-    </div>
+      </div>
+      <ng-template #displayLimit>
+        <div class="display-limit">
+          <h4>Pedigree Depth Limit: {{limit}}</h4>
+          <button class="btn btn-primary" (click)="toEditMode()"><i class="bi bi-pencil"></i></button>
+        </div>
+      </ng-template>
+    </form>
   </div>
   <ng-container *ngTemplateOutlet="recursiveHorse; context:{ $implicit: familyTreeRoot }"></ng-container>
 </ng-container>
@@ -32,7 +34,7 @@
           <i *ngIf="horse.isCollapsed" class="bi bi-chevron-right"></i>
           <i *ngIf="!horse.isCollapsed" class="bi bi-chevron-down"></i>
         </button>
-        <strong class="name">{{horse.name}}</strong>
+        <strong class="readonly-name" style="word-wrap: break-word">{{horse.name}}</strong>
       </div>
       <div class="flex-end-elements">
         <span>{{ dateOfBirthAsLocaleDate(horse) }}</span>

@@ -15,11 +15,6 @@
   padding: 10px;
   background-color: lightgray;
   border-radius: 10px;
-
-  .name {
-    margin-left: 16px;
-    font-size: large;
-  }
 }
 
 .flex-start-elements {
@@ -47,10 +42,6 @@
   gap: 12px;
 }
 
-.limit-form {
-  float: right;
-}
-
 .limit-input {
   width: 200px;
 }
@@ -76,11 +67,6 @@
   }
 }
 
-.top-bar {
-  margin-bottom: 20px;
-  align-items: center;
-}
-
 .responsive-primary-button, .responsive-secondary-button, .responsive-warning-button, .responsive-danger-button, .responsive-info-button, .responsive-dark-button {
   @include button-variant($light, $light);
 }
@@ -92,7 +78,24 @@
   }
 }
 
+.top-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .readonly-name {
-  max-width: 200px;
+  max-width: 800px;
   word-wrap: break-word;
+  margin-left: 16px;
+  font-size: large;
+}
+
+.main-header {
+  width: 600px;
+  word-wrap: break-word;
+}
+
+.limit-form {
+  margin-left: auto;
 }
