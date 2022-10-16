@@ -81,11 +81,11 @@
   align-items: center;
 }
 
-.responsive-primary-button, .responsive-secondary-button, .responsive-warning-button, .responsive-danger-button, .responsive-info-button, .responsive-dark-button, .responsive-tree-button {
+.responsive-primary-button, .responsive-secondary-button, .responsive-warning-button, .responsive-danger-button, .responsive-info-button, .responsive-dark-button {
   @include button-variant($light, $light);
 }
 
-@each $color in (primary, secondary, info, warning, danger) {
+@each $color in (primary, secondary, info, warning, danger, dark) {
   $value: map.get($theme-colors, $color);
   .elements-container:hover .responsive-#{$color}-button {
     @include button-variant($value, $value);

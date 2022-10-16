@@ -2,6 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import {Horse} from '../../../dto/horse';
 import {HorseService} from '../../../service/horse.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {
+  ConfirmDeleteModalContentComponent
+} from '../../confirm-delete-modal-content/confirm-delete-modal-content.component';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {constructErrorMessageWithList} from '../../../shared/validator';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-family-tree',
@@ -22,6 +28,8 @@ export class FamilyTreeComponent implements OnInit {
   constructor(private horseService: HorseService,
               private route: ActivatedRoute,
               private router: Router,
+              private modalService: NgbModal,
+              private notification: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -32,6 +40,23 @@ export class FamilyTreeComponent implements OnInit {
     // fetch on prev line necessary since no change detected on initial route move
     this.subscribeToLimitQueryParamChange();
     this.getFamilyTreeData();
+  }
+
+  public dateOfBirthAsLocaleDate(horse: Horse): string {
+    return new Date(horse.dateOfBirth).toLocaleDateString();
+  }
+
+  public openDeleteConfirm(horse: Horse): void {
+    const modalRef = this.modalService.open(ConfirmDeleteModalContentComponent);
+    modalRef.componentInstance.horse = horse;
+
+    modalRef.result.then((horseWasDeleted: boolean) => {
+      if (horseWasDeleted) {
+        this.getFamilyTreeData();
+      } else {
+        console.warn('Horses weren\'t reloaded as the deletion failed.');
+      }
+    });
   }
 
   public toEditMode() {
@@ -58,7 +83,13 @@ export class FamilyTreeComponent implements OnInit {
     const limit = Number(this.route.snapshot.queryParamMap.get('limit'));
     this.horseService.getFamilyTree(id, limit).subscribe({
       next: (familyTreeHorse: Horse) => this.familyTreeRoot = familyTreeHorse,
-      error: (error: any) => console.error('NOT IMPLEMENTED YET')
+      error: (error) => {
+        console.error('Error while getting family tree', error);
+        const errorMessage = error.status === 0
+          ? 'Connection to the server failed.'
+          : constructErrorMessageWithList(error);
+        this.notification.error(errorMessage, `Error while getting family tree`, {enableHtml: true, timeOut: 0});
+      }
     });
   }
 

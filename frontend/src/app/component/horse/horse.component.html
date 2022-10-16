@@ -114,6 +114,11 @@
                aria-label="Show horse details">
               <i class="bi bi-info-lg"></i>
             </button>
+            <button class="btn btn-sm responsive-dark-button"
+                    [routerLink]="[horse.id, 'family-tree']"
+                    aria-label="Show horse family tree">
+              <i class="bi bi-diagram-2-fill"></i>
+            </button>
             <button class="btn btn-sm responsive-primary-button"
                [routerLink]="[horse.id, 'edit']"
                aria-label="Edit horse">

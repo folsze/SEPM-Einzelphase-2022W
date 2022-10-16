@@ -1,11 +1,14 @@
 <div class="header-and-buttons">
   <h1 class="display-1">{{heading}}</h1>
-  <div class="buttons-wrapper">
-    <button *ngIf="isReadonlyMode" class="button-with-icon-and-text btn btn-sm" routerLink="edit">
-      <i class="bi bi-pencil"></i>EDIT
+  <div class="top-buttons-wrapper">
+    <button class="button-with-icon-and-text btn btn-sm btn-dark" routerLink="family-tree">
+      <i class="bi bi-diagram-2-fill"></i> View Family Tree
     </button>
-    <button *ngIf="isEditMode" class="button-with-icon-and-text btn btn-sm" routerLink="../">
-      <i class="bi bi-info-lg"></i>DETAILS
+    <button *ngIf="isReadonlyMode" class="button-with-icon-and-text btn btn-sm btn-primary" routerLink="edit">
+      <i class="bi bi-pencil"></i> Edit
+    </button>
+    <button *ngIf="isEditMode" class="button-with-icon-and-text btn btn-sm btn-secondary" routerLink="../">
+      <i class="bi bi-info-lg"></i> Details
     </button>
   </div>
 </div>
