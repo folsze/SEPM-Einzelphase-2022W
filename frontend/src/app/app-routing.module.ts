@@ -5,6 +5,7 @@ import {HorseComponent} from './component/horse/horse.component';
 import {OwnerComponent} from './component/owner/owner.component';
 import {OwnerCreateComponent} from './component/owner/owner-create/owner-create.component';
 import {FormMode} from './enum/formMode';
+import {FamilyTreeComponent} from './component/horse/family-tree/family-tree.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'horses', pathMatch: 'full'},
@@ -13,6 +14,7 @@ const routes: Routes = [
     {path: 'create', component: HorseFormComponent, data: {mode: FormMode.create}},
     {path: ':id', component: HorseFormComponent, data: {mode: FormMode.readonly}},
     {path: ':id/edit', component: HorseFormComponent, data: {mode: FormMode.edit}},
+    {path: ':id/family-tree', component: FamilyTreeComponent},
   ]},
   {path: 'owners', children: [
       {path: '', component: OwnerComponent},

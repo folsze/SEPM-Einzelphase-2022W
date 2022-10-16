@@ -16,6 +16,7 @@ import {HorseComponent} from './component/horse/horse.component';
 import { OwnerComponent } from './component/owner/owner.component';
 import { OwnerCreateComponent } from './component/owner/owner-create/owner-create.component';
 import { ConfirmDeleteModalContentComponent } from './component/confirm-delete-modal-content/confirm-delete-modal-content.component';
+import { FamilyTreeComponent } from './component/horse/family-tree/family-tree.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { ConfirmDeleteModalContentComponent } from './component/confirm-delete-m
     OwnerComponent,
     OwnerCreateComponent,
     ConfirmDeleteModalContentComponent,
+    FamilyTreeComponent,
   ],
   imports: [
     BrowserModule,

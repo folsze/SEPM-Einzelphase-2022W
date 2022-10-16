@@ -82,4 +82,12 @@ export class HorseService {
   public deleteHorse(id: number): Observable<Horse> {
     return this.http.delete<Horse>(baseUri + '/' + id);
   }
+
+  getFamilyTree(id: number, limit: number): Observable<Horse> {
+    let params: HttpParams = new HttpParams();
+    if (limit) {
+      params = params.append('limit', limit);
+    }
+    return this.http.get<Horse>(baseUri + '/' + id + '/familyTree', {params});
+  }
 }

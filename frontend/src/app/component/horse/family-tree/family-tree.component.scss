@@ -1,0 +1,98 @@
+@use "sass:map";
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins";
+
+.boundary-container {
+  padding-left: 40px;
+}
+
+.elements-container {
+  gap: 40px;
+  border: 1px solid;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: lightgray;
+  border-radius: 10px;
+
+  .name {
+    margin-left: 16px;
+    font-size: large;
+  }
+}
+
+.flex-start-elements {
+  display: flex;
+  align-items: center;
+}
+
+.flex-end-elements {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.bottom-buttons {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  display: flex;
+  gap: 50px;
+}
+
+.limit-input-and-label {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.limit-form {
+  float: right;
+}
+
+.limit-input {
+  width: 200px;
+}
+
+.input-and-button{
+  display: flex;
+  gap: 16px;
+}
+
+.display-limit {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .edit-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
+
+  h4 {
+    margin-bottom: 0;
+  }
+}
+
+.top-bar {
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.responsive-primary-button, .responsive-secondary-button, .responsive-warning-button, .responsive-danger-button, .responsive-info-button, .responsive-dark-button, .responsive-tree-button {
+  @include button-variant($light, $light);
+}
+
+@each $color in (primary, secondary, info, warning, danger) {
+  $value: map.get($theme-colors, $color);
+  .elements-container:hover .responsive-#{$color}-button {
+    @include button-variant($value, $value);
+  }
+}
+
+.readonly-name {
+  max-width: 200px;
+  word-wrap: break-word;
+}
