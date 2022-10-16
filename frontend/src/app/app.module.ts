@@ -15,6 +15,7 @@ import {HorseFormComponent} from './component/horse/horse-form/horse-form.compon
 import {HorseComponent} from './component/horse/horse.component';
 import { OwnerComponent } from './component/owner/owner.component';
 import { OwnerCreateComponent } from './component/owner/owner-create/owner-create.component';
+import { ConfirmDeleteModalContentComponent } from './component/confirm-delete-modal-content/confirm-delete-modal-content.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { OwnerCreateComponent } from './component/owner/owner-create/owner-creat
     AutocompleteComponent,
     OwnerComponent,
     OwnerCreateComponent,
+    ConfirmDeleteModalContentComponent,
   ],
   imports: [
     BrowserModule,

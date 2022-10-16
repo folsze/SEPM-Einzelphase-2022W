@@ -7,6 +7,10 @@ import {AbstractControl, FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged, Observable, of, OperatorFunction, switchMap} from 'rxjs';
 import {constructErrorMessageWithList} from '../../shared/validator';
 import {OwnerService} from '../../service/owner.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {
+  ConfirmDeleteModalContentComponent
+} from '../confirm-delete-modal-content/confirm-delete-modal-content.component';
 
 @Component({
   selector: 'app-horse',
@@ -32,7 +36,8 @@ export class HorseComponent implements OnInit {
     private service: HorseService,
     private notification: ToastrService,
     private formBuilder: FormBuilder,
-    private ownerService: OwnerService
+    private ownerService: OwnerService,
+    private modalService: NgbModal
   ) { }
 
   public get nameFormControl(): AbstractControl {
@@ -84,6 +89,30 @@ export class HorseComponent implements OnInit {
             this.searchWithCurrentValues(horseSearchFormValues);
           }
         }
+    });
+  }
+
+  public openDeleteConfirm(horse: Horse): void {
+    const modalRef = this.modalService.open(ConfirmDeleteModalContentComponent);
+    modalRef.componentInstance.horseName = horse.name;
+    modalRef.result.then((confirmedDeletion) => {
+      if (confirmedDeletion && horse.id) {
+        this.service.deleteHorse(horse.id).subscribe({
+          next: () => {
+            this.notification.success(`Horse ${horse.name} successfully deleted.`);
+            this.searchWithCurrentValues(this.form.value);
+          },
+          error: (error) => {
+            console.error('Error fetching owners', error);
+            const errorMessage = error.status === 0
+              ? 'Connection to the server failed.'
+              : constructErrorMessageWithList(error);
+            this.notification.error(errorMessage, `Could not delete horse ${horse.name}.`, {enableHtml: true, timeOut: 0});
+          }
+        });
+      } else {
+        console.error('Horse to be deleted could not be found.');
+      }
     });
   }
 
@@ -145,23 +174,4 @@ export class HorseComponent implements OnInit {
     return new Date(horse.dateOfBirth).toLocaleDateString();
   }
 
-  public deleteIfUserConfirms(horse: Horse): void {
-    if (horse.id) {
-      if (confirm(`Are you sure you want to delete the horse \"${horse.name}\"`)) {
-        this.service.deleteHorse(horse.id).subscribe({
-          next: () => {
-            this.notification.success(`Horse ${horse.name} successfully deleted.`);
-            this.searchWithCurrentValues(this.form.value);
-          },
-          error: (error) => {
-            console.error('Error fetching owners', error);
-            const errorMessage = error.status === 0
-              ? 'Connection to the server failed.'
-              : constructErrorMessageWithList(error);
-            this.notification.error(errorMessage, `Could not delete horse ${horse.name}.`, {enableHtml: true, timeOut: 0});
-          }
-        });
-      }
-    }
-  }
 }
