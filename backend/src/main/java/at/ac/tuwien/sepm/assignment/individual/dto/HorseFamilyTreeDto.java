@@ -7,7 +7,7 @@ import java.time.LocalDate;
 public record HorseFamilyTreeDto(
     Long id,
     String name,
-    LocalDate birthDate,
+    LocalDate dateOfBirth,
     Sex sex,
     HorseFamilyTreeDto mother,
     HorseFamilyTreeDto father
