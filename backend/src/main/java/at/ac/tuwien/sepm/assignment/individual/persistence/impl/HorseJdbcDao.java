@@ -11,10 +11,12 @@ import at.ac.tuwien.sepm.assignment.individual.persistence.HorseDao;
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
 
 import java.lang.invoke.MethodHandles;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,8 +79,8 @@ public class HorseJdbcDao implements HorseDao {
     args.add((searchParameters.name() != null) ? '%' + searchParameters.name() + '%' : null);
     args.add((searchParameters.description() != null) ? '%' + searchParameters.description() + '%' : null);
     args.add((searchParameters.description() != null) ? '%' + searchParameters.description() + '%' : null);
-    args.add(searchParameters.bornBefore()); // todo: convert to sql date?
-    args.add(searchParameters.bornBefore()); // todo: convert to sql date?
+    args.add(searchParameters.bornBefore());
+    args.add(searchParameters.bornBefore());
     args.add(searchParameters.sex() != null ? searchParameters.sex().toString() : null);
     args.add(searchParameters.sex() != null ? searchParameters.sex().toString() : null);
     args.add(searchParameters.ownerId());
@@ -157,7 +159,7 @@ public class HorseJdbcDao implements HorseDao {
         PreparedStatement stmt = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
         stmt.setString(1, toCreate.name());
         stmt.setString(2, toCreate.description());
-        stmt.setString(3, java.sql.Date.valueOf(toCreate.dateOfBirth()).toString());
+        stmt.setString(3, Date.valueOf(toCreate.dateOfBirth()).toString());
         stmt.setString(4, toCreate.sex().toString());
         stmt.setObject(5, toCreate.ownerId());
         stmt.setObject(6,
@@ -188,7 +190,7 @@ public class HorseJdbcDao implements HorseDao {
     int updated = jdbcTemplate.update(SQL_UPDATE,
         horse.name(),
         horse.description(),
-        horse.dateOfBirth(),
+        Date.valueOf(horse.dateOfBirth()),
         horse.sex().toString(),
         horse.ownerId(),
         horse.motherId(),
@@ -242,11 +244,13 @@ public class HorseJdbcDao implements HorseDao {
 
 
   private Horse mapRow(ResultSet result, int rowNum) throws SQLException {
+    Date d1 = result.getDate("date_of_birth");
+    LocalDate d = result.getObject("date_of_birth", LocalDate.class);
     return new Horse()
         .setId(result.getLong("id"))
         .setName(result.getString("name"))
         .setDescription(result.getString("description"))
-        .setDateOfBirth(result.getDate("date_of_birth").toLocalDate())
+        .setDateOfBirth(result.getObject("date_of_birth", LocalDate.class))
         .setSex(Sex.valueOf(result.getString("sex")))
         .setOwnerId(result.getObject("owner_id", Long.class))
         .setMotherId(result.getObject("mother_id", Long.class))
@@ -258,7 +262,7 @@ public class HorseJdbcDao implements HorseDao {
     return new HorseMinimal()
         .setId(result.getLong("id"))
         .setName(result.getString("name"))
-        .setDateOfBirth(result.getDate("date_of_birth").toLocalDate())
+        .setDateOfBirth(result.getObject("date_of_birth", LocalDate.class))
         .setSex(Sex.valueOf(result.getString("sex")))
         ;
   }
