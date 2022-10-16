@@ -80,7 +80,7 @@
     <ng-template #selectedOwnerFullName>
       <div>
         <div class="typeahead-result">
-          {{ currentOwnerFullName }}
+          <div class="readonly-name">{{ currentOwnerFullName }}</div>
           <button type="button" (click)="clearOwner()" class="btn btn-secondary">
             <i class="bi bi-x-circle"></i>
           </button>

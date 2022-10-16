@@ -245,7 +245,7 @@ export class HorseFormComponent implements OnInit {
     const sendHorse: HorseDetail = {
       id: this.idOfHorseBeingEditedElseUndefined,
       name: this.nameFormControl.value.trim(),
-      description: this.descriptionFormControl.value?.trim(),
+      description: this.descriptionFormControl.value ? this.descriptionFormControl.value?.trim() : null,
       dateOfBirth: this.dateOfBirthFormControl.value,
       sex: this.sexFormControl.value,
       owner: this.ownerFormControl.value,

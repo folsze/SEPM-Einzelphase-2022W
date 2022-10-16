@@ -59,11 +59,21 @@ export class HorseComponent implements OnInit {
     return this.form.controls.ownerFullNameSubstring;
   }
 
+  public get currentOwnerFullName(): string {
+    return this.ownerFormControl.value ?
+      this.ownerFormControl.value.firstName + ' ' + this.ownerFormControl.value.lastName :
+      '';
+  }
+
   private static noDateInFutureValidator(dateControl: AbstractControl) {
     const now: Date = new Date();
     const dateInput: Date = new Date(dateControl.value);
     const dateInFuture = dateInput > now;
     return dateInFuture ? { dateInFuture: true } : null;
+  }
+
+  private static getFullNameIfExistsOf(owner: Owner): string {
+    return owner ? owner.firstName + ' ' + owner.lastName : '';
   }
 
   ngOnInit(): void {
@@ -99,15 +109,6 @@ export class HorseComponent implements OnInit {
   }
 
   // -------------------------------------------------------- START OF OWNER TYPEAHEAD SECTION -----------------------------------
-  private static getFullNameIfExistsOf(owner: Owner): string {
-    return owner ? owner.firstName + ' ' + owner.lastName : '';
-  }
-
-  public get currentOwnerFullName(): string {
-    return this.ownerFormControl.value ?
-      this.ownerFormControl.value.firstName + ' ' + this.ownerFormControl.value.lastName :
-      '';
-  }
 
   public ownerFullName(owner: Owner): string {
     return owner ?
