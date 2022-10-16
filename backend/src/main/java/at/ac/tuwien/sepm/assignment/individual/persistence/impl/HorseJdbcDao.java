@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.assignment.individual.persistence.impl;
 
+import at.ac.tuwien.sepm.assignment.individual.dto.FamilyTreeQueryParamsDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
@@ -64,6 +65,17 @@ public class HorseJdbcDao implements HorseDao {
   private static final String SQL_SEARCH_EXCLUDE_CLAUSE = " AND id != ?";
   private static final String SQL_SEARCH_LIMIT_CLAUSE = " LIMIT ?";
 
+  private static final String SQL_LIST_FOR_FAMILY_TREE_OF_HORSE = "WITH RECURSIVE pedigree_horse (id, name, date_of_birth, sex, " +
+      "mother_id, father_id, generation_number) AS " +
+      "(SELECT id, name, date_of_birth, sex, mother_id, father_id, 1 AS generation_number " +
+      " FROM horse WHERE id = ?" +
+      " UNION " +
+      "SELECT horse.id, horse.name, horse.date_of_birth, horse.sex, " +
+      " horse.mother_id, horse.father_id, (generation_number + 1) AS generation_number " +
+      " FROM horse JOIN pedigree_horse " +
+      " ON (horse.id = pedigree_horse.mother_id OR horse.id = pedigree_horse.father_id)" +
+      " WHERE generation_number < ?) " +
+      "SELECT * FROM pedigree_horse";
 
   private final JdbcTemplate jdbcTemplate;
 
@@ -112,7 +124,7 @@ public class HorseJdbcDao implements HorseDao {
     try {
       return jdbcTemplate.query(SQL_SELECT_ALL, this::mapRow);
     } catch (DataAccessException dae) {
-      throw new FatalException("Error while querying all horses.", dae); // todo Fragestunde: bis in die Persistenz eh ok? Keine Schichteninformation...
+      throw new FatalException("Error while querying all horses.", dae);
     }
   }
 
@@ -242,6 +254,17 @@ public class HorseJdbcDao implements HorseDao {
     }
   }
 
+  public List<Horse> getListForFamilyTreeOfHorse(FamilyTreeQueryParamsDto queryParams) throws NotFoundException {
+    try {
+      List<Horse> list = jdbcTemplate.query(SQL_LIST_FOR_FAMILY_TREE_OF_HORSE, this::mapRowFamilyTree, queryParams.horseId(), queryParams.limit());
+      if (list.isEmpty()) {
+        throw new NotFoundException(String.format("Could not find horse with id %s", queryParams.horseId()));
+      }
+      return list;
+    } catch (DataAccessException e) {
+      throw new FatalException("Error when getting list of horses for family tree.", e);
+    }
+  }
 
   private Horse mapRow(ResultSet result, int rowNum) throws SQLException {
     Date d1 = result.getDate("date_of_birth");
@@ -264,6 +287,17 @@ public class HorseJdbcDao implements HorseDao {
         .setName(result.getString("name"))
         .setDateOfBirth(result.getObject("date_of_birth", LocalDate.class))
         .setSex(Sex.valueOf(result.getString("sex")))
+        ;
+  }
+
+  private Horse mapRowFamilyTree(ResultSet result, int rowNum) throws SQLException {
+    return new Horse()
+        .setId(result.getLong("id"))
+        .setName(result.getString("name"))
+        .setDateOfBirth(result.getObject("date_of_birth", LocalDate.class))
+        .setSex(Sex.valueOf(result.getString("sex")))
+        .setMotherId(result.getObject("mother_id", Long.class))
+        .setFatherId(result.getObject("father_id", Long.class))
         ;
   }
 }

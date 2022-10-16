@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepm.assignment.individual.rest;
 
+import at.ac.tuwien.sepm.assignment.individual.dto.FamilyTreeQueryParamsDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseFamilyTreeDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
@@ -121,6 +123,19 @@ public class HorseEndpoint {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while deleting horse from database", fe);
     } catch (ConflictException ce) {
       throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ce.getMessage(), ce);
+    }
+  }
+
+  @GetMapping(path = "/{id}/familyTree")
+  @ResponseStatus(HttpStatus.OK)
+  public HorseFamilyTreeDto familyTreeOfHorse(@PathVariable Long id, @RequestParam(required = false) Long limit) {
+    try {
+      Long actualLimit = (limit != null) ? limit : 1000;
+      return service.getFamilyTree(new FamilyTreeQueryParamsDto(id, actualLimit));
+    } catch (ValidationException ve) {
+      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ve.getMessage());
+    } catch (NotFoundException nfe) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, nfe.getMessage());
     }
   }
 

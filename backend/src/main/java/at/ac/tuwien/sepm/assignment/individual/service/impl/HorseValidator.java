@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.assignment.individual.service.impl;
 
+import at.ac.tuwien.sepm.assignment.individual.dto.FamilyTreeQueryParamsDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseMinimalDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
@@ -307,6 +308,22 @@ public class HorseValidator {
 
     if (limit != null && limit <= 0) {
       validationErrors.add("Limit must be > 0");
+    }
+  }
+
+  public void validateForFamilyTree(FamilyTreeQueryParamsDto queryParams) throws ValidationException {
+    List<String> validationErrors = new ArrayList<>();
+
+    if (queryParams.horseId() == null) {
+      validationErrors.add("Id of family-tree horse must not be null");
+    }
+
+    if (queryParams.limit() != null && (queryParams.limit() <= 0 || queryParams.limit() > 1000)) {
+      validationErrors.add("Limit must be in range [1,1000]");
+    }
+
+    if (!validationErrors.isEmpty()) {
+      throw new ValidationException("Error while validating family tree query params", validationErrors);
     }
   }
 }

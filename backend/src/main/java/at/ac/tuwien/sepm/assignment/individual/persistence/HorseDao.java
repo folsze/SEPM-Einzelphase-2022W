@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepm.assignment.individual.persistence;
 
+import at.ac.tuwien.sepm.assignment.individual.dto.FamilyTreeQueryParamsDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
-import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
@@ -52,4 +52,6 @@ public interface HorseDao {
   HorseMinimal getHorseMinimalById(Long id);
 
   List<HorseMinimal> getChildrenOf(Long horseId);
+
+  List<Horse> getListForFamilyTreeOfHorse(FamilyTreeQueryParamsDto queryParams) throws NotFoundException;
 }

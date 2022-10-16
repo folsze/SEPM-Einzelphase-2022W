@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepm.assignment.individual.service.impl;
 
+import at.ac.tuwien.sepm.assignment.individual.dto.FamilyTreeQueryParamsDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseFamilyTreeDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseMinimalDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
@@ -18,6 +20,7 @@ import at.ac.tuwien.sepm.assignment.individual.service.OwnerService;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -123,4 +126,34 @@ public class HorseServiceImpl implements HorseService {
       throw new FatalException("Error while trying to query owner of horse.");
     }
   }
+
+  @Override
+  public HorseFamilyTreeDto getFamilyTree(FamilyTreeQueryParamsDto queryParams) throws NotFoundException, ValidationException {
+    validator.validateForFamilyTree(queryParams);
+    List<Horse> listOfHorsesForFamilyTree = dao.getListForFamilyTreeOfHorse(queryParams);
+    return getFamilyTreeDtoRecursively(listOfHorsesForFamilyTree.get(0).getId(), listOfHorsesForFamilyTree, queryParams.limit(), 1L);
+  }
+
+  private HorseFamilyTreeDto getFamilyTreeDtoRecursively(Long horseId, List<Horse> list, Long limit, Long currentGeneration) {
+    if (horseId == null || currentGeneration > limit) {
+      return null;
+    } else {
+      List<Horse> oneHorse = list.stream().filter(h -> h.getId().equals(horseId)).toList(); // O(n)
+
+      if (oneHorse.size() != 1) {
+        throw new FatalException("Error while mapping the horse family tree");
+      }
+      Horse h = oneHorse.get(0);
+
+      return new HorseFamilyTreeDto(
+          h.getId(),
+          h.getName(),
+          h.getDateOfBirth(),
+          h.getSex(),
+          getFamilyTreeDtoRecursively(h.getMotherId(), list, limit, currentGeneration + 1),
+          getFamilyTreeDtoRecursively(h.getFatherId(), list, limit, currentGeneration + 1)
+      );
+    }
+  }
+
 }

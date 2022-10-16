@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepm.assignment.individual.service;
 
+import at.ac.tuwien.sepm.assignment.individual.dto.FamilyTreeQueryParamsDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseFamilyTreeDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
@@ -44,4 +46,5 @@ public interface HorseService {
 
   Stream<HorseListDto> search(HorseSearchDto searchParameters) throws ValidationException, ConflictException;
 
+  HorseFamilyTreeDto getFamilyTree(FamilyTreeQueryParamsDto queryParams) throws NotFoundException, ValidationException;
 }
