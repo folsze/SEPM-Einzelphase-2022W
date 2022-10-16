@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -34,6 +35,7 @@ public class OwnerEndpoint {
   }
 
   @GetMapping
+  @ResponseStatus(HttpStatus.OK)
   public Stream<OwnerDto> search(
       @RequestParam(required = false) String fullNameSubstring,
       @RequestParam(required = false) Integer maxResultCount) {
@@ -47,6 +49,7 @@ public class OwnerEndpoint {
   }
 
   @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
   public OwnerDto create(@RequestBody OwnerCreateDto ownerCreateDto) {
     try {
       return service.create(ownerCreateDto);

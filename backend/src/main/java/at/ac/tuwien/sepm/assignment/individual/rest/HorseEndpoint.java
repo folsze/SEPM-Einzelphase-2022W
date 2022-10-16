@@ -43,6 +43,7 @@ public class HorseEndpoint {
   }
 
   @GetMapping
+  @ResponseStatus(HttpStatus.OK)
   public Stream<HorseListDto> searchHorses(@RequestParam(required = false) String name,
                                            @RequestParam(required = false) String description,
                                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateOfBirth,
@@ -62,6 +63,7 @@ public class HorseEndpoint {
   }
 
   @GetMapping("{id}")
+  @ResponseStatus(HttpStatus.OK)
   public HorseDetailDto getById(@PathVariable long id) {
     LOG.info("GET " + BASE_PATH + "/{}", id);
     try {
@@ -74,6 +76,7 @@ public class HorseEndpoint {
   }
 
   @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
   public HorseDetailDto create(@RequestBody HorseDetailDto createData) throws ValidationException {
     LOG.info("POST " + BASE_PATH + "{}", createData);
     try {
@@ -89,6 +92,7 @@ public class HorseEndpoint {
   }
 
   @PutMapping("{id}")
+  @ResponseStatus(HttpStatus.OK)
   public HorseDetailDto update(@PathVariable long id, @RequestBody HorseDetailDto updateData) throws ValidationException, ConflictException {
     LOG.info("PUT " + BASE_PATH + "/{}", id);
     LOG.debug("Body of request:\n{}", updateData);
