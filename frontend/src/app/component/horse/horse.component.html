@@ -102,11 +102,11 @@
     </thead>
     <tbody>
       <tr *ngFor="let horse of horses" class="center-td">
-        <td>{{horse.name}}</td>
-        <td>{{horse.description}}</td>
+        <td style="max-width: 100px; word-wrap: break-word">{{horse.name}}</td>
+        <td style="max-width: 300px; word-wrap: break-word">{{horse.description}}</td>
         <td>{{dateOfBirthAsLocaleDate(horse)}}</td>
         <td>{{horse.sex === 'FEMALE' ? 'Female' : 'Male'}}</td>
-        <td>{{ownerFullName(horse.owner)}}</td>
+        <td style="max-width: 200px; word-wrap: break-word">{{ownerFullName(horse.owner)}}</td>
         <td>
           <div class="btn-group">
             <button class="btn btn-sm responsive-secondary-button"
