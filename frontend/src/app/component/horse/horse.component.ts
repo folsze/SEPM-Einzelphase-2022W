@@ -94,24 +94,13 @@ export class HorseComponent implements OnInit {
 
   public openDeleteConfirm(horse: Horse): void {
     const modalRef = this.modalService.open(ConfirmDeleteModalContentComponent);
-    modalRef.componentInstance.horseName = horse.name;
-    modalRef.result.then((confirmedDeletion) => {
-      if (confirmedDeletion && horse.id) {
-        this.service.deleteHorse(horse.id).subscribe({
-          next: () => {
-            this.notification.success(`Horse ${horse.name} successfully deleted.`);
-            this.searchWithCurrentValues(this.form.value);
-          },
-          error: (error) => {
-            console.error('Error fetching owners', error);
-            const errorMessage = error.status === 0
-              ? 'Connection to the server failed.'
-              : constructErrorMessageWithList(error);
-            this.notification.error(errorMessage, `Could not delete horse ${horse.name}.`, {enableHtml: true, timeOut: 0});
-          }
-        });
+    modalRef.componentInstance.horse = horse;
+
+    modalRef.result.then((horseWasDeleted: boolean) => {
+      if (horseWasDeleted) {
+        this.searchWithCurrentValues(this.form.value);
       } else {
-        console.error('Horse to be deleted could not be found.');
+        console.warn('Horses weren\'t reloaded as the deletion failed.');
       }
     });
   }

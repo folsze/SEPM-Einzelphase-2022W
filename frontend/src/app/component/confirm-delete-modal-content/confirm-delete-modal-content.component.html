@@ -3,12 +3,12 @@
   <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
 </div>
 <div class="modal-body">
-  <p><strong>Are you sure you want to delete the horse <span class="text-primary horse-name">"{{horseName}}"</span>?</strong></p>
+  <p><strong>Are you sure you want to delete the horse <span class="text-primary horse-name">"{{horse.name}}"</span>?</strong></p>
   <p>
     <span class="text-danger">This operation can not be undone.</span>
   </p>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
-  <button type="button" class="btn btn-danger" (click)="modal.close(true)">Ok</button>
+  <button type="button" class="btn btn-danger" (click)="deleteHorseAndCloseModalIfDeleteWorked()">Ok</button>
 </div>
