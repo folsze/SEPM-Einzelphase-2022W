@@ -73,6 +73,12 @@ public class HorseValidator {
       validateThatHorseYoungerThanFather(horse, horse.father(), conflictErrors);
       validateThatFatherExistsInDB(horse.fatherId(), conflictErrors);
     }
+
+    if (horse.motherId() != null && horse.fatherId() != null) {
+      if (horse.motherId().equals(horse.fatherId())) {
+        validationErrors.add("Mother ID must not equal Father ID");
+      }
+    }
   }
 
   private void validateThatHorseYoungerThanMother(HorseDetailDto horse, HorseMinimalDto mother, List<String> validationErrors) {
