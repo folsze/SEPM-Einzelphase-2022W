@@ -16,7 +16,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -56,7 +55,8 @@ public class HorseJdbcDao implements HorseDao {
           + " (? IS NULL OR UPPER(name) LIKE UPPER(?)) AND "
           + " (? IS NULL OR UPPER(description) LIKE UPPER(?)) AND "
           + " (? IS NULL OR date_of_birth < ?) AND "
-          + " (? IS NULL OR sex = ?)";
+          + " (? IS NULL OR sex = ?) AND "
+          + " (? IS NULL OR owner_id = ?)";
   private static final String SQL_SELECT_ALL_CHILDREN = "SELECT * FROM " + TABLE_NAME + " WHERE mother_id = ? OR father_id = ?";
 
   private static final String SQL_SEARCH_EXCLUDE_CLAUSE = " AND id != ?";
@@ -81,6 +81,8 @@ public class HorseJdbcDao implements HorseDao {
     args.add(searchParameters.bornBefore()); // todo: convert to sql date?
     args.add(searchParameters.sex() != null ? searchParameters.sex().toString() : null);
     args.add(searchParameters.sex() != null ? searchParameters.sex().toString() : null);
+    args.add(searchParameters.ownerId());
+    args.add(searchParameters.ownerId());
 
     String query = SQL_SEARCH;
     var excludeThisId = searchParameters.idOfHorseToBeExcluded();

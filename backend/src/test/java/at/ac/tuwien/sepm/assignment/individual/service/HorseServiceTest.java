@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.tuple;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
+import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
 
@@ -23,7 +24,7 @@ public class HorseServiceTest {
   HorseService horseService;
 
   @Test
-  public void getAllReturnsAllStoredHorses() throws ValidationException {
+  public void getAllReturnsAllStoredHorses() throws ValidationException, ConflictException {
     HorseSearchDto h = new HorseSearchDto(null, null, null, null, null, null, null);
     List<HorseListDto> horses = horseService.search(h)
         .toList();

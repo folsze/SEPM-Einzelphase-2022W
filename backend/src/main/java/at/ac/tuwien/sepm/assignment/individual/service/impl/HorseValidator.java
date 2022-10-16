@@ -227,32 +227,44 @@ public class HorseValidator {
   }
 
   // START OF "THE REST" SECTION
-  public void validateForSearch(HorseSearchDto horse) throws ValidationException {
+  public void validateForSearch(HorseSearchDto horse) throws ValidationException, ConflictException {
     LOG.trace("validateForSearch({})", horse);
     List<String> validationErrors = new ArrayList<>();
+    List<String> conflictErrors = new ArrayList<>();
 
     validateSearchHorsePrimitiveAttributes(
         horse.name(),
         horse.description(),
         horse.bornBefore(),
-        horse.ownerFullNameSubstring(),
         horse.limit(),
         validationErrors);
+
+    if (!validationErrors.isEmpty()) {
+      throw new ValidationException("Validation of horse search filter failed", validationErrors);
+    }
 
     if (horse.idOfHorseToBeExcluded() != null) {
       try {
         horseDao.getById(horse.idOfHorseToBeExcluded());
       } catch (NotFoundException nfe) {
-        validationErrors.add("Horse to be excluded from search not found in database");
+        conflictErrors.add("Horse to be excluded from search not found in database");
       }
     }
 
-    if (!validationErrors.isEmpty()) {
-      throw new ValidationException("Validation of horse search filter failed", validationErrors);
+    if (horse.ownerId() != null) {
+      try {
+        ownerDao.getById(horse.ownerId());
+      } catch (NotFoundException nfe) {
+        conflictErrors.add("Owner of search-filter not found in database");
+      }
+    }
+
+    if (!conflictErrors.isEmpty()) {
+      throw new ConflictException("Conflict-Validation of horse search filter failed", conflictErrors);
     }
   }
 
-  public void validateSearchHorsePrimitiveAttributes(String name, String description, LocalDate bornBefore, String ownerFullNameSubstring, Integer limit,
+  public void validateSearchHorsePrimitiveAttributes(String name, String description, LocalDate bornBefore, Integer limit,
                                                      List<String> validationErrors) {
     if (name != null) {
       if (name.isBlank()) {
@@ -284,19 +296,6 @@ public class HorseValidator {
     if (bornBefore != null) {
       if (bornBefore.isAfter(LocalDate.now())) {
         validationErrors.add("Date used for filtering horses must not be in the future");
-      }
-    }
-
-    if (ownerFullNameSubstring != null) {
-      if (ownerFullNameSubstring.isBlank()) {
-        validationErrors.add("Owner name-substring is given but blank");
-      }
-      if (ownerFullNameSubstring.length() > 255) {
-        validationErrors.add("Owner name-substring too long: longer than 255 characters");
-      }
-
-      if (ownerFullNameSubstring.length() != ownerFullNameSubstring.trim().length()) {
-        validationErrors.add("Owner name-substring must not start/end with whitespaces");
       }
     }
 

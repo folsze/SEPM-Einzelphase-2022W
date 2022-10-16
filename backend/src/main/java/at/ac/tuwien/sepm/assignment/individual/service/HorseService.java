@@ -42,6 +42,6 @@ public interface HorseService {
 
   void delete(Long id) throws NotFoundException, ConflictException;
 
-  Stream<HorseListDto> search(HorseSearchDto searchParameters) throws ValidationException;
+  Stream<HorseListDto> search(HorseSearchDto searchParameters) throws ValidationException, ConflictException;
 
 }

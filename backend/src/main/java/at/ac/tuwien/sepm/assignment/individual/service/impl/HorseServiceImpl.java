@@ -5,7 +5,6 @@ import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseMinimalDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerDto;
-import at.ac.tuwien.sepm.assignment.individual.dto.OwnerSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.entity.HorseMinimal;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
@@ -108,7 +107,7 @@ public class HorseServiceImpl implements HorseService {
   }
 
   @Override
-  public Stream<HorseListDto> search(HorseSearchDto searchParameters) throws ValidationException {
+  public Stream<HorseListDto> search(HorseSearchDto searchParameters) throws ValidationException, ConflictException {
     validator.validateForSearch(searchParameters);
     var horses = dao.search(searchParameters);
     var ownerIds = horses.stream()
@@ -116,13 +115,12 @@ public class HorseServiceImpl implements HorseService {
         .filter(Objects::nonNull)
         .collect(Collectors.toUnmodifiableSet());
 
-    Map<Long, OwnerDto> horsesOwnersMatchingOwnerFullNameSubstring = ownerService.getOwnersByIdsAndFilter(ownerIds,
-        new OwnerSearchDto(searchParameters.ownerFullNameSubstring(), null));
-
-    // Stream<Horse> horseStream = horses.stream().filter(horse -> horsesOwnersMatchingOwnerFullNameSubstring.containsKey(horse.getOwnerId()));
-    // einkommentieren &: horsesStream.map(... todo Fragestunde
-    Stream<HorseListDto> result = horses.stream().map(horse -> mapper.entityToListDto(horse, horsesOwnersMatchingOwnerFullNameSubstring));
-
-    return result;
+    try {
+      Map<Long, OwnerDto> horsesOwners = ownerService.getOwnersByIds(ownerIds);
+      Stream<HorseListDto> result = horses.stream().map(horse -> mapper.entityToListDto(horse, horsesOwners));
+      return result;
+    } catch (NotFoundException nfe) {
+      throw new FatalException("Error while trying to query owner of horse.");
+    }
   }
 }

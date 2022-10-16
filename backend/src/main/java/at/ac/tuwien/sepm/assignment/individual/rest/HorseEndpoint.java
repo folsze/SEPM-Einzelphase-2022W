@@ -47,15 +47,17 @@ public class HorseEndpoint {
                                            @RequestParam(required = false) String description,
                                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateOfBirth,
                                            @RequestParam(required = false) Sex sex,
-                                           @RequestParam(required = false) String ownerFullNameSubstring,
+                                           @RequestParam(required = false) Long ownerId,
                                            @RequestParam(required = false) Integer limit,
                                            @RequestParam(required = false) Long idOfHorseToBeExcluded) {
-    HorseSearchDto requestParams = new HorseSearchDto(name, description, dateOfBirth, sex, ownerFullNameSubstring, limit, idOfHorseToBeExcluded);
+    HorseSearchDto requestParams = new HorseSearchDto(name, description, dateOfBirth, sex, ownerId, limit, idOfHorseToBeExcluded);
     LOG.debug("request parameters: {}", requestParams);
     try {
       return service.search(requestParams);
     } catch (ValidationException ve) {
       throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ve.getMessage(), ve);
+    } catch (ConflictException ce) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, ce.getMessage(), ce);
     }
   }
 

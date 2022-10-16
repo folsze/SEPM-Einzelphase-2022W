@@ -16,7 +16,7 @@ public record HorseSearchDto(
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     LocalDate bornBefore,
     Sex sex,
-    String ownerFullNameSubstring,
+    Long ownerId,
     Integer limit,
     Long idOfHorseToBeExcluded
 ) {
