@@ -40,5 +40,5 @@ VALUES (-1, 'Wendy', 'The famous one!', '2014-10-10', 'FEMALE', -9, null, null),
        (-7, '1-FATHER', 'The famous one!', '2020-12-12', 'MALE', null, -4, -3),
        (-8, '1-MOTHER', 'The famous one!', '2021-12-12', 'FEMALE', null, -6, -5),
        (-9, '1', '----STAMMBAUM-WURZEL----', '2022-10-11', 'FEMALE', null, -8, -7),
-       (-10, 'Brandy', null, '2012-12-12', 'FEMALE', -1, null, null)
+       (-10, 'Brandy', null, '2022-10-11', 'FEMALE', -1, null, null)
 ;
