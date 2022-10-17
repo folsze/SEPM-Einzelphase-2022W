@@ -65,17 +65,17 @@ public class HorseJdbcDao implements HorseDao {
   private static final String SQL_SEARCH_EXCLUDE_CLAUSE = " AND id != ?";
   private static final String SQL_SEARCH_LIMIT_CLAUSE = " LIMIT ?";
 
-  private static final String SQL_LIST_FOR_FAMILY_TREE_OF_HORSE = "WITH RECURSIVE pedigree_horse (id, name, date_of_birth, sex, " +
-      "mother_id, father_id, generation_number) AS " +
-      "(SELECT id, name, date_of_birth, sex, mother_id, father_id, 1 AS generation_number " +
-      " FROM horse WHERE id = ?" +
-      " UNION " +
-      "SELECT horse.id, horse.name, horse.date_of_birth, horse.sex, " +
-      " horse.mother_id, horse.father_id, (generation_number + 1) AS generation_number " +
-      " FROM horse JOIN pedigree_horse " +
-      " ON (horse.id = pedigree_horse.mother_id OR horse.id = pedigree_horse.father_id)" +
-      " WHERE generation_number < ?) " +
-      "SELECT * FROM pedigree_horse";
+  private static final String SQL_LIST_FOR_FAMILY_TREE_OF_HORSE = "WITH RECURSIVE pedigree_horse (id, name, date_of_birth, sex, "
+      + "mother_id, father_id, generation_number) AS "
+      + "(SELECT id, name, date_of_birth, sex, mother_id, father_id, 1 AS generation_number "
+      + " FROM horse WHERE id = ?"
+      + " UNION "
+      + "SELECT horse.id, horse.name, horse.date_of_birth, horse.sex, "
+      + " horse.mother_id, horse.father_id, (generation_number + 1) AS generation_number "
+      + " FROM horse JOIN pedigree_horse "
+      + " ON (horse.id = pedigree_horse.mother_id OR horse.id = pedigree_horse.father_id)"
+      + " WHERE generation_number < ?) "
+      + "SELECT * FROM pedigree_horse";
 
   private final JdbcTemplate jdbcTemplate;
 
