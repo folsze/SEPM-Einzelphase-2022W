@@ -51,5 +51,13 @@ public interface OwnerDao {
    */
   Owner create(OwnerCreateDto newOwner);
 
+  /**
+   * Gets all owners that are included in the list ownersOfHorses while also
+   * filtering those owners at the same time
+   *
+   * @param ownersOfHorses   all the ids (Long) of the owners
+   * @param searchParameters the parameters with which to filter the owners
+   * @return a collection of all owners that were in the ids & matched the queryParams
+   */
   Collection<Owner> getOwnersByIdsAndFilter(Collection<Long> ownersOfHorses, OwnerSearchDto searchParameters);
 }

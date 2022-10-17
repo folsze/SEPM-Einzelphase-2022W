@@ -43,15 +43,55 @@ public interface HorseDao {
    */
   Horse getById(long id) throws NotFoundException;
 
+  /**
+   * Create a horse from a HorseDetailDto in the persistent data store.
+   *
+   * @param toCreate the data of the horse to be created
+   * @return the horse entity that was created
+   */
   Horse create(HorseDetailDto toCreate);
 
+  /**
+   * Delete a horse by its ID from the persistent data store.
+   *
+   * @param id the id of the horse to be deleted
+   * @throws NotFoundException if the horse with the given ID does not exist in the persistent data store
+   * @throws ConflictException if the specified horse is already a parent of a horse (not allowed to turn horses into orphans)
+   */
   void delete(Long id) throws NotFoundException, ConflictException;
 
+  /**
+   * Search all horses by all attributes that a HorseSearchDto has.
+   * All search parameters are optional, a search with none specified will return all horses.
+   *
+   * @param searchParameters a DTO holding all of the search parameters
+   * @return the list of Horses that matched the search
+   */
   List<Horse> search(HorseSearchDto searchParameters);
 
+  /**
+   * gets a minimal form of the normal horse by id.
+   * This minimal form doesn't have a description, parents nor an owner.
+   *
+   * @param id the id of the desired horse
+   * @return the desired horse that was searched for with the id
+   */
   HorseMinimal getHorseMinimalById(Long id);
 
+  /**
+   * Gets all the children of the horse by the horses id
+   *
+   * @param horseId the id of the horse whose children are desired
+   * @return A list of all horses that are children of the horse with the id
+   */
   List<HorseMinimal> getChildrenOf(Long horseId);
 
+  /**
+   * Gets a list of all horses that are included in the specified horses id
+   *
+   * @param queryParams the queryParams for the search for the family tree: the horse id & the limit
+   * @return A list of all the horses that were queried
+   * @throws NotFoundException if the id specified in the queryParams was not found in the database
+   */
   List<Horse> getListForFamilyTreeOfHorse(FamilyTreeQueryParamsDto queryParams) throws NotFoundException;
 }

@@ -33,9 +33,6 @@ public interface OwnerService {
    */
   Map<Long, OwnerDto> getOwnersByIds(Collection<Long> ids) throws NotFoundException;
 
-
-  Map<Long, OwnerDto> getOwnersByIdsAndFilter(Collection<Long> ownersOfHorses, OwnerSearchDto searchParameters);
-
   /**
    * Search for owners matching the criteria in {@code searchParameters}.
    * <p>
