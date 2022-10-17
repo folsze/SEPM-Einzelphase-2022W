@@ -89,7 +89,7 @@ public interface HorseDao {
   /**
    * Gets a list of all horses that are included in the specified horses id
    *
-   * @param queryParams the queryParams for the search for the family tree: the horse id & the limit
+   * @param queryParams the queryParams for the search for the family tree: the horse id and the limit
    * @return A list of all the horses that were queried
    * @throws NotFoundException if the id specified in the queryParams was not found in the database
    */
