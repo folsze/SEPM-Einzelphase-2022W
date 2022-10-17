@@ -27,3 +27,9 @@
   max-width: 200px;
   word-wrap: break-word;
 }
+
+.typeahead-result{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}

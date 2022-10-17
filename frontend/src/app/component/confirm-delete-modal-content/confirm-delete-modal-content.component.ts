@@ -28,7 +28,7 @@ export class ConfirmDeleteModalContentComponent {
           this.modal.close(confirmedDeletion);
         },
         error: (error) => {
-          console.error('Error fetching owners', error);
+          console.error('Error deleting horse', error);
           const errorMessage = error.status === 0
             ? 'Connection to the server failed.'
             : constructErrorMessageWithList(error);

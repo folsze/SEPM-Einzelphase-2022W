@@ -45,17 +45,21 @@ export class FamilyTreeComponent implements OnInit {
     return new Date(horse.dateOfBirth).toLocaleDateString();
   }
 
-  public openDeleteConfirm(horse: Horse): void {
+  public openDeleteConfirm(horseUserWantedToDelete: Horse): void {
     const modalRef = this.modalService.open(ConfirmDeleteModalContentComponent);
-    modalRef.componentInstance.horse = horse;
+    modalRef.componentInstance.horse = horseUserWantedToDelete;
 
     modalRef.result.then((horseWasDeleted: boolean) => {
       if (horseWasDeleted) {
-        this.getFamilyTreeData();
+        if (horseUserWantedToDelete.id === this.familyTreeRoot.id) {
+          this.router.navigate(['horses']);
+        } else {
+          this.getFamilyTreeData();
+        }
       } else {
         console.warn('Horses weren\'t reloaded as the deletion failed.');
       }
-    });
+    }).catch(() => {});
   }
 
   public toEditMode() {
