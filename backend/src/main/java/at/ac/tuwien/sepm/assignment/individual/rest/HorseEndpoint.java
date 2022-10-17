@@ -36,6 +36,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping(path = HorseEndpoint.BASE_PATH)
 public class HorseEndpoint {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static final String BASE_PATH = "/horses";
 
   private final HorseService service;
@@ -53,13 +54,17 @@ public class HorseEndpoint {
                                            @RequestParam(required = false) Long ownerId,
                                            @RequestParam(required = false) Integer limit,
                                            @RequestParam(required = false) Long idOfHorseToBeExcluded) {
+    LOG.info("GET " + BASE_PATH + "?name={}&description={}&dateOfBirth={}&sex={}?ownerId={}&limit={}&idOfHorseToBeExcluded={}", name, description, dateOfBirth,
+        sex, ownerId, limit, idOfHorseToBeExcluded);
     HorseSearchDto requestParams = new HorseSearchDto(name, description, dateOfBirth, sex, ownerId, limit, idOfHorseToBeExcluded);
     LOG.debug("request parameters: {}", requestParams);
     try {
       return service.search(requestParams);
     } catch (ValidationException ve) {
+      logClientError(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid search RequestParams during horse search", ve);
       throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ve.getMessage(), ve);
     } catch (ConflictException ce) {
+      logClientError(HttpStatus.CONFLICT, "A conflict with the existing state arose while trying to search a horse", ce);
       throw new ResponseStatusException(HttpStatus.CONFLICT, ce.getMessage(), ce);
     }
   }
@@ -80,15 +85,18 @@ public class HorseEndpoint {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public HorseDetailDto create(@RequestBody HorseDetailDto createData) throws ValidationException {
-    LOG.info("POST " + BASE_PATH + "{}", createData);
+    LOG.info("POST " + BASE_PATH);
+    LOG.debug("Body of request:\n{}", createData);
     try {
       return service.create(createData);
     } catch (ValidationException ve) {
+      logClientError(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid family create horse request body", ve);
       throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ve.getMessage(), ve);
     } catch (FatalException fe) {
       LOG.error("Error while creating horse.", fe);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, fe.getMessage(), fe);
     } catch (ConflictException ce) {
+      logClientError(HttpStatus.CONFLICT, "A conflict with the existing state arose while trying to create a horse", ce);
       throw new ResponseStatusException(HttpStatus.CONFLICT, ce.getMessage(), ce);
     }
   }
@@ -105,6 +113,7 @@ public class HorseEndpoint {
       logClientError(status, "Horse to update not found", e);
       throw new ResponseStatusException(status, e.getMessage(), e);
     } catch (ConflictException ce) {
+      logClientError(HttpStatus.CONFLICT, "A conflict with the existing state arose while trying to update horse with id %d".formatted(id), ce);
       throw new ResponseStatusException(HttpStatus.CONFLICT, ce.getMessage(), ce);
     }
   }
@@ -116,12 +125,13 @@ public class HorseEndpoint {
     try {
       service.delete(id);
     } catch (NotFoundException nfe) {
-      LOG.error("Horse (with id {}) to be deleted doesn't exist", id, nfe);
+      logClientError(HttpStatus.NOT_FOUND, "Horse to be deleted with id " + id + " doesn't exist", nfe);
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Horse to be deleted doesn't exist", nfe);
     } catch (FatalException fe) {
-      LOG.error("Error while deleting horse with id {} from database", id, fe);
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while deleting horse from database", fe);
+      LOG.error("Error while deleting horse with id {}. Status {}", id, HttpStatus.INTERNAL_SERVER_ERROR.value(), fe);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while deleting horse", fe);
     } catch (ConflictException ce) {
+      logClientError(HttpStatus.CONFLICT, "A conflict with the existing state arose while trying to delete horse with id " + id, ce);
       throw new ResponseStatusException(HttpStatus.CONFLICT, ce.getMessage(), ce);
     }
   }
@@ -129,12 +139,17 @@ public class HorseEndpoint {
   @GetMapping(path = "/{id}/familyTree")
   @ResponseStatus(HttpStatus.OK)
   public HorseFamilyTreeDto familyTreeOfHorse(@PathVariable Long id, @RequestParam(required = false) Long limit) {
+    LOG.info("GET " + BASE_PATH + "/{}/familyTree", id);
+    LOG.debug("tree depth limit from request: {}", limit);
     try {
       Long actualLimit = (limit != null) ? limit : 1000;
+      LOG.debug("actual tree depth limit: {}", actualLimit);
       return service.getFamilyTree(new FamilyTreeQueryParamsDto(id, actualLimit));
     } catch (ValidationException ve) {
+      logClientError(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid family tree request parameters", ve);
       throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, ve.getMessage());
     } catch (NotFoundException nfe) {
+      logClientError(HttpStatus.NOT_FOUND, "Horse with id " + id + " not found", nfe);
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, nfe.getMessage());
     }
   }

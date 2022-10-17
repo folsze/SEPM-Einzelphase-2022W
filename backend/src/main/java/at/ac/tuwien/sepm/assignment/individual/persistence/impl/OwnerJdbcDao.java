@@ -30,6 +30,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class OwnerJdbcDao implements OwnerDao {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private static final String TABLE_NAME = "owner";
   private static final String SQL_SELECT_BY_ID = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?";
   private static final String SQL_SELECT_OWNERS_BY_IDS = "SELECT * FROM " + TABLE_NAME + " WHERE id IN (:ids)";
@@ -104,6 +105,7 @@ public class OwnerJdbcDao implements OwnerDao {
 
   @Override
   public Collection<Owner> getOwnersByIdsAndFilter(Collection<Long> ownerIdsOfHorses, OwnerSearchDto searchParameters) {
+    LOG.trace("getOwnersByIdsAndFilter {}", ownerIdsOfHorses);
     Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("ids", ownerIdsOfHorses);
     paramMap.put("name", searchParameters.name());
@@ -133,6 +135,7 @@ public class OwnerJdbcDao implements OwnerDao {
   }
 
   private Owner mapRow(ResultSet resultSet, int i) throws SQLException {
+    LOG.trace("mapRow result: {} rowNum: {}", resultSet, i);
     return new Owner()
         .setId(resultSet.getLong("id"))
         .setFirstName(resultSet.getString("first_name"))

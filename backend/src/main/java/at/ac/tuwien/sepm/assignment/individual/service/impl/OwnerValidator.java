@@ -44,6 +44,7 @@ public class OwnerValidator {
   }
 
   private void validateEmail(String email, List<String> validationErrors) {
+    LOG.trace("validateEmail {}", email);
     String regEx = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
     if (email != null) {
       if (!email.matches(regEx)) {
@@ -53,6 +54,7 @@ public class OwnerValidator {
   }
 
   private void validateFirstName(String firstName, List<String> validationErrors) {
+    LOG.trace("validateFirstName {}", firstName);
     if (firstName != null) {
       if (firstName.isBlank()) {
         validationErrors.add("First name is given but blank");
@@ -71,6 +73,7 @@ public class OwnerValidator {
   }
 
   private void validateLastName(String lastName, List<String> validationErrors) {
+    LOG.trace("validateLastName {}", lastName);
     if (lastName != null) {
       if (lastName.isBlank()) {
         validationErrors.add("Last name is given but blank");
@@ -89,6 +92,7 @@ public class OwnerValidator {
   }
 
   private void validateOwnerFullNameSubstring(String ownerFullNameSubstring, List<String> validationErrors) {
+    LOG.trace("validateOwnerFullNameSubstring {}", ownerFullNameSubstring);
     if (ownerFullNameSubstring != null) {
       if (ownerFullNameSubstring.isBlank()) {
         validationErrors.add("Full name substring is given but blank");

@@ -21,9 +21,11 @@ public class HorseMapper {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public HorseMapper() {
+
   }
 
   public HorseMinimalDto minimalEntityToMinimalDto(HorseMinimal horse) {
+    LOG.trace("minimalEntityToMinimalDto {}", horse);
     if (horse == null) {
       return null;
     }
@@ -86,6 +88,7 @@ public class HorseMapper {
   }
 
   private OwnerDto getOwnerDto(Long ownerId, Map<Long, OwnerDto> owners) {
+    LOG.trace("getOwnerDto {}", ownerId);
     OwnerDto owner = null;
     if (ownerId != null) {
       if (!owners.containsKey(ownerId)) {
@@ -97,6 +100,7 @@ public class HorseMapper {
   }
 
   private HorseMinimalDto getHorseMinimalDto(Long horseId, Map<Long, HorseMinimalDto> horses) {
+    LOG.trace("getHorseMinimalDto {}", horseId);
     HorseMinimalDto horse = null;
     if (horseId != null) {
       if (!horses.containsKey(horseId)) {

@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HorseServiceImpl implements HorseService {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private final HorseDao dao;
   private final HorseMapper mapper;
   private final HorseValidator validator;
@@ -72,6 +73,7 @@ public class HorseServiceImpl implements HorseService {
 
   @Override
   public HorseDetailDto create(HorseDetailDto createData) throws ValidationException, ConflictException {
+    LOG.trace("horse create body: {}", createData);
     validator.validateForCreate(createData);
     var createdHorse = dao.create(createData);
     return mapper.entityToDetailDto(
@@ -83,6 +85,7 @@ public class HorseServiceImpl implements HorseService {
   }
 
   private Map<Long, OwnerDto> ownerMapForSingleId(Long ownerId) {
+    LOG.trace("ownerMapForSingleId. ID={}", ownerId);
     try {
       return ownerId == null
           ? null
@@ -93,6 +96,7 @@ public class HorseServiceImpl implements HorseService {
   }
 
   private Map<Long, HorseMinimalDto> horseMapForSingleId(Long horseId) {
+    LOG.trace("horseMapForSingleId. ID={}", horseId);
     return horseId == null
         ? null
         : Collections.singletonMap(horseId, mapper.minimalEntityToMinimalDto(getMinimalHorseById(horseId)));
@@ -111,6 +115,7 @@ public class HorseServiceImpl implements HorseService {
 
   @Override
   public Stream<HorseListDto> search(HorseSearchDto searchParameters) throws ValidationException, ConflictException {
+    LOG.trace("search. params: {}", searchParameters);
     validator.validateForSearch(searchParameters);
     var horses = dao.search(searchParameters);
     var ownerIds = horses.stream()
@@ -129,12 +134,15 @@ public class HorseServiceImpl implements HorseService {
 
   @Override
   public HorseFamilyTreeDto getFamilyTree(FamilyTreeQueryParamsDto queryParams) throws NotFoundException, ValidationException {
+    LOG.trace("get familyTree: {}", queryParams);
     validator.validateForFamilyTree(queryParams);
     List<Horse> listOfHorsesForFamilyTree = dao.getListForFamilyTreeOfHorse(queryParams);
     return getFamilyTreeDtoRecursively(listOfHorsesForFamilyTree.get(0).getId(), listOfHorsesForFamilyTree, queryParams.limit(), 1L);
   }
 
   private HorseFamilyTreeDto getFamilyTreeDtoRecursively(Long horseId, List<Horse> list, Long limit, Long currentGeneration) {
+    LOG.trace("getFamilyTreeDtoRecursively: horseId={}, list={}, limit={}, currentGeneration={}",
+        horseId, list.toString(), limit.toString(), currentGeneration.toString());
     if (horseId == null || currentGeneration > limit) {
       return null;
     } else {

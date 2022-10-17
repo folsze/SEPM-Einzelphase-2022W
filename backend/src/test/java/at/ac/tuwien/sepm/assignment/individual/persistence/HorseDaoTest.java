@@ -9,6 +9,7 @@ import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 
+import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,11 +27,14 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 public class HorseDaoTest {
 
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Autowired
   HorseDao horseDao;
 
   @Test
   public void getAllReturnsAllStoredHorses() {
+    LOG.trace("getAllReturnsAllStoredHorses");
     List<Horse> horses = horseDao.getAll();
     assertThat(horses.size()).isGreaterThanOrEqualTo(10);
     assertThat(horses)
@@ -38,11 +44,13 @@ public class HorseDaoTest {
 
   @Test
   public void getNonExistentThrowsNotFound() {
+    LOG.trace("getNonExistentThrowsNotFound");
     assertThrows(NotFoundException.class, () -> horseDao.getById(-9999L));
   }
 
   @Test
   public void afterDeletingHorseItShouldNotBeFindableInDB() throws NotFoundException, ConflictException {
+    LOG.trace("afterDeletingHorseItShouldNotBeFindableInDB");
     Horse h = horseDao.create(new HorseDetailDto(null, "TestHorseName", null, LocalDate.now(), Sex.FEMALE, null, null, null));
     horseDao.delete(h.getId());
     assertThrows(NotFoundException.class, () -> horseDao.getById(h.getId()));
@@ -50,6 +58,7 @@ public class HorseDaoTest {
 
   @Test
   public void creatingHorseFromDtoShouldReturnSameValues() throws NotFoundException, ConflictException {
+    LOG.trace("creatingHorseFromDtoShouldReturnSameValues");
     HorseDetailDto toBeCreated = new HorseDetailDto(
         null,
         "Wendy 2.0",

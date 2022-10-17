@@ -73,20 +73,6 @@ public class Horse {
     return this;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Horse horse = (Horse) o;
-    return id.equals(horse.id) && name.equals(horse.name) && Objects.equals(description, horse.description) && dateOfBirth.equals(horse.dateOfBirth)
-        && sex == horse.sex && Objects.equals(ownerId, horse.ownerId) && Objects.equals(motherId, horse.motherId)
-        && Objects.equals(fatherId, horse.fatherId);
-  }
-
   public Long getMotherId() {
     return motherId;
   }
@@ -103,6 +89,20 @@ public class Horse {
   public Horse setFatherId(Long fatherId) {
     this.fatherId = fatherId;
     return this;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Horse horse = (Horse) o;
+    return id.equals(horse.id) && name.equals(horse.name) && Objects.equals(description, horse.description) && dateOfBirth.equals(horse.dateOfBirth)
+        && sex == horse.sex && Objects.equals(ownerId, horse.ownerId) && Objects.equals(motherId, horse.motherId)
+        && Objects.equals(fatherId, horse.fatherId);
   }
 
   @Override

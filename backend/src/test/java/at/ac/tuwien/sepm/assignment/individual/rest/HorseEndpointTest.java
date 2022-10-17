@@ -15,11 +15,14 @@ import at.ac.tuwien.sepm.assignment.individual.service.HorseService;
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -38,6 +41,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @WebAppConfiguration
 public class HorseEndpointTest {
 
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Autowired
   private WebApplicationContext webAppContext;
   private MockMvc mockMvc;
@@ -50,11 +55,13 @@ public class HorseEndpointTest {
 
   @BeforeEach
   public void setup() {
+    LOG.trace("setup");
     this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
   }
 
   @Test
   public void gettingAllHorses() throws Exception {
+    LOG.trace("gettingAllHorses");
     byte[] body = mockMvc
         .perform(MockMvcRequestBuilders
             .get("/horses")
@@ -71,6 +78,7 @@ public class HorseEndpointTest {
 
   @Test
   public void gettingNonexistentUrlReturns404() throws Exception {
+    LOG.trace("gettingNonexistentUrlReturns404");
     mockMvc
         .perform(MockMvcRequestBuilders
             .get("/asdf123")
@@ -79,6 +87,7 @@ public class HorseEndpointTest {
 
   @Test
   public void postReturns201AndHorseValues() throws Exception {
+    LOG.trace("postReturns201AndHorseValues");
     HorseDetailDto horseDto = new HorseDetailDto(null, "Brandy", "Very Nice", LocalDate.of(2022, 1, 1), Sex.FEMALE, null, null, null);
 
     MvcResult result = mockMvc.perform(
@@ -100,6 +109,7 @@ public class HorseEndpointTest {
 
   @Test
   public void deleteReturns204AndThenGetReturns404() throws Exception {
+    LOG.trace("deleteReturns204AndThenGetReturns404");
     mockMvc.perform(
             delete("/horses/-10")
                 .contentType(MediaType.APPLICATION_JSON)

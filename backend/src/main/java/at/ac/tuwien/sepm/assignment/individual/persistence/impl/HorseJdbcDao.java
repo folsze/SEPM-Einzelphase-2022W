@@ -86,6 +86,7 @@ public class HorseJdbcDao implements HorseDao {
 
   @Override
   public List<Horse> search(HorseSearchDto searchParameters) {
+    LOG.trace("search horse. params: {}", searchParameters);
     var args = new ArrayList<>();
     args.add((searchParameters.name() != null) ? '%' + searchParameters.name() + '%' : null);
     args.add((searchParameters.name() != null) ? '%' + searchParameters.name() + '%' : null);
@@ -120,7 +121,7 @@ public class HorseJdbcDao implements HorseDao {
 
   @Override
   public List<Horse> getAll() {
-    LOG.trace("getAll()");
+    LOG.trace("horse: getAll()");
     try {
       return jdbcTemplate.query(SQL_SELECT_ALL, this::mapRow);
     } catch (DataAccessException dae) {
@@ -130,7 +131,7 @@ public class HorseJdbcDao implements HorseDao {
 
   @Override
   public Horse getById(long id) throws NotFoundException {
-    LOG.trace("getById({})", id);
+    LOG.trace("horse: getById({})", id);
     List<Horse> horses = jdbcTemplate.query(SQL_SELECT_BY_ID, this::mapRow, id);
 
     if (horses.isEmpty()) {
@@ -145,7 +146,7 @@ public class HorseJdbcDao implements HorseDao {
 
   @Override
   public HorseMinimal getHorseMinimalById(Long id) {
-    LOG.trace("getById({})", id);
+    LOG.trace("horse: getMinimalById({})", id);
     if (id == null) {
       return null;
     }
@@ -164,6 +165,7 @@ public class HorseJdbcDao implements HorseDao {
 
   @Override
   public Horse create(HorseDetailDto toCreate) {
+    LOG.trace("create: {}", toCreate);
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
     try {
@@ -247,6 +249,7 @@ public class HorseJdbcDao implements HorseDao {
 
   @Override
   public List<HorseMinimal> getChildrenOf(Long horseId) {
+    LOG.trace("getChildrenOf id={}", horseId);
     try {
       return jdbcTemplate.query(SQL_SELECT_ALL_CHILDREN, this::mapRowMinimal, horseId, horseId);
     } catch (DataAccessException dae) {
@@ -254,7 +257,9 @@ public class HorseJdbcDao implements HorseDao {
     }
   }
 
+  @Override
   public List<Horse> getListForFamilyTreeOfHorse(FamilyTreeQueryParamsDto queryParams) throws NotFoundException {
+    LOG.trace("getListForFamilyTreeOfHorse. Params: {}", queryParams);
     try {
       List<Horse> list = jdbcTemplate.query(SQL_LIST_FOR_FAMILY_TREE_OF_HORSE, this::mapRowFamilyTree, queryParams.horseId(), queryParams.limit());
       if (list.isEmpty()) {
@@ -267,6 +272,7 @@ public class HorseJdbcDao implements HorseDao {
   }
 
   private Horse mapRow(ResultSet result, int rowNum) throws SQLException {
+    LOG.trace("mapRow set:{}, rowNum:{}", result, rowNum);
     Date d1 = result.getDate("date_of_birth");
     LocalDate d = result.getObject("date_of_birth", LocalDate.class);
     return new Horse()
@@ -282,6 +288,7 @@ public class HorseJdbcDao implements HorseDao {
   }
 
   private HorseMinimal mapRowMinimal(ResultSet result, int rowNum) throws SQLException {
+    LOG.trace("mapRowMinimal set:{}, rowNum:{}", result, rowNum);
     return new HorseMinimal()
         .setId(result.getLong("id"))
         .setName(result.getString("name"))
@@ -291,6 +298,7 @@ public class HorseJdbcDao implements HorseDao {
   }
 
   private Horse mapRowFamilyTree(ResultSet result, int rowNum) throws SQLException {
+    LOG.trace("mapRowFamilyTree set:{}, rowNum:{}", result, rowNum);
     return new Horse()
         .setId(result.getLong("id"))
         .setName(result.getString("name"))

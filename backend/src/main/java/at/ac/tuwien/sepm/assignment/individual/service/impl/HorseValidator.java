@@ -38,6 +38,7 @@ public class HorseValidator {
 
   // START OF VALIDATE FOR CREATE OR UPDATE SECTION
   public void validateForCreate(HorseDetailDto horse) throws ValidationException, ConflictException {
+    LOG.trace("validateForCreate: {}", horse);
     List<String> validationErrors = new ArrayList<>();
     List<String> conflictErrors = new ArrayList<>();
 
@@ -53,6 +54,7 @@ public class HorseValidator {
   }
 
   private void validateWhatsRequiredIfCreateOrUpdate(HorseDetailDto horse, List<String> validationErrors, List<String> conflictErrors) {
+    LOG.trace("validateWhatsRequiredIfCreateOrUpdate: {}", horse);
     validatePrimitiveHorseAttributes(horse.name(), horse.description(), horse.dateOfBirth(), horse.sex(), validationErrors);
 
     if (horse.ownerId() != null) {
@@ -83,42 +85,48 @@ public class HorseValidator {
   }
 
   private void validateThatHorseYoungerThanMother(HorseDetailDto horse, HorseMinimalDto mother, List<String> validationErrors) {
+    LOG.trace("validateThatHorseYoungerThanMother: {}", horse);
     if (horse.dateOfBirth().isBefore(mother.dateOfBirth())) {
       validationErrors.add("Horse must be younger than its mother");
     }
   }
 
   private void validateThatHorseYoungerThanFather(HorseDetailDto horse, HorseMinimalDto father, List<String> validationErrors) {
+    LOG.trace("validateThatHorseYoungerThanFather: {}", horse);
     if (horse.dateOfBirth().isBefore(father.dateOfBirth())) {
       validationErrors.add("Horse must be younger than its father");
     }
   }
 
   private void validateThatMotherExistsInDB(Long motherId, List<String> validationErrors) {
+    LOG.trace("validateThatMotherExistsInDB: id={}", motherId);
     try {
       horseDao.getById(motherId);
     } catch (NotFoundException nfe) {
-      validationErrors.add("Could not find provided mother in the database");
+      validationErrors.add("Could not find provided mother");
     }
   }
 
   private void validateThatFatherExistsInDB(Long fatherId, List<String> validationErrors) {
+    LOG.trace("validateThatFatherExistsInDB id: {}", fatherId);
     try {
       horseDao.getById(fatherId);
     } catch (NotFoundException nfe) {
-      validationErrors.add("Could not find provided father in the database");
+      validationErrors.add("Could not find provided father");
     }
   }
 
   private void validateThatOwnerExistsInDB(Long ownerId, List<String> validationErrors) {
+    LOG.trace("validateThatOwnerExistsInDB id={}", ownerId);
     try {
       ownerDao.getById(ownerId);
     } catch (NotFoundException nfe) {
-      validationErrors.add("Could not find provided owner in the database");
+      validationErrors.add("Could not find provided owner");
     }
   }
 
   private void validatePrimitiveHorseAttributes(String name, String description, LocalDate dateOfBirth, Sex sex, List<String> validationErrors) {
+    LOG.trace("validatePrimitiveHorseAttributes name={}", name);
     if (name != null) {
       if (name.isBlank()) {
         validationErrors.add("Horse name is given but blank");
@@ -184,6 +192,7 @@ public class HorseValidator {
   }
 
   private void validateWhatsRequiredOnlyIfUpdate(HorseDetailDto horse, List<String> conflictErrors) {
+    LOG.trace("validateWhatsRequiredOnlyIfUpdate: horse={}", horse);
     if (horse.id() != null) {
       Horse oldHorse;
       try {
@@ -197,12 +206,13 @@ public class HorseValidator {
           validateThatHorsesChildrenAreStillYoungerThanTheirParent(horse.id(), horse.dateOfBirth(), conflictErrors);
         }
       } catch (NotFoundException ignored) {
-        conflictErrors.add("Horse to be updated was not found in database. Could not validate remaining horse values");
+        conflictErrors.add("Horse to be updated was not found. Could not validate remaining horse values");
       }
     }  // else block was already handled by basic attribute validation
   }
 
   private void validateThatHorsesChildrenAreStillYoungerThanTheirParent(Long parentId, LocalDate horseDateOfBirth, List<String> conflictErrors) {
+    LOG.trace("validateThatHorsesChildrenAreStillYoungerThanTheirParent {}", parentId);
     List<HorseMinimal> children = horseDao.getChildrenOf(parentId);
 
     if (children.size() > 0) {
@@ -221,6 +231,7 @@ public class HorseValidator {
   }
 
   private void validateThatHorseDoesntHaveChildren(Long horseId, List<String> conflictErrors) {
+    LOG.trace("validateThatHorseDoesntHaveChildren id={}", horseId);
     List<HorseMinimal> children = horseDao.getChildrenOf(horseId);
 
     if (children.size() > 0) {
@@ -254,7 +265,7 @@ public class HorseValidator {
       try {
         horseDao.getById(horse.idOfHorseToBeExcluded());
       } catch (NotFoundException nfe) {
-        conflictErrors.add("Horse to be excluded from search not found in database");
+        conflictErrors.add("Horse to be excluded from search not found");
       }
     }
 
@@ -262,7 +273,7 @@ public class HorseValidator {
       try {
         ownerDao.getById(horse.ownerId());
       } catch (NotFoundException nfe) {
-        conflictErrors.add("Owner of search-filter not found in database");
+        conflictErrors.add("Owner of search-filter not found");
       }
     }
 
@@ -273,6 +284,7 @@ public class HorseValidator {
 
   public void validateSearchHorsePrimitiveAttributes(String name, String description, LocalDate bornBefore, Integer limit,
                                                      List<String> validationErrors) {
+    LOG.trace("validateSearchHorsePrimitiveAttributes {} {} {} {}", name, description, bornBefore, limit);
     if (name != null) {
       if (name.isBlank()) {
         validationErrors.add("Horse name is given but blank");
@@ -312,6 +324,7 @@ public class HorseValidator {
   }
 
   public void validateForFamilyTree(FamilyTreeQueryParamsDto queryParams) throws ValidationException {
+    LOG.trace("validateForFamilyTree {}", queryParams);
     List<String> validationErrors = new ArrayList<>();
 
     if (queryParams.horseId() == null) {

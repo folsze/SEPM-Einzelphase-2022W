@@ -14,10 +14,13 @@ import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
 
+import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,11 +29,14 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 public class HorseServiceTest {
 
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Autowired
   HorseService horseService;
 
   @Test
   public void getAllReturnsAllStoredHorses() throws ValidationException, ConflictException {
+    LOG.trace("getAllReturnsAllStoredHorses");
     HorseSearchDto h = new HorseSearchDto(null, null, null, null, null, null, null);
     List<HorseListDto> horses = horseService.search(h)
         .toList();
@@ -42,6 +48,7 @@ public class HorseServiceTest {
 
   @Test
   public void shouldNotCreateHorseWithSameSexParents() throws ValidationException, NotFoundException, ConflictException {
+    LOG.trace("shouldNotCreateHorseWithSameSexParents");
     HorseDetailDto mother = new HorseDetailDto(null, "mom", null, LocalDate.of(2022, 1, 1), Sex.FEMALE, null, null, null);
     HorseDetailDto mother2 = new HorseDetailDto(null, "mom2", null, LocalDate.of(2022, 1, 1), Sex.FEMALE, null, null, null);
     HorseDetailDto h1 = horseService.create(mother);
@@ -59,12 +66,14 @@ public class HorseServiceTest {
 
   @Test
   public void shouldNotCreateHorseWithoutName() {
+    LOG.trace("shouldNotCreateHorseWithoutName");
     HorseDetailDto horse = new HorseDetailDto(null, null, null, LocalDate.of(2022, 1, 1), Sex.FEMALE, null, null, null);
     assertThrows(ValidationException.class, () -> horseService.create(horse));
   }
 
   @Test
   public void shouldUpdateWhenParentsDifferentSex() throws ValidationException, NotFoundException, ConflictException {
+    LOG.trace("shouldUpdateWhenParentsDifferentSex");
     HorseDetailDto h1 = new HorseDetailDto(null, "mom", null, LocalDate.of(2022, 1, 1),
         Sex.FEMALE, null, null, null);
     HorseDetailDto h2 = new HorseDetailDto(null, "dad", null, LocalDate.of(2022, 1, 1),
