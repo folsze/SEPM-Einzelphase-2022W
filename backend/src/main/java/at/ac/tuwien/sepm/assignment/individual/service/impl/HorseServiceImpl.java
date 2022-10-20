@@ -147,10 +147,7 @@ public class HorseServiceImpl implements HorseService {
       return null;
     } else {
       List<Horse> oneHorse = list.stream().filter(h -> h.getId().equals(horseId)).toList(); // O(n)
-
-      if (oneHorse.size() != 1) {
-        throw new FatalException("Error while mapping the horse family tree");
-      }
+      
       Horse h = oneHorse.get(0);
 
       return new HorseFamilyTreeDto(
