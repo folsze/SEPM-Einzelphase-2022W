@@ -85,8 +85,7 @@ public class OwnerJdbcDao implements OwnerDao {
         return stmt;
       }, keyHolder);
     } catch (DataAccessException dae) {
-      throw new FatalException("Error while querying all owners.",
-          dae); // todo Fragestunde: passt so? Wie sonst? Wieso überhaupt abfangen notwendig? Damit JDBC/SQL nicht sichtbar wird?
+      throw new FatalException("Error while querying all owners.", dae);
     }
 
     Number key = keyHolder.getKey();
