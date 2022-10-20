@@ -61,3 +61,4 @@ GESAMTSTUNDEN: 80 h
     - [US9] allow incest-relation
     - [US3] allow deletion of a horse that is a parent
     - [TS12] added stundenliste.txt
+    - [TS16] removed unsued imports
