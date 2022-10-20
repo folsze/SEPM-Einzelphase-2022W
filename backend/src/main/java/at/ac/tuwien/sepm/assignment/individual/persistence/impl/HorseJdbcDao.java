@@ -227,7 +227,7 @@ public class HorseJdbcDao implements HorseDao {
   }
 
   @Override
-  public void delete(Long id) throws NotFoundException, ConflictException {
+  public void delete(Long id) throws NotFoundException {
     LOG.trace("delete horse with id {}", id);
 
     try {
@@ -240,8 +240,6 @@ public class HorseJdbcDao implements HorseDao {
       if (noOfUpdates < 1) {
         throw new NotFoundException("Horse to be deleted not found");
       }
-    } catch (DataIntegrityViolationException dive) {
-      throw new ConflictException("Could not delete horse as it is the parent of another horse", List.of("Tried making another horse an orphan"));
     } catch (DataAccessException dae) {
       throw new FatalException("Error when deleting horse", dae);
     }

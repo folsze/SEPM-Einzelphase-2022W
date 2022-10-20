@@ -56,9 +56,8 @@ public interface HorseDao {
    *
    * @param id the id of the horse to be deleted
    * @throws NotFoundException if the horse with the given ID does not exist in the persistent data store
-   * @throws ConflictException if the specified horse is already a parent of a horse (not allowed to turn horses into orphans)
    */
-  void delete(Long id) throws NotFoundException, ConflictException;
+  void delete(Long id) throws NotFoundException;
 
   /**
    * Search all horses by all attributes that a HorseSearchDto has.

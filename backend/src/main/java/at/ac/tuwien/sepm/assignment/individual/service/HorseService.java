@@ -55,10 +55,8 @@ public interface HorseService {
    *
    * @param id the id of the horse to be deleted
    * @throws NotFoundException if the id provided doesn't map to a horse in the existing state of the program
-   * @throws ConflictException if the horse to be deleted would cause a conflict with the existing state of the system.
-   *                           Most of the time this means that the horse already has children, whose mother_id would then point to a non-existent horse.
    */
-  void delete(Long id) throws NotFoundException, ConflictException;
+  void delete(Long id) throws NotFoundException;
 
   /**
    * searches all horses with parameters specified in a HorseSearchDto

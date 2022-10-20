@@ -108,7 +108,7 @@ public class HorseServiceImpl implements HorseService {
   }
 
   @Override
-  public void delete(Long id) throws NotFoundException, ConflictException {
+  public void delete(Long id) throws NotFoundException {
     LOG.trace("delete horse with id {}", id);
     dao.delete(id);
   }
@@ -147,7 +147,7 @@ public class HorseServiceImpl implements HorseService {
       return null;
     } else {
       List<Horse> oneHorse = list.stream().filter(h -> h.getId().equals(horseId)).toList(); // O(n)
-      
+
       Horse h = oneHorse.get(0);
 
       return new HorseFamilyTreeDto(

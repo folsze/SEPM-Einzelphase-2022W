@@ -127,12 +127,6 @@ public class HorseEndpoint {
     } catch (NotFoundException nfe) {
       logClientError(HttpStatus.NOT_FOUND, "Horse to be deleted with id " + id + " doesn't exist", nfe);
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Horse to be deleted doesn't exist", nfe);
-    } catch (FatalException fe) {
-      LOG.error("Error while deleting horse with id {}. Status {}", id, HttpStatus.INTERNAL_SERVER_ERROR.value(), fe);
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while deleting horse", fe);
-    } catch (ConflictException ce) {
-      logClientError(HttpStatus.CONFLICT, "A conflict with the existing state arose while trying to delete horse with id " + id, ce);
-      throw new ResponseStatusException(HttpStatus.CONFLICT, ce.getMessage(), ce);
     }
   }
 
