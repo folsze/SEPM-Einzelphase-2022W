@@ -1,0 +1,63 @@
+Stundenliste von: Felix Olszewski, 12022502
+
+GESAMTSTUNDEN: 80 h
+
+- 06.10. 16:00-17:00
+    - initial setup & commit 
+- 07.10. 08:30-15:30 18:00-19:15 23:00-23:30
+    - [TS10] & [TS14] intiale Aufsetzung, Projekt durchlesen
+    - [US7] BE basics implementieren
+    - [US8] basics implementieren
+    - [US7] FE basics implementieren
+- 08.10. 08:30-12:30 17:45-23:59
+    - [US7] Owner add works
+    - [US1] basics work
+    - [US1] changed to reactive forms, adjusted owner endpoint
+    - [US1] ngbTypeahead
+    - [US2] endpoint
+    - [US8] a wordings
+    - [US7] FE max-length
+    - [US5] detail view
+    - [US2] edit possible
+    - [US3] deletion works
+- 09.10. 10:00-12:30 14:00-15:00
+    - [US5] now only have one edit/add component
+    - [US3] in list & form
+- 10.10. 08:00-11:00 20:00-23:59
+    - [US6] horse search fully working
+- 12.10. 09:30-12:00 12:30-16:00 16:30-23:59
+    - [US6] request params & bug-free, deselect sex, debounceTime
+- 13.10. 08:00-14:00 20:00-23:50
+    - [US4] parents accessible everywhere
+    - [US6] horseId Exclude (+validation)
+    - [TS15] added validation
+    - [TS20] lots of message adjustments
+- 14.10. 12:00-15:00 20:00-23:30
+    - [TS20] more infos
+    - [TS26] more precise excpetions
+    - [TS15] slight loosening
+    - [TS16] deleted comments
+    - [TS22] checkstyle fixes
+    - [TS26] conflict exceptions
+- 15.10. 10:00-13:00
+    - [TS22] node to 18.x
+    - [US5] parent-navigation
+- 16.10. 11:30-15:00 17:00-23:30
+    - [US6] minor corrections
+    - [TS15] stricter validation
+    - [US2] break-word
+    - [TS27] response statuses
+    - [US9] family tree 100%
+    - [US3] D.R.Y. component
+- 17.10. 10:00-12:00 15:00-17:00
+    - [TS28] added test data
+    - [TS22] checkstyle fix maven
+    - [TS27] adjust http code
+    - [US9] error handling
+    - [TS13] added all tests
+    - [TS10] logging everywhere
+    - [TS11] interface documentation
+- 20.10. 10:00-13:00
+    - [US9] allow incest-relation
+    - [US3] allow deletion of a horse that is a parent
+    - [TS12] added stundenliste.txt
