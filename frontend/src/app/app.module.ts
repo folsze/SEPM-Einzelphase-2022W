@@ -9,7 +9,6 @@ import {ToastrModule} from 'ngx-toastr';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {AutocompleteComponent} from './component/autocomplete/autocomplete.component';
 import {HeaderComponent} from './component/header/header.component';
 import {HorseFormComponent} from './component/horse/horse-form/horse-form.component';
 import {HorseComponent} from './component/horse/horse.component';
@@ -24,7 +23,6 @@ import { FamilyTreeComponent } from './component/horse/family-tree/family-tree.c
     HeaderComponent,
     HorseComponent,
     HorseFormComponent,
-    AutocompleteComponent,
     OwnerComponent,
     OwnerCreateComponent,
     ConfirmDeleteModalContentComponent,

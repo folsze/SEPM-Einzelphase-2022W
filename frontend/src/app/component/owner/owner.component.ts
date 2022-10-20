@@ -46,8 +46,4 @@ export class OwnerComponent implements OnInit {
       : '';
   }
 
-  dateOfBirthAsLocaleDate(horse: Horse): string {
-    return new Date(horse.dateOfBirth).toLocaleDateString();
-  }
-
 }

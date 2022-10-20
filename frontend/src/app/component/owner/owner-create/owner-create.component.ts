@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import {OwnerService} from '../../../service/owner.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
-import {Observable, of} from 'rxjs';
+import {Observable} from 'rxjs';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Owner} from '../../../dto/owner';
 import {constructErrorMessageWithList} from '../../../shared/validator';
