@@ -24,8 +24,8 @@ export class ConfirmDeleteModalContentComponent {
       this.service.deleteHorse(this.horse.id).subscribe({
         next: () => {
           this.notification.success(`Horse ${this.horse.name} successfully deleted.`);
-          const confirmedDeletion = true;
-          this.modal.close(confirmedDeletion);
+          const horseWasDeleted = true;
+          this.modal.close(horseWasDeleted);
         },
         error: (error) => {
           console.error('Error deleting horse', error);
