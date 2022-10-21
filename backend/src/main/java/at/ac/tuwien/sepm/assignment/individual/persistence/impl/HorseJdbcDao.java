@@ -130,16 +130,23 @@ public class HorseJdbcDao implements HorseDao {
   @Override
   public Horse getById(long id) throws NotFoundException {
     LOG.trace("horse: getById({})", id);
-    List<Horse> horses = jdbcTemplate.query(SQL_SELECT_BY_ID, this::mapRow, id);
 
-    if (horses.isEmpty()) {
-      throw new NotFoundException("No horse with ID %d found".formatted(id));
-    }
-    if (horses.size() > 1) {
-      throw new FatalException("Too many horses with ID %d found".formatted(id));
+    try {
+      List<Horse> horses = jdbcTemplate.query(SQL_SELECT_BY_ID, this::mapRow, id);
+
+      if (horses.isEmpty()) {
+        throw new NotFoundException("No horse with ID %d found".formatted(id));
+      }
+
+      if (horses.size() > 1) {
+        throw new FatalException("Too many horses with ID %d found".formatted(id));
+      }
+
+      return horses.get(0);
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error while querying a horse by id.");
     }
 
-    return horses.get(0);
   }
 
   @Override
@@ -149,16 +156,21 @@ public class HorseJdbcDao implements HorseDao {
       return null;
     }
 
-    List<HorseMinimal> horses = jdbcTemplate.query(SQL_SELECT_MINIMAL_BY_ID, this::mapRowMinimal, id);
-    if (horses.isEmpty()) {
-      throw new FatalException("Horse.motherId != null (motherId=%d) but mother was NotFound. This shouldn't happen.".formatted(id));
-    }
+    try {
+      List<HorseMinimal> horses = jdbcTemplate.query(SQL_SELECT_MINIMAL_BY_ID, this::mapRowMinimal, id);
 
-    if (horses.size() > 1) {
-      throw new FatalException("Too many horses with ID %d found".formatted(id));
-    }
+      if (horses.isEmpty()) {
+        throw new FatalException("Horse.motherId != null (motherId=%d) but mother was NotFound. This shouldn't happen.".formatted(id));
+      }
 
-    return horses.get(0);
+      if (horses.size() > 1) {
+        throw new FatalException("Too many horses with ID %d found".formatted(id));
+      }
+
+      return horses.get(0);
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error while getting minimal horse by id");
+    }
   }
 
   @Override
@@ -199,29 +211,33 @@ public class HorseJdbcDao implements HorseDao {
   @Override
   public Horse update(Long id, HorseDetailDto horse) throws NotFoundException {
     LOG.trace("update({})", horse);
-    int updated = jdbcTemplate.update(SQL_UPDATE,
-        horse.name(),
-        horse.description(),
-        horse.dateOfBirth(),
-        horse.sex().toString(),
-        horse.ownerId(),
-        horse.motherId(),
-        horse.fatherId(),
-        id);
-    if (updated == 0) {
-      throw new NotFoundException("Could not update horse with ID " + horse.id() + ", because it does not exist");
-    }
+    try {
+      int updated = jdbcTemplate.update(SQL_UPDATE,
+          horse.name(),
+          horse.description(),
+          horse.dateOfBirth(),
+          horse.sex().toString(),
+          horse.ownerId(),
+          horse.motherId(),
+          horse.fatherId(),
+          id);
+      if (updated == 0) {
+        throw new NotFoundException("Could not update horse with ID " + horse.id() + ", because it does not exist");
+      }
 
-    return new Horse()
-        .setId(id)
-        .setName(horse.name())
-        .setDescription(horse.description())
-        .setDateOfBirth(horse.dateOfBirth())
-        .setSex(horse.sex())
-        .setOwnerId(horse.ownerId())
-        .setMotherId(horse.motherId())
-        .setFatherId(horse.fatherId())
-        ;
+      return new Horse()
+          .setId(id)
+          .setName(horse.name())
+          .setDescription(horse.description())
+          .setDateOfBirth(horse.dateOfBirth())
+          .setSex(horse.sex())
+          .setOwnerId(horse.ownerId())
+          .setMotherId(horse.motherId())
+          .setFatherId(horse.fatherId())
+          ;
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error while trying to update horses.");
+    }
   }
 
   @Override

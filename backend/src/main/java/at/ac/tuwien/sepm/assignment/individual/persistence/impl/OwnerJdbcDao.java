@@ -108,15 +108,23 @@ public class OwnerJdbcDao implements OwnerDao {
     Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("ids", ownerIdsOfHorses);
     paramMap.put("name", searchParameters.name());
-    Collection<Owner> c = jdbcNamed.query(SQL_SELECT_OWNERS_BY_IDS_AND_FILTER, paramMap, this::mapRow);
-    return c;
+    try {
+      Collection<Owner> c = jdbcNamed.query(SQL_SELECT_OWNERS_BY_IDS_AND_FILTER, paramMap, this::mapRow);
+      return c;
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error when getOwners by ids and filter");
+    }
   }
 
   @Override
   public Collection<Owner> getOwnersByIds(Collection<Long> ownerIdsOfHorses) {
     LOG.trace("getAllById({})", ownerIdsOfHorses);
     var statementParams = Collections.singletonMap("ids", ownerIdsOfHorses);
-    return jdbcNamed.query(SQL_SELECT_OWNERS_BY_IDS, statementParams, this::mapRow);
+    try {
+      return jdbcNamed.query(SQL_SELECT_OWNERS_BY_IDS, statementParams, this::mapRow);
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error when getting owners by ids");
+    }
   }
 
   @Override
@@ -130,7 +138,12 @@ public class OwnerJdbcDao implements OwnerDao {
       query += SQL_SEARCH_LIMIT_CLAUSE;
       params.add(maxAmount);
     }
-    return jdbcTemplate.query(query, this::mapRow, params.toArray());
+
+    try {
+      return jdbcTemplate.query(query, this::mapRow, params.toArray());
+    } catch (DataAccessException dae) {
+      throw new FatalException("Error while searching owners");
+    }
   }
 
   private Owner mapRow(ResultSet resultSet, int i) throws SQLException {
