@@ -18,7 +18,7 @@ test-backend:
     - mvn -B clean install
 
 test-frontend:
-  image: node:18
+  image: registry.reset.inso-w.at/pub/docker/node-non-root-18
   stage: test
   script:
     - cd frontend
